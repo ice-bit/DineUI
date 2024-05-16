@@ -28,12 +28,13 @@ class TabBarHostingController: UITabBarController {
         }
         let orderService = OrderServiceImpl(databaseAccess: databaseAccess)
         let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
+        let tableService = TableServiceImpl(databaseAccess: databaseAccess)
         
         let orderViewController = OrderViewController(orderService: orderService, menuService: menuService)
         orderViewController.tabBarItem = UITabBarItem(title: "Orders", image: UIImage(systemName: "cart"), selectedImage: UIImage(systemName: "cart.fill"))
         let billViewController = BillViewController()
         billViewController.tabBarItem = UITabBarItem(title: "Bills", image: UIImage(systemName: "newspaper"), selectedImage: UIImage(systemName: "newspaper.fill"))
-        let tableViewController = TablesViewController()
+        let tableViewController = TablesViewController(tableService: tableService)
         tableViewController.tabBarItem = UITabBarItem(title: "Tables", image: UIImage(systemName: "table.furniture"), selectedImage: UIImage(systemName: "table.furniture.fill"))
         
         let menuViewController = MenuViewController(menuService: menuService)

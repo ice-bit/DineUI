@@ -25,7 +25,6 @@ class TableCollectionViewCell: UICollectionViewCell {
         stackView.backgroundColor = UIColor(named: "secondaryBgColor")
         stackView.alignment = .center
         stackView.distribution = .fillEqually
-//        stackView.spacing = 1
         stackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMinXMaxYCorner]
         stackView.layer.cornerRadius = 10
         return stackView
@@ -35,7 +34,8 @@ class TableCollectionViewCell: UICollectionViewCell {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.backgroundColor = UIColor(named: "teritiaryBgColor")
-        stackView.alignment = .leading
+        stackView.alignment = .center
+        stackView.distribution = .fillEqually
         stackView.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
         stackView.layer.cornerRadius = 10
         return stackView
@@ -67,18 +67,21 @@ class TableCollectionViewCell: UICollectionViewCell {
     
     private lazy var statusValueLabel: UILabel = {
         let label = UILabel()
+        label.font = .systemFont(ofSize: 15)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var locationValueLabel: UILabel = {
         let label = UILabel()
+        label.font = .systemFont(ofSize: 15)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var capacityValueLabel: UILabel = {
         let label = UILabel()
+        label.font = .systemFont(ofSize: 15)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -102,9 +105,14 @@ class TableCollectionViewCell: UICollectionViewCell {
         contentView.addSubview(wrapperHStackView)
         wrapperHStackView.addArrangedSubview(leftVStackView)
         wrapperHStackView.addArrangedSubview(rightVStackView)
+        
         leftVStackView.addArrangedSubview(statusLabel)
         leftVStackView.addArrangedSubview(locationLabel)
         leftVStackView.addArrangedSubview(capacityLabel)
+        
+        rightVStackView.addArrangedSubview(statusValueLabel)
+        rightVStackView.addArrangedSubview(locationValueLabel)
+        rightVStackView.addArrangedSubview(capacityValueLabel)
         
         NSLayoutConstraint.activate([
             wrapperHStackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),

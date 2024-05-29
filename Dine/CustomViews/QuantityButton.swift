@@ -23,7 +23,7 @@ class QuantityButton: UIView {
     private lazy var containerView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(named: "primaryBgColor")
+        view.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
         return view
     }()
     

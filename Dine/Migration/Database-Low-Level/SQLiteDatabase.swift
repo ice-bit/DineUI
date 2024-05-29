@@ -10,6 +10,7 @@ import SQLite3
 
 protocol SQLTable {
     static var createStatement: String { get }
+    static var tableName: String { get }
 }
 
 protocol SQLInsertable {
@@ -68,6 +69,10 @@ class SQLiteDatabase {
     }
     
     func createTable(table: SQLTable.Type) throws {
+        /*guard try !isTableAvailable(table.tableName) else {
+            print("Table \(table.tableName) already exist!")
+            return
+        }*/
         let createTableStatment = try prepareStatement(sql: table.createStatement)
         defer {
             sqlite3_finalize(createTableStatment)
@@ -188,6 +193,27 @@ class SQLiteDatabase {
             }
         }
         return true
+    }
+    
+    func isTableAvailable(_ tableName: String) throws -> Bool {
+        let query = "SELECT COUNT(*) FROM sqlite_master WHERE type='table' AND name='\(tableName)"
+        let queryStatement = try prepareStatement(sql: query)
+        defer {
+            sqlite3_finalize(queryStatement)
+        }
+        if sqlite3_step(queryStatement) == SQLITE_ROW {
+            let count = sqlite3_column_int(queryStatement, 0)
+            
+            // If count is greater than 0, the table exists
+            if count > 0 {
+                print("Table \(tableName) exists")
+                return true
+            } else {
+                print("Table \(tableName) does not exist")
+                return false
+            }
+        }
+        return false
     }
 }
 

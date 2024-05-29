@@ -11,22 +11,17 @@ protocol MenuItemDelegate: AnyObject {
     func menuItemDidAdd(_ item: MenuItem)
 }
 
+extension Notification.Name {
+    static let didAddMenuItemNotification = Notification.Name("com.euphoria.Dine.didAddMenuItemNotification")
+}
+
 class AddItemViewController: UIViewController {
-    
-    private let menuService: MenuService
-    
     weak var menuItemDelegate: MenuItemDelegate?
     
-    init(menuService: MenuService) {
-        self.menuService = menuService
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
     // MARK: - Properties
+    
+    private let pickerData: [MenuSection] = [.starter, .mainCourse, .side, .desserts, .beverages]
+    private var selectedMenuSection: MenuSection?
     
     private var stackView: UIStackView!
     private var itemImageView: UIImageView!
@@ -35,6 +30,9 @@ class AddItemViewController: UIViewController {
     private var descTextField: UITextField!
     private var addButton: UIButton!
     private var addImageButton: UIButton!
+    private var sectionSelectionButton: UIButton!
+    
+    private var pickerView: UIPickerView!
     
     // MARK: - View Lifecycle
     
@@ -44,21 +42,60 @@ class AddItemViewController: UIViewController {
         setupSubviews()
     }
     
-    // MARK: - View Setup
+    // MARK: - @OBJC Methods
+    @objc private func selectMenuSectionButtonTapped(_ sender: UIButton) {
+        print("menu selection button tapped")
+        let alert = UIAlertController(title: "Select Section", message: "\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
+        
+        let pickerViewFrame = CGRect(x: 0, y: 50, width: alert.view.bounds.width - 20, height: 200)
+        pickerView = UIPickerView(frame: pickerViewFrame)
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        
+        alert.view.addSubview(pickerView)
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
+        alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { _ in
+            let selectedIndex = self.pickerView.selectedRow(inComponent: 0)
+            let selectedSection = self.pickerData[selectedIndex].rawValue
+            self.selectedMenuSection = MenuSection(rawValue: selectedSection)
+            self.sectionSelectionButton.setTitle(selectedSection, for: .normal)
+        }))
+        
+        present(alert, animated: true, completion: nil)
+    }
     
+    // MARK: - View Setup
     private func configureView() {
-        view.backgroundColor = UIColor(named: "primaryBgColor")
+        view.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
     }
     
     private func setupSubviews() {
         setupStackView()
-//        setupItemImageView()
         setupAddImageButton()
         setupNameTextField()
         setupPriceTextField()
+        setupSectionSelectionButton()
         setupAddButton()
         addSubviews()
         setupConstraints()
+        setupPickerView()
+    }
+    
+    private func setupPickerView() {
+        pickerView = UIPickerView()
+        pickerView.delegate = self
+        pickerView.dataSource = self
+    }
+    
+    private func setupSectionSelectionButton() {
+        sectionSelectionButton = UIButton()
+        sectionSelectionButton.setTitle("Select Section", for: .normal)
+        sectionSelectionButton.translatesAutoresizingMaskIntoConstraints = false
+        sectionSelectionButton.setTitleColor(.label, for: .normal)
+        sectionSelectionButton.backgroundColor = .systemGray5
+        sectionSelectionButton.layer.cornerRadius = 10
+        sectionSelectionButton.addTarget(self, action: #selector(selectMenuSectionButtonTapped(_ :)), for: .touchUpInside)
     }
     
     private func setupStackView() {
@@ -81,7 +118,7 @@ class AddItemViewController: UIViewController {
         addImageButton = UIButton()
         let symbolConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 40, weight: .medium))
         addImageButton.setImage(UIImage(systemName: "plus", withConfiguration: symbolConfig), for: .normal)
-        addImageButton.backgroundColor = UIColor(named: "secondaryBgColor")
+        addImageButton.backgroundColor = .systemGray5
         addImageButton.tintColor = .label
         addImageButton.translatesAutoresizingMaskIntoConstraints = false
         addImageButton.layer.borderWidth = 1
@@ -93,7 +130,7 @@ class AddItemViewController: UIViewController {
         nameTextField = DTextField()
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         nameTextField.placeholder = "Name"
-        nameTextField.backgroundColor = UIColor(named: "secondaryBgColor")
+        nameTextField.backgroundColor = .systemGray5
         nameTextField.layer.cornerRadius = 12
     }
     
@@ -101,7 +138,7 @@ class AddItemViewController: UIViewController {
         priceTextField = DTextField()
         priceTextField.translatesAutoresizingMaskIntoConstraints = false
         priceTextField.placeholder = "Price Tag"
-        priceTextField.backgroundColor = UIColor(named: "secondaryBgColor")
+        priceTextField.backgroundColor = .systemGray5
         priceTextField.layer.cornerRadius = 12
     }
     
@@ -109,7 +146,7 @@ class AddItemViewController: UIViewController {
         addButton = UIButton()
         addButton.setTitle("Add Item", for: .normal)
         addButton.translatesAutoresizingMaskIntoConstraints = false
-        addButton.backgroundColor = UIColor(named: "secondaryBgColor")
+        addButton.backgroundColor = .app
         addButton.layer.cornerRadius = 10
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
         addButton.setTitleColor(.label, for: .normal)
@@ -120,6 +157,7 @@ class AddItemViewController: UIViewController {
         stackView.addArrangedSubview(addImageButton)
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(priceTextField)
+        stackView.addArrangedSubview(sectionSelectionButton)
         stackView.addArrangedSubview(addButton)
     }
     
@@ -139,6 +177,9 @@ class AddItemViewController: UIViewController {
             
             addImageButton.heightAnchor.constraint(equalToConstant: 150),
             addImageButton.widthAnchor.constraint(equalToConstant: 150),
+            
+            sectionSelectionButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            sectionSelectionButton.heightAnchor.constraint(equalToConstant: 44),
         ])
     }
     
@@ -151,13 +192,43 @@ class AddItemViewController: UIViewController {
             return
         }
         
-        if let name = nameTextField.text {
-            let menuItem = MenuItem(name: name, price: price)
-            try? menuService.add(menuItem)
+        if let name = nameTextField.text, let selectedSection = selectedMenuSection {
+            let menuItem = MenuItem(name: name, price: price, menuSection: selectedSection) 
+            do  {
+                let databaseAccess = try SQLiteDataAccess.openDatabase()
+                let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
+                try menuService.add(menuItem)
+                NotificationCenter.default.post(name: .didAddMenuItemNotification, object: nil)
+            } catch {
+                print("Unable to add MenuItem - \(error)")
+            }
             menuItemDelegate?.menuItemDidAdd(menuItem)
             self.dismiss(animated: true)
         }
         
     }
+}
+
+extension AddItemViewController: UIPickerViewDataSource, UIPickerViewDelegate {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        pickerData.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        pickerData[row].rawValue
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        print("Selected Item: \(pickerData[row].rawValue)")
+    }
+    
+}
+
+#Preview {
+    AddItemViewController()
 }
 

@@ -11,6 +11,13 @@ class MenuSectionTableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "MenuSectionTableViewCell"
     
+    private lazy var customSFSymbol: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleToFill
+        imageView.backgroundColor = .black
+        return imageView
+    }()
+    
     private lazy var sectionTitle: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 22, weight: .regular)
@@ -48,18 +55,25 @@ class MenuSectionTableViewCell: UITableViewCell {
     
     private func setupSubviews() {
         contentView.addSubview(sectionTitle)
+        contentView.addSubview(customSFSymbol)
 //        contentView.addSubview(customDisclosureImage)
-        contentView.backgroundColor = UIColor(named: "primaryBgColor")
+        contentView.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
+        
         
         NSLayoutConstraint.activate([
-            sectionTitle.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 14),
+            customSFSymbol.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 14),
+            customSFSymbol.centerYAnchor.constraint(equalTo: contentView.centerYAnchor),
+            customSFSymbol.heightAnchor.constraint(equalToConstant: 55),
+            customSFSymbol.widthAnchor.constraint(equalToConstant: 55),
+            sectionTitle.leadingAnchor.constraint(equalTo: customSFSymbol.trailingAnchor, constant: 8),
             sectionTitle.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 11),
             sectionTitle.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -11),
-            sectionTitle.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+            sectionTitle.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -14),
             /*customDisclosureImage.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 11),
             customDisclosureImage.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
             customDisclosureImage.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -11),
             customDisclosureImage.leadingAnchor.constraint(equalTo: sectionTitle.trailingAnchor, constant: 8)*/
+            
         ])
         
     }

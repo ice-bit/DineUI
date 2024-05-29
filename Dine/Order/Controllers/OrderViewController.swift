@@ -58,25 +58,13 @@ class OrderViewController: UIViewController {
     }
     
     @objc private func addOrder() {
-        /*let menuItems = [
-            MenuItem(name: "Chicken", price: 3.4),
-            MenuItem(name: "Beef", price: 3.4),
-            MenuItem(name: "Bacon bread", price: 3.4),
-        ]
-        let order = Order(tableId: UUID(), orderStatus: .received, menuItems: menuItems)
-        orderData.append(order)
-        do {
-            try orderService.add(order)
-        } catch {
-            print("Failed to add order to db: \(error)")
-        }*/
-        let menuListVC = MenuListViewController(sectionTitle: "Menu", menuService: menuService, isPresented: true)
+        let menuListVC = MenuListViewController()
         let navController = UINavigationController(rootViewController: menuListVC)
         present(navController, animated: true)
     }
     
     private func setupNavigationBar() {
-        let addBarButton = UIBarButtonItem(image: UIImage(systemName: "plus.app"), style: .done, target: self, action: #selector(addOrder))
+        let addBarButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .done, target: self, action: #selector(addOrder))
         navigationItem.rightBarButtonItem = addBarButton
     }
     
@@ -90,7 +78,7 @@ class OrderViewController: UIViewController {
     
     private func setupAppearance() {
         self.title = "Orders"
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
     }
 
@@ -102,6 +90,7 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
         let cell = tableView.dequeueReusableCell(withIdentifier: OrderCell.reuseIdentifier, for: indexPath) as! OrderCell
 //        cell.configure(status: data.status, itemCount: data.itemCount, orderID: "fuwfewf", tableID: "fwefewfewf", date: data.date, isOrderBilled: true)
 //        cell.configure(status: data.orderStatusValue.rawValue, itemCount: data.menuItems.count, orderID: data.orderIdValue.uuidString, tableID: data.tableIDValue.uuidString, date: data.getDate, isOrderBilled: data.isOrderBilledValue)
+        cell.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
         cell.configure(status: data.orderStatusValue.rawValue, itemCount: data.menuItems.count, orderID: "7264rhr74ry34r", tableID: "d476139424", date: data.getDate, isOrderBilled: data.isOrderBilledValue)
         return cell
     }

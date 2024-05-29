@@ -31,7 +31,7 @@ class OrderController: OrderServicable {
             // Append the menu item to the array the specified number of times
             orderMenuItems.append(contentsOf: Array(repeating: menuItem, count: quantity))
             // Add to join table
-            let orderitem = OrderItem(orderID: orderID, menuItemID: menuItem.itemId, menuItemName: menuItem.name, price: menuItem.price, quantity: quantity)
+            let orderitem = OrderItem(orderID: orderID, menuItemID: menuItem.itemId, menuItemName: menuItem.name, price: menuItem.price, section: .mainCourse, quantity: quantity)
             try orderService.add(orderitem)
         }
         let order = Order(orderId: orderID, tableId: table.tableId, isOrderBilled: false, orderDate: Date(), menuItems: orderMenuItems, orderStatus: .received)

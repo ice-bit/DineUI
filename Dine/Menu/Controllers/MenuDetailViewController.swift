@@ -9,7 +9,7 @@ import UIKit
 
 class MenuDetailViewController: UIViewController {
     
-    private let menu: MenuCell 
+    private let menu: MenuItem
     
     private var itemImageView: UIImageView!
     private var nameTag: UILabel!
@@ -18,7 +18,7 @@ class MenuDetailViewController: UIViewController {
     private var descriptionTag: UILabel!
 //    private var addButton:
     
-    init(menu: MenuCell) {
+    init(menu: MenuItem) {
         self.menu = menu
         super.init(nibName: nil, bundle: nil)
     }
@@ -35,7 +35,7 @@ class MenuDetailViewController: UIViewController {
     }
     
     private func configView() {
-        view.backgroundColor = UIColor(named: "primaryBgColor")
+        view.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
     }
     
     private func setupSubview() {
@@ -51,7 +51,7 @@ class MenuDetailViewController: UIViewController {
     
     private func setupMenuImage() {
         itemImageView = UIImageView()
-        itemImageView.image = menu.image
+        itemImageView.image = UIImage(named: "burger")
         itemImageView.layer.cornerRadius = 14
         itemImageView.clipsToBounds = true
         itemImageView.translatesAutoresizingMaskIntoConstraints = false
@@ -60,7 +60,7 @@ class MenuDetailViewController: UIViewController {
     
     private func setupItemTitle() {
         nameTag = UILabel()
-        nameTag.text = menu.title
+        nameTag.text = menu.name
         nameTag.numberOfLines = 2
         nameTag.textAlignment = .center
         nameTag.font = .systemFont(ofSize: 28, weight: .bold)

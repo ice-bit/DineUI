@@ -8,10 +8,6 @@
 import Foundation
 import SQLite3
 
-enum TableStatus: String, CaseIterable {
-    case free, reserved, occupied, other
-}
-
 class RestaurantTable {
     private let _tableId: UUID
     var tableStatus: TableStatus
@@ -54,6 +50,10 @@ class RestaurantTable {
 extension RestaurantTable: Parsable {}
 
 extension RestaurantTable: SQLTable {
+    static var tableName: String {
+        DatabaseTables.restaurantTable.rawValue
+    }
+    
     static var createStatement: String {
         """
         CREATE TABLE \(DatabaseTables.restaurantTable.rawValue) (

@@ -13,7 +13,7 @@ class OrderCell: UITableViewCell {
     
     private lazy var containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray4
+        view.backgroundColor = UIColor(named: "quaternaryBgColor")
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 10
         return view
@@ -35,7 +35,7 @@ class OrderCell: UITableViewCell {
     
     private lazy var overlayContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = .systemGray6
+        view.backgroundColor = UIColor(named: "secondaryBgColor")
         view.layer.cornerRadius = 10
         view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
         view.translatesAutoresizingMaskIntoConstraints = false

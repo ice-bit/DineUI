@@ -79,6 +79,10 @@ class Order {
 }
 
 extension Order: SQLTable {
+    static var tableName: String {
+        DatabaseTables.orderTable.rawValue
+    }
+    
     static var createStatement: String {
         """
         CREATE TABLE \(DatabaseTables.orderTable.rawValue) (
@@ -87,7 +91,7 @@ extension Order: SQLTable {
             OrderDateTime TEXT NOT NULL,
             OrderStatus VARCHAR(255) NOT NULL,
             OrderIsBilled INT NOT NULL,
-            FOREIGN KEY (TableID) REFERENCES Tables(TableID)
+            FOREIGN KEY (TableID) REFERENCES \(DatabaseTables.restaurantTable.rawValue)(TableID)
         );
         """
     }

@@ -16,6 +16,7 @@ protocol MenuService {
 
 struct MenuServiceImpl: MenuService {
     private let databaseAccess: DatabaseAccess
+    
     init(databaseAccess: DatabaseAccess) {
         self.databaseAccess = databaseAccess
     }

@@ -1,0 +1,23 @@
+[
+    {
+        "systemImage": "square.dashed",
+        "sectionTitle": "Starters"
+    },
+    {
+        "systemImage": "square.dashed",
+        "sectionTitle": "Main Course"
+    },
+    {
+        "systemImage": "square.dashed",
+        "sectionTitle": "Side"
+    },
+    {
+        "systemImage": "square.dashed",
+        "sectionTitle": "Desserts"
+    },
+    {
+        "systemImage": "square.dashed",
+        "sectionTitle": "Beverages"
+    }
+]
+

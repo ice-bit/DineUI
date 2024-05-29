@@ -13,7 +13,7 @@ enum DatabaseTables: String, CaseIterable {
     case billTable = "Bills"
     case restaurantTable = "Tables"
     case orderMenuItemTable = "OrderItems"
-    case menuItem = "MenuItems"
+    case menuItem = "MenuItemsTest"
     case orderTable = "OrderData"
 }
 

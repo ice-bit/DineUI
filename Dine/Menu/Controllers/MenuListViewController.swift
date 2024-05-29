@@ -6,19 +6,15 @@
 //
 
 import UIKit
+import SwiftUI
 
 class MenuListViewController: UIViewController {
-    private let sectionTitle: String
-    private let menuService: MenuService
-    private let isPresented: Bool
-
     private var tableView: UITableView!
-    private var addItemsButton: UIButton!
     
-    private let menuData: [MenuCell] = [
-        MenuCell(image: UIImage(named: "burger")!, indicator: nil, title: "Bacon Bliss Loaded Burger", price: 6.99, secTitle: "Savory Bacon Delight"),
-        MenuCell(image: UIImage(named: "tofu")!, indicator: nil, title: "Something just like this", price: 69.3, secTitle: "Coldplay is in live at coachella!")
-    ]
+    private var addItemsButton: UIButton!
+    let searchController = UISearchController()
+    
+    private var filteredItems: [MenuItem] = []
     
     private var menuItemCart: [MenuItem] = []
     
@@ -28,28 +24,28 @@ class MenuListViewController: UIViewController {
         }
     }
     
-    init(sectionTitle: String, menuService: MenuService, isPresented: Bool) {
-        self.sectionTitle = sectionTitle
-        self.menuService = menuService
-        self.isPresented = isPresented
-        super.init(nibName: nil, bundle: nil)
+    var isFiltering: Bool {
+        searchController.isActive && !isSearchBarEmpty
     }
     
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
+    var isSearchBarEmpty: Bool {
+        return searchController.searchBar.text?.isEmpty ?? true
     }
     
+    // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupNavBar()
         setupTableView()
-        setupAddButton()
+        view = tableView
+        setupNavBar()
+//        setupAddButton()
         configureView()
         loadMenu()
     }
     
+    // MARK: - OBJC
     @objc func presentAddMenuSheet() {
-        let addItemSheetVC = AddItemViewController(menuService: menuService)
+        let addItemSheetVC = AddItemViewController()
         addItemSheetVC.menuItemDelegate = self
         if let sheet = addItemSheetVC.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
@@ -68,6 +64,8 @@ class MenuListViewController: UIViewController {
     
     @objc func tableSelectionButtonTapped(sender: UIBarButtonItem) {
         // TODO: Push the table selection VC
+        let chooseTableVC = ChooseTableViewController()
+        self.navigationController?.pushViewController(chooseTableVC, animated: true)
     }
     
     @objc func doneButtonTapped(sender: UIBarButtonItem) {
@@ -101,45 +99,46 @@ class MenuListViewController: UIViewController {
         let orderController = OrderController(orderService: orderService, tableService: tableService)
     }
     
+    // MARK: - CUSTOM Methods
     private func setupNavBar() {
-        title = sectionTitle
+        title = "Menu"
         navigationController?.navigationBar.prefersLargeTitles = true
         
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentAddMenuSheet))
-//        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
+        //        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped))
         
-        if isPresented {
-            navigationItem.rightBarButtonItem = cancelButton
-        } else {
-            navigationItem.rightBarButtonItem = addButton
-        }
+        
+        navigationItem.rightBarButtonItem = cancelButton
+        
         setupSearchBar()
     }
     
     private func loadMenu() {
-        if let menuItems = try? menuService.fetch() {
-            self.menuItems = menuItems
+        do {
+            let dataAccess = try SQLiteDataAccess.openDatabase()
+            let menuService = MenuServiceImpl(databaseAccess: dataAccess)
+            let results = try menuService.fetch()
+            if let results {
+                menuItems = results
+            }
+        } catch {
+            print("Unable to fetch menu items - \(error)")
         }
     }
     
     private func configureView() {
-        view.backgroundColor = UIColor(named: "primaryBgColor")
-        tableView.backgroundColor = UIColor(named: "primaryBgColor")
-        tableView.separatorStyle = .none
-        navigationController?.navigationBar.backgroundColor = UIColor(named: "primaryBgColor")
+        navigationController?.navigationBar.backgroundColor = .systemBackground
     }
     
     private func setupTableView() {
-        tableView = UITableView(frame: view.bounds)
-        view.addSubview(tableView)
-        tableView.delegate = self
+        tableView = UITableView(frame: .zero)
+        tableView.separatorStyle = .none
         tableView.dataSource = self
         tableView.register(MenuItemCell.self, forCellReuseIdentifier: MenuItemCell.reuseIdentifier)
     }
     
     private func setupAddButton() {
-        guard isPresented else { return }
         addItemsButton = UIButton()
         addItemsButton.setTitleColor(.label, for: .normal)
         addItemsButton.layer.cornerRadius = 12
@@ -158,35 +157,63 @@ class MenuListViewController: UIViewController {
         ])
     }
     
+    // MARK: - SearchBar Methods
     private func setupSearchBar() {
-        let searchBar = UISearchController()
-        navigationItem.searchController = searchBar
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Items"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+    }
+    
+    private func filterContentForSearchText(_ searchText: String) {
+        filteredItems = menuItems.filter { (menuItem: MenuItem) -> Bool in
+            return menuItem.name.lowercased().contains(searchText.lowercased())
+        }
+        
+        tableView.reloadData()
     }
 
 }
 
 extension MenuListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        menuItems.count
+        if isFiltering {
+            return filteredItems.count
+        }
+        
+        return menuItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let defaultData = menuData[0]
-        let menuData = menuItems[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemCell.reuseIdentifier, for: indexPath) as! MenuItemCell
-        cell.configure(itemImage: defaultData.image, isFoodVeg: true, title: menuData.name, price: menuData.price, secondaryTitle: defaultData.secTitle)
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemCell.reuseIdentifier, for: indexPath) as? MenuItemCell else {
+            return UITableViewCell()
+        }
+        
+        let menuItem: MenuItem
+        if isFiltering {
+            menuItem = filteredItems[indexPath.row]
+        } else {
+            menuItem = menuItems[indexPath.row]
+        }
+        
+        cell.configure(itemImage: .burger, isFoodVeg: true, title: menuItem.name, price: menuItem.price, secondaryTitle: "Lorem ipsum")
         return cell
     }
+     
+     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+         let menuItem: MenuItem
+         if isFiltering {
+             menuItem = filteredItems[indexPath.row]
+         } else {
+             menuItem = menuItems[indexPath.row]
+         }
+         let detailVC = MenuDetailViewController(menu: menuItem)
+         navigationController?.pushViewController(detailVC, animated: true)
+     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         122
-    }
-    
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let selectedMenuItem = menuData[indexPath.row]
-        let detailVC = MenuDetailViewController(menu: selectedMenuItem)
-        navigationController?.pushViewController(detailVC, animated: true)
     }
 }
 
@@ -194,4 +221,15 @@ extension MenuListViewController: MenuItemDelegate {
     func menuItemDidAdd(_ item: MenuItem) {
         menuItems.append(item)
     }
+}
+
+extension MenuListViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        filterContentForSearchText(searchBar.text!)
+    }
+}
+
+#Preview {
+    MenuListViewController()
 }

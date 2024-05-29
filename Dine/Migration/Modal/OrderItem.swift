@@ -13,9 +13,14 @@ struct OrderItem {
     let menuItemID: UUID
     let menuItemName: String
     let price: Double
+    let section: MenuSection
     let quantity: Int
 }
 extension OrderItem: SQLTable {
+    static var tableName: String {
+        DatabaseTables.orderMenuItemTable.rawValue
+    }
+    
     static var createStatement: String {
         """
         CREATE TABLE \(DatabaseTables.orderMenuItemTable.rawValue) (
@@ -23,8 +28,9 @@ extension OrderItem: SQLTable {
             OrderID VARCHAR(32) NOT NULL,
             MenuItemID VARCHAR(32) NOT NULL,
             Quantity INT NOT NULL,
-            FOREIGN KEY (OrderID) REFERENCES OrderData(OrderID),
-            FOREIGN KEY (MenuItemID) REFERENCES MenuItems(MenuItemID)
+            Section TEXT NOT NULL,
+            FOREIGN KEY (OrderID) REFERENCES \(DatabaseTables.orderTable.rawValue)(OrderID),
+            FOREIGN KEY (MenuItemID) REFERENCES \(DatabaseTables.menuItem.rawValue)(MenuItemID)
         );
         """
     }
@@ -37,8 +43,8 @@ extension OrderItem: SQLInsertable {
             return ""
         }
         return """
-        INSERT INTO \(DatabaseTables.orderMenuItemTable.rawValue) (OrderID, MenuItemID, Quantity)
-        VALUES ('\(orderID.uuidString)', '\(menuItemID.uuidString)', \(quantity));
+        INSERT INTO \(DatabaseTables.orderMenuItemTable.rawValue) (OrderID, MenuItemID, Quantity, Section)
+        VALUES ('\(orderID.uuidString)', '\(menuItemID.uuidString)', \(quantity), '\(section.rawValue)');
         """
     }
 }
@@ -47,20 +53,24 @@ extension OrderItem: DatabaseParsable {
     static func parseRow(statement: OpaquePointer?) throws -> OrderItem? {
         guard let statement = statement else { return nil }
         guard let itemIdCString = sqlite3_column_text(statement, 0),
-              let nameCString = sqlite3_column_text(statement, 1) else {
+              let nameCString = sqlite3_column_text(statement, 1),
+              let menuSectionCString = sqlite3_column_text(statement, 4) else {
             throw DatabaseError.missingRequiredValue
         }
         
         let name = String(cString: nameCString)
         let price = sqlite3_column_double(statement, 2)
+        let menuSectionRawValue = String(cString: menuSectionCString)
         
         let quantityPointer = sqlite3_column_int(statement, 3)
         let resultQuantity = Int(quantityPointer)
-        guard let itemId = UUID(uuidString: String(cString: itemIdCString)) else {
+        guard let itemId = UUID(uuidString: String(cString: itemIdCString)),
+              let menuSection = MenuSection(rawValue: menuSectionRawValue)
+        else {
             throw DatabaseError.conversionFailed
         }
         
-        let orderMenuItem = OrderItem(orderID: nil, menuItemID: itemId, menuItemName: name, price: price, quantity: resultQuantity)
+        let orderMenuItem = OrderItem(orderID: nil, menuItemID: itemId, menuItemName: name, price: price, section: menuSection, quantity: resultQuantity)
         return orderMenuItem
     }
 }

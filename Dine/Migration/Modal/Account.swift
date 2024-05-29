@@ -86,6 +86,10 @@ extension Account: Equatable {
 }
 
 extension Account: SQLTable {
+    static var tableName: String {
+        DatabaseTables.accountTable.rawValue
+    }
+    
     static var createStatement: String {
         """
         CREATE TABLE IF NOT EXISTS \(DatabaseTables.accountTable.rawValue) (

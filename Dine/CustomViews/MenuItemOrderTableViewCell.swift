@@ -80,7 +80,7 @@ class MenuItemOrderTableViewCell: UITableViewCell {
         stepper.translatesAutoresizingMaskIntoConstraints = false
         countTag.translatesAutoresizingMaskIntoConstraints = false
         
-        containerView.backgroundColor = UIColor(named: "secondaryBgColor")
+//        containerView.backgroundColor = UIColor(named: "secondaryBgColor")
         containerView.layer.cornerRadius = 12
         
         itemImageView.layer.cornerRadius = 8 // Adjust the value as needed

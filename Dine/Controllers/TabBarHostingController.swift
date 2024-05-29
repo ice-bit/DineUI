@@ -13,15 +13,30 @@ class TabBarHostingController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupDBTables()
         setupAppearance()
         setupTabBar()
     }
     
+    // MARK: - Private methods
+    
+    private func setupDBTables() {
+        let databaseService = DatabaseServiceImpl()
+        databaseService.createMenuItemTable()
+        databaseService.createAccountTable()
+        databaseService.createBillTable()
+        databaseService.createOrderItemTable()
+        databaseService.createOrderTable()
+        databaseService.createTableDataTable()
+    }
+    
     private func setupAppearance() {
         view.backgroundColor = .systemBackground
+        tabBar.tintColor = UIColor(named: "AppColor")
     }
     
     private func setupTabBar() {
+        let vcFactory = ViewControllerFactory()
         guard let databaseAccess = try? SQLiteDataAccess.openDatabase() else {
             print("Failed to open database connection")
             return
@@ -37,13 +52,17 @@ class TabBarHostingController: UITabBarController {
         let tableViewController = TablesViewController(tableService: tableService)
         tableViewController.tabBarItem = UITabBarItem(title: "Tables", image: UIImage(systemName: "table.furniture"), selectedImage: UIImage(systemName: "table.furniture.fill"))
         
-        let menuViewController = MenuViewController(menuService: menuService)
-        menuViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "menucard"), selectedImage: UIImage(systemName: "menucard.fill"))
+        guard let menuSectionViewController = vcFactory.createMenuSectionViewController() else {
+            print("Error: Failed to create instance of MenuSectionViewController.")
+            return
+        }
+        
+        menuSectionViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "menucard"), selectedImage: UIImage(systemName: "menucard.fill"))
         
         let orderNavigationController = UINavigationController(rootViewController: orderViewController)
         let billNavigationController = UINavigationController(rootViewController: billViewController)
         let tableNavigationController = UINavigationController(rootViewController: tableViewController)
-        let menuNavigationController = UINavigationController(rootViewController: menuViewController)
+        let menuNavigationController = UINavigationController(rootViewController: menuSectionViewController)
         
         
         let viewControllers = [orderNavigationController, billNavigationController, tableNavigationController, menuNavigationController]
@@ -53,5 +72,31 @@ class TabBarHostingController: UITabBarController {
     }
 
 
+}
+
+struct ViewControllerFactory {
+    private var databaseAccess: DatabaseAccess? = {
+        do {
+            return try SQLiteDataAccess.openDatabase()
+        } catch {
+            fatalError("Error: Unable to open the database. Please check if the database file exists and is accessible.")
+        }
+        return nil
+    }()
+    
+    func createMenuSectionViewController() -> MenuSectionViewController? {
+        guard let databaseAccess else {
+            print("Error: 'databaseAccess' object not found. Unwrapping failed due to missing or null reference.")
+            return nil
+        }
+        
+        let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
+        
+        return MenuSectionViewController(menuService: menuService)
+    }
+}
+
+#Preview {
+    TabBarHostingController()
 }
 

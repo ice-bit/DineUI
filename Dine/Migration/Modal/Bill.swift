@@ -63,6 +63,10 @@ class Bill {
 extension Bill: Parsable {}
 
 extension Bill: SQLTable {
+    static var tableName: String {
+        DatabaseTables.billTable.rawValue
+    }
+    
     static var createStatement: String {
         """
         CREATE TABLE \(DatabaseTables.billTable.rawValue) (

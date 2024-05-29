@@ -14,7 +14,7 @@ class MenuController {
     }
     
     func addItemToMenu(name: String, price: Double) throws {
-        let menuItem = MenuItem(name: name, price: price)
+        let menuItem = MenuItem(name: name, price: price, menuSection: .mainCourse)
         try menuService.add(menuItem)
     }
     

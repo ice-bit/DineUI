@@ -37,11 +37,13 @@ struct OrderServiceImpl: OrderService {
             return nil
         }
         for resultOrder in resultOrders {
+            let menuItemTable = DatabaseTables.menuItem.rawValue
+            let orderItemTable = DatabaseTables.orderMenuItemTable.rawValue
             let menuItemQuery = """
-                SELECT MenuItems.MenuItemID, MenuItems.MenuItemName, MenuItems.Price, OrderItems.Quantity
+                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).Section
                 FROM OrderItems
-                JOIN MenuItems ON OrderItems.MenuItemID = MenuItems.MenuItemID
-                WHERE OrderItems.OrderID = '\(resultOrder.orderIdValue.uuidString)';
+                JOIN \(menuItemTable) ON \(orderItemTable).MenuItemID = \(menuItemTable).MenuItemID
+                WHERE \(orderItemTable).OrderID = '\(resultOrder.orderIdValue.uuidString)';
                 """
             guard let resultOrderMenuItems = try databaseAccess.retrieve(query: menuItemQuery, parseRow: OrderItem.parseRow) as? [OrderItem] else {
                 print("Failed to convert to MenuItems")
@@ -49,7 +51,7 @@ struct OrderServiceImpl: OrderService {
             }
             for orderMenuItem in resultOrderMenuItems {
                 for _ in 0..<orderMenuItem.quantity {
-                    let menuItem = MenuItem(itemId: orderMenuItem.menuItemID, name: orderMenuItem.menuItemName, price: orderMenuItem.price)
+                    let menuItem = MenuItem(itemId: orderMenuItem.menuItemID, name: orderMenuItem.menuItemName, price: orderMenuItem.price, menuSection: .mainCourse)
                     resultOrder.menuItems.append(menuItem)
                 }
             }

@@ -88,7 +88,7 @@ class MenuItemCell: UITableViewCell {
         stepper.translatesAutoresizingMaskIntoConstraints = false
         countTag.translatesAutoresizingMaskIntoConstraints = false
         
-        contentView.backgroundColor = UIColor(named: "primaryBgColor")
+        contentView.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
         
         containerView.backgroundColor = UIColor(named: "secondaryBgColor")
         containerView.layer.cornerRadius = 12

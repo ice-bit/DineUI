@@ -25,6 +25,10 @@ class Restaurant: Codable {
 }
 
 extension Restaurant: SQLInsertable, SQLTable {
+    static var tableName: String {
+        DatabaseTables.restaurantDBTable.rawValue
+    }
+    
     static var createStatement: String {
         """
         CREATE TABLE \(DatabaseTables.restaurantDBTable.rawValue) (

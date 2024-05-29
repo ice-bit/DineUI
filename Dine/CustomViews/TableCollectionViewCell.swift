@@ -15,7 +15,7 @@ class TableCollectionViewCell: UICollectionViewCell {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.layer.cornerRadius = 12
         stackView.layer.borderColor = CGColor(red: 0.47, green: 0.42, blue: 0.36, alpha: 1) /// R 0.47 G 0.42 B 0.36 A 1.00
-        stackView.layer.borderWidth = 1
+        stackView.layer.borderWidth = 0.4
         return stackView
     }()
     

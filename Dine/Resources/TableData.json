@@ -1,0 +1,27 @@
+[
+  {
+    "id": "FDCB280E-862F-4A86-AC56-76BB2D28466D",
+    "locationID": 101,
+    "capacity": 4,
+    "tableStatus": "Free"
+  },
+  {
+    "id": "FDCB280E-862F-4A86-AC56-76BB2D28466D",
+    "locationID": 102,
+    "capacity": 2,
+    "tableStatus": "Reserved"
+  },
+  {
+    "id": "FDCB280E-862F-4A86-AC56-76BB2D28466D",
+    "locationID": 103,
+    "capacity": 6,
+    "tableStatus": "Occupied"
+  },
+  {
+    "id": "FDCB280E-862F-4A86-AC56-76BB2D28466D",
+    "locationID": 104,
+    "capacity": 8,
+    "tableStatus": "Other"
+  }
+]
+

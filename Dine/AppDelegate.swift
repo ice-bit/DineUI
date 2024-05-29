@@ -18,14 +18,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
     
     func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-        do {
-            let databaseAccess = try SQLiteDataAccess.openDatabase()
-            let databaseService = DatabaseServiceImpl(databaseAccessor: databaseAccess)
-            databaseService.setupTables()
-        } catch {
-            print("Failed to open database connection")
-        }
-        
         return true
     }
 

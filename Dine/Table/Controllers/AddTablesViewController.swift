@@ -16,6 +16,6 @@ class AddTablesViewController: UIViewController {
     }
     
     private func setAppearance() {
-        view.backgroundColor = UIColor(named: "primaryBgColor")
+        view.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
     }
 }

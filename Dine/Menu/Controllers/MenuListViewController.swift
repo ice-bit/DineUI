@@ -16,7 +16,13 @@ class MenuListViewController: UIViewController {
     
     private var filteredItems: [MenuItem] = []
     
-    private var menuItemCart: [MenuItem] = []
+    private var menuItemCart: [MenuItem] = [] {
+        didSet {
+            if !menuItemCart.isEmpty {
+                navigationItem.rightBarButtonItem?.isHidden = false
+            }
+        }
+    }
     
     private var menuItems: [MenuItem] = [] {
         didSet {
@@ -37,29 +43,10 @@ class MenuListViewController: UIViewController {
         super.viewDidLoad()
         setupTableView()
         view = tableView
-        setupNavBar()
-//        setupAddButton()
-        configureView()
         loadMenu()
-    }
-    
-    // MARK: - OBJC
-    @objc func presentAddMenuSheet() {
-        let addItemSheetVC = AddItemViewController()
-        addItemSheetVC.menuItemDelegate = self
-        if let sheet = addItemSheetVC.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-            sheet.prefersEdgeAttachedInCompactHeight = true
-            sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
-            sheet.prefersGrabberVisible = true
-        }
-        
-        present(addItemSheetVC, animated: true)
-    }
-    
-    @objc func cancelButtonTapped(sender: UIBarButtonItem) {
-        self.dismiss(animated: true)
+        setupNavBar()
+        configureView()
+        setupSearchBar()
     }
     
     @objc func tableSelectionButtonTapped(sender: UIBarButtonItem) {
@@ -68,50 +55,28 @@ class MenuListViewController: UIViewController {
         self.navigationController?.pushViewController(chooseTableVC, animated: true)
     }
     
-    @objc func doneButtonTapped(sender: UIBarButtonItem) {
-        print("Done button for add items tapped!")
-        var itemCart = [MenuItem]()
-        let numberOfRows = tableView.numberOfRows(inSection: 0)
-        for rowIndex in 0..<numberOfRows {
-            let menuItem = menuItems[rowIndex]
-            let indexPath = IndexPath(row: rowIndex, section: 0)
-            let cell = tableView.cellForRow(at: indexPath) as! MenuItemCell
-            for _ in 0..<cell.itemCount {
-                itemCart.append(menuItem)
-            }
-        }
-        
-        for item in itemCart {
-            print("\(item.name)")
-        }
-        
-        guard let databaseAccess = try? SQLiteDataAccess.openDatabase() else {
-            print("Failed to open database connection!")
-            // TODO: Do something if the database connection failed
-            return
-        }
-        
-        // TODO: Comeback after building table
-        
-        let orderService = OrderServiceImpl(databaseAccess: databaseAccess)
-        let tableService = TableServiceImpl(databaseAccess: databaseAccess)
-        
-        let orderController = OrderController(orderService: orderService, tableService: tableService)
-    }
     
     // MARK: - CUSTOM Methods
     private func setupNavBar() {
         title = "Menu"
         navigationController?.navigationBar.prefersLargeTitles = true
-        
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(presentAddMenuSheet))
-        //        let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(doneButtonTapped))
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped))
-        
-        
-        navigationItem.rightBarButtonItem = cancelButton
-        
-        setupSearchBar()
+        let proceedbutton = UIBarButtonItem(title: "Proceed", style: .plain, target: self, action: #selector(proceedButtonAction(_ :)))
+        navigationItem.rightBarButtonItem = proceedbutton
+        navigationItem.rightBarButtonItem?.isHidden = true // Initially hidden
+        navigationItem.leftBarButtonItem = cancelButton
+    }
+    
+    @objc func cancelButtonTapped(sender: UIBarButtonItem) {
+        self.dismiss(animated: true)
+    }
+    
+    @objc func proceedButtonAction(_ sender: UIBarButtonItem) {
+        for item in menuItemCart {
+            print(item.name)
+        }
+//        let chooseTableVC = ChooseTableViewController()
+//        navigationController?.pushViewController(chooseTableVC, animated: true)
     }
     
     private func loadMenu() {
@@ -135,7 +100,7 @@ class MenuListViewController: UIViewController {
         tableView = UITableView(frame: .zero)
         tableView.separatorStyle = .none
         tableView.dataSource = self
-        tableView.register(MenuItemCell.self, forCellReuseIdentifier: MenuItemCell.reuseIdentifier)
+        tableView.register(MenuItemTableViewCell.self, forCellReuseIdentifier: MenuItemTableViewCell.reuseIdentifier)
     }
     
     private func setupAddButton() {
@@ -173,31 +138,21 @@ class MenuListViewController: UIViewController {
         
         tableView.reloadData()
     }
-
 }
 
 extension MenuListViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if isFiltering {
-            return filteredItems.count
-        }
-        
-        return menuItems.count
+        isFiltering ? filteredItems.count : menuItems.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemCell.reuseIdentifier, for: indexPath) as? MenuItemCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemTableViewCell.reuseIdentifier, for: indexPath) as? MenuItemTableViewCell else {
             return UITableViewCell()
         }
         
-        let menuItem: MenuItem
-        if isFiltering {
-            menuItem = filteredItems[indexPath.row]
-        } else {
-            menuItem = menuItems[indexPath.row]
-        }
-        
-        cell.configure(itemImage: .burger, isFoodVeg: true, title: menuItem.name, price: menuItem.price, secondaryTitle: "Lorem ipsum")
+        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuItems[indexPath.row]
+        cell.configure(menuItem: menuItem)
+        cell.delegate = self
         return cell
     }
      
@@ -211,10 +166,6 @@ extension MenuListViewController: UITableViewDelegate, UITableViewDataSource {
          let detailVC = MenuDetailViewController(menu: menuItem)
          navigationController?.pushViewController(detailVC, animated: true)
      }
-    
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        122
-    }
 }
 
 extension MenuListViewController: MenuItemDelegate {
@@ -227,6 +178,16 @@ extension MenuListViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         filterContentForSearchText(searchBar.text!)
+    }
+}
+
+extension MenuListViewController: MenuItemTableViewCellDelegate {
+    func menuTableViewCell(_ cell: MenuItemTableViewCell, didChangeItemCount count: Int, for menuItem: MenuItem) {
+        menuItemCart.removeAll { $0 == menuItem }
+        
+        for _ in 0..<count {
+            menuItemCart.append(menuItem)
+        }
     }
 }
 

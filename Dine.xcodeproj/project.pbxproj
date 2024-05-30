@@ -91,6 +91,7 @@
 		5548B6A62C04BC96000E99C8 /* MockDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6A52C04BC96000E99C8 /* MockDatabase.swift */; };
 		5548B6A92C059EA8000E99C8 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 5548B6A82C059EA8000E99C8 /* SQLite */; };
 		5548B6AD2C05AAD9000E99C8 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6AC2C05AAD9000E99C8 /* DatabaseManager.swift */; };
+		5548B6AF2C075907000E99C8 /* MenuItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6AE2C075907000E99C8 /* MenuItemTableViewCell.swift */; };
 		55F966692BF214C400557C92 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966682BF214C400557C92 /* DatabaseService.swift */; };
 		55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666A2BF3344B00557C92 /* QuantityButton.swift */; };
 		55F9666D2BF364D000557C92 /* MenuItemOrderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */; };
@@ -193,6 +194,7 @@
 		5548B6A32C04BA23000E99C8 /* ConfirmOrderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmOrderViewController.swift; sourceTree = "<group>"; };
 		5548B6A52C04BC96000E99C8 /* MockDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDatabase.swift; sourceTree = "<group>"; };
 		5548B6AC2C05AAD9000E99C8 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
+		5548B6AE2C075907000E99C8 /* MenuItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemTableViewCell.swift; sourceTree = "<group>"; };
 		55F966682BF214C400557C92 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		55F9666A2BF3344B00557C92 /* QuantityButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityButton.swift; sourceTree = "<group>"; };
 		55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemOrderTableViewCell.swift; sourceTree = "<group>"; };
@@ -255,6 +257,8 @@
 		551AAE402BFF7C5700E50FE7 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				5548B6AE2C075907000E99C8 /* MenuItemTableViewCell.swift */,
+				5524F56D2BEB3FFC003F500C /* MenuItemCell.swift */,
 				551AAE412BFF7C7300E50FE7 /* MenuItemRow.swift */,
 			);
 			path = View;
@@ -325,7 +329,6 @@
 			isa = PBXGroup;
 			children = (
 				5524F62C2BEDE564003F500C /* Order */,
-				5524F56D2BEB3FFC003F500C /* MenuItemCell.swift */,
 				5524F5692BEA3E3B003F500C /* MenuSectionTableViewCell.swift */,
 				55F9666A2BF3344B00557C92 /* QuantityButton.swift */,
 				55F966712BF378E400557C92 /* DTextField.swift */,
@@ -719,6 +722,7 @@
 				552D37EF2BF1F4F0005B1D19 /* MenuItem.swift in Sources */,
 				5548B6A62C04BC96000E99C8 /* MockDatabase.swift in Sources */,
 				55F966692BF214C400557C92 /* DatabaseService.swift in Sources */,
+				5548B6AF2C075907000E99C8 /* MenuItemTableViewCell.swift in Sources */,
 				551AAE2C2BFDEF7700E50FE7 /* MenuSectionViewController.swift in Sources */,
 				5524F56A2BEA3E3B003F500C /* MenuSectionTableViewCell.swift in Sources */,
 				552D37AE2BF1F09F005B1D19 /* SQLiteDataAccess.swift in Sources */,

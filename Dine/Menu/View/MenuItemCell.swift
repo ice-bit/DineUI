@@ -6,21 +6,26 @@
 //
 
 import UIKit
+import SwiftUI
 
 protocol CustomStepperDelegate: AnyObject {
     func stepperValueChanged(value: Double)
 }
+
 class MenuItemCell: UITableViewCell {
     static let reuseIdentifier = "MenuItemCell"
+    
     private var count: Int = 0 {
         willSet {
             countTag.text = String(newValue)
         }
     }
+    
     var itemCount: Int {
         count
     }
     private var menuItem: MenuItem?
+    
     weak var stepperDelegate: CustomStepperDelegate?
     
     private var itemImageView: UIImageView!
@@ -30,8 +35,16 @@ class MenuItemCell: UITableViewCell {
     private var secondaryTitle: UILabel!
     private var containerView: UIView!
     private var countTag: UILabel!
-    // Hide the stepper when the cell is called for just displaying
     private var stepper: UIStepper!
+    
+    private lazy var stackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.spacing = 2
+        stackView.alignment = .leading
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -72,12 +85,13 @@ class MenuItemCell: UITableViewCell {
         
         contentView.addSubview(containerView)
         containerView.addSubview(itemImageView)
-        containerView.addSubview(foodIndicator)
-        containerView.addSubview(title)
-        containerView.addSubview(priceTag)
-        containerView.addSubview(secondaryTitle)
-        containerView.addSubview(stepper)
-        containerView.addSubview(countTag)
+//        containerView.addSubview(stepper)
+//        containerView.addSubview(countTag)
+        containerView.addSubview(stackView)
+        stackView.addArrangedSubview(foodIndicator)
+        stackView.addArrangedSubview(title)
+        stackView.addArrangedSubview(priceTag)
+        stackView.addArrangedSubview(secondaryTitle)
         
         itemImageView.translatesAutoresizingMaskIntoConstraints = false
         foodIndicator.translatesAutoresizingMaskIntoConstraints = false
@@ -88,9 +102,9 @@ class MenuItemCell: UITableViewCell {
         stepper.translatesAutoresizingMaskIntoConstraints = false
         countTag.translatesAutoresizingMaskIntoConstraints = false
         
-        contentView.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
+        contentView.backgroundColor = .systemBackground
         
-        containerView.backgroundColor = UIColor(named: "secondaryBgColor")
+        containerView.backgroundColor = .app
         containerView.layer.cornerRadius = 12
         
         countTag.font = .systemFont(ofSize: 14)
@@ -99,50 +113,33 @@ class MenuItemCell: UITableViewCell {
         itemImageView.layer.masksToBounds = true
         itemImageView.contentMode = .scaleToFill
         foodIndicator.image = UIImage(systemName: "square.dashed")
-        title.font = .systemFont(ofSize: 17, weight: .regular)
+        title.font = .systemFont(ofSize: 17, weight: .medium)
         priceTag.font = .systemFont(ofSize: 14, weight: .regular)
-        secondaryTitle.font = .systemFont(ofSize: 12, weight: .light)
+        secondaryTitle.font = .systemFont(ofSize: 12, weight: .regular)
         
         stepper.addTarget(self, action: #selector(stepperValueChanged), for: .touchUpInside)
         
         countTag.text = String(count)
         
         NSLayoutConstraint.activate([
-            containerView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-            containerView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.92),
-            
-            itemImageView.heightAnchor.constraint(equalTo: containerView.heightAnchor, multiplier: 0.8),
-            itemImageView.widthAnchor.constraint(equalTo: itemImageView.heightAnchor),
+            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
+            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
+            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
+
+            itemImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 12),
             itemImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            itemImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 18),
+            itemImageView.heightAnchor.constraint(equalToConstant: 100),
+            itemImageView.widthAnchor.constraint(equalToConstant: 100),
             
-            foodIndicator.topAnchor.constraint(equalTo: containerView.topAnchor, constant: 16),
-            foodIndicator.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 14),
-            foodIndicator.heightAnchor.constraint(equalToConstant: 14),
-            foodIndicator.widthAnchor.constraint(equalToConstant: 14),
+            stackView.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 12),
+            stackView.centerYAnchor.constraint(equalTo: itemImageView.centerYAnchor),
             
-            title.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 14),
-            title.topAnchor.constraint(equalTo: foodIndicator.bottomAnchor, constant: 0),
-            title.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            title.heightAnchor.constraint(equalToConstant: 24),
-            
-            priceTag.topAnchor.constraint(equalTo: title.bottomAnchor, constant: 0),
-            priceTag.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 14),
-            priceTag.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            priceTag.heightAnchor.constraint(equalToConstant: 20),
-            
-            secondaryTitle.heightAnchor.constraint(equalToConstant: 20),
-            secondaryTitle.topAnchor.constraint(equalTo: priceTag.bottomAnchor, constant: 0),
-            secondaryTitle.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 14),
-            secondaryTitle.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            
-            stepper.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
+            /*stepper.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
             stepper.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
             
             countTag.centerXAnchor.constraint(equalTo: stepper.centerXAnchor),
-            countTag.centerYAnchor.constraint(equalTo: stepper.centerYAnchor)
+            countTag.centerYAnchor.constraint(equalTo: stepper.centerYAnchor)*/
         ])
         
     }
@@ -158,8 +155,8 @@ class MenuItemCell: UITableViewCell {
     func configure(menuItem: MenuItem) {
         itemImageView.image = UIImage(named: "burger")!
         title.text = menuItem.name
-        let priceString = String(menuItem.price)
-        priceTag.text = "$ \(priceString)"
+        let priceString = String(format: "%.2f", menuItem.price)
+        self.priceTag.text = "$ \(priceString)"
         secondaryTitle.text = "Lorem ipsum is not fair."
         self.menuItem = menuItem
     }
@@ -174,3 +171,8 @@ struct MenuCell {
     let secTitle: String
 }
 
+#Preview {
+    let menuItemCell = MenuItemCell()
+    menuItemCell.configure(itemImage: .burger, isFoodVeg: false, title: "Burger", price: 8.98, secondaryTitle: "Lorem ipsumfew")
+    return menuItemCell
+}

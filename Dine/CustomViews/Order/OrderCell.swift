@@ -44,14 +44,14 @@ class OrderCell: UITableViewCell {
     
     private lazy var orderIDLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
+        label.font = .systemFont(ofSize: 8)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var tableIDLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 14)
+        label.font = .systemFont(ofSize: 8)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -138,13 +138,13 @@ class OrderCell: UITableViewCell {
         ])
     }
     
-    func configure(status: String, itemCount: Int, orderID: String, tableID: String, date: Date, isOrderBilled: Bool) {
-        statusLabel.text = status
-        itemCountLabel.text = "Items: \(String(itemCount))"
-        orderIDLabel.text = /*orderID.uuidString*/orderID
-        tableIDLabel.text = tableID
+    func configureCell(with order: Order) {
+        statusLabel.text = order.orderStatusValue.rawValue
+        itemCountLabel.text = "Items: \(String(order.menuItems.count))"
+        orderIDLabel.text = /*orderID.uuidString*/order.orderIdValue.uuidString
+        tableIDLabel.text = order.tableIDValue.uuidString
         
-        dateLabel.text = date.formattedDateString()
+        dateLabel.text = Date().formatted()
         billStatusLabel.text = "Unbilled"
     }
     

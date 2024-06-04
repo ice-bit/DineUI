@@ -7,10 +7,6 @@
 
 import SwiftUI
 
-extension NSNotification.Name {
-    static let didAddTable = Notification.Name("com.euphoria.Dine.didAddTable")
-}
-
 struct AddTableFormView: View {
     @State private var locationID: String = ""
     @State private var selectedNumber: Int = 0

@@ -11,10 +11,6 @@ protocol MenuItemDelegate: AnyObject {
     func menuItemDidAdd(_ item: MenuItem)
 }
 
-extension Notification.Name {
-    static let didAddMenuItemNotification = Notification.Name("com.euphoria.Dine.didAddMenuItemNotification")
-}
-
 class AddItemViewController: UIViewController {
     weak var menuItemDelegate: MenuItemDelegate?
     
@@ -95,7 +91,7 @@ class AddItemViewController: UIViewController {
         sectionSelectionButton.setTitleColor(.label, for: .normal)
         sectionSelectionButton.backgroundColor = .systemGray5
         sectionSelectionButton.layer.cornerRadius = 10
-        sectionSelectionButton.addTarget(self, action: #selector(selectMenuSectionButtonTapped(_ :)), for: .touchUpInside)
+        sectionSelectionButton.addTarget(self, action: #selector(selectMenuSectionButtonTapped(_:)), for: .touchUpInside)
     }
     
     private func setupStackView() {
@@ -136,6 +132,7 @@ class AddItemViewController: UIViewController {
     
     private func setupPriceTextField() {
         priceTextField = DTextField()
+        priceTextField.keyboardType = .decimalPad
         priceTextField.translatesAutoresizingMaskIntoConstraints = false
         priceTextField.placeholder = "Price Tag"
         priceTextField.backgroundColor = .systemGray5
@@ -198,6 +195,10 @@ class AddItemViewController: UIViewController {
                 let databaseAccess = try SQLiteDataAccess.openDatabase()
                 let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
                 try menuService.add(menuItem)
+                // Haptic feedback
+                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
+                impactFeedback.prepare()
+                impactFeedback.impactOccurred()
                 NotificationCenter.default.post(name: .didAddMenuItemNotification, object: nil)
             } catch {
                 print("Unable to add MenuItem - \(error)")

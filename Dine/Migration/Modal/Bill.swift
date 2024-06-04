@@ -7,11 +7,15 @@
 
 import Foundation
 import SQLite3
+enum PaymentStatus: String {
+    case paid = "Paid"
+    case unpaid = "Unpaid"
+}
 
 class Bill {
     private var _billId: UUID
     private var amount: Double
-    private var date: Date
+    var date: Date
     private var tip: Double
     private var tax: Double
     private var isPaid: Bool
@@ -22,6 +26,10 @@ class Bill {
     
     var csvString: String {
         "\(_billId),\(amount),\(date),\(tip),\(tax),\(isPaid)"
+    }
+    
+    var paymentStatus: PaymentStatus {
+        isPaid ? PaymentStatus.paid : PaymentStatus.unpaid
     }
     
     init(_billId: UUID, amount: Double, date: Date, tip: Double, tax: Double, isPaid: Bool) {

@@ -23,12 +23,15 @@ struct TableItem: View {
             HStack {
                 Text("Location ID -")
                 Text("\(table.locationId)")
+                    .lineLimit(1)
             }
+            .font(.subheadline)
             
             HStack {
                 Text("Capacity -")
                 Text("\(table.capacity)")
             }
+            .font(.subheadline)
         }
         .font(.subheadline)
         .padding()

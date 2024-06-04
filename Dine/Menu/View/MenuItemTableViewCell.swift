@@ -36,7 +36,7 @@ class MenuItemTableViewCell: UITableViewCell {
     private lazy var itemImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
-        imageView.layer.cornerRadius = 10
+        imageView.layer.cornerRadius = 8
         imageView.layer.masksToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -92,13 +92,13 @@ class MenuItemTableViewCell: UITableViewCell {
         let view = UIView()
         view.backgroundColor = .app
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.cornerRadius = 10
+        view.layer.cornerRadius = 20
         return view
     }()
     
     private lazy var stepper: UIStepper = {
         let stepper = UIStepper()
-        stepper.addTarget(self, action: #selector(stepperAction(_ :)), for: .touchUpInside)
+        stepper.addTarget(self, action: #selector(stepperAction(_:)), for: .touchUpInside)
         stepper.translatesAutoresizingMaskIntoConstraints = false
         return stepper
     }()
@@ -138,6 +138,10 @@ class MenuItemTableViewCell: UITableViewCell {
     }
     
     @objc private func stepperAction(_ sender: UIStepper) {
+        // Haptic feedback
+        let selectionFeedback = UISelectionFeedbackGenerator()
+        selectionFeedback.prepare()
+        selectionFeedback.selectionChanged()
         _itemCount = Int(stepper.value)
         if let menuItem {
             delegate?.menuTableViewCell(self, didChangeItemCount: _itemCount, for: menuItem)
@@ -160,8 +164,8 @@ class MenuItemTableViewCell: UITableViewCell {
         labelVStackView.addArrangedSubview(secTitleLabel)
         
         NSLayoutConstraint.activate([
-            wrapperView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 8),
-            wrapperView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -8),
+            wrapperView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            wrapperView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
             wrapperView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             wrapperView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             

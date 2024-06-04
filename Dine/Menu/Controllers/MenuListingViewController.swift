@@ -36,7 +36,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         navigationController?.navigationBar.prefersLargeTitles = true
         setupSearchBar()
         setupNavbar()
-        NotificationCenter.default.addObserver(self, selector: #selector(didAddMenuItem(_ :)), name: .didAddMenuItemNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didAddMenuItem(_:)), name: .didAddMenuItemNotification, object: nil)
     }
     
     @objc private func didAddMenuItem(_ sender: NotificationCenter) {
@@ -83,7 +83,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     private func setupNavbar() {
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addMenuItemButtonTapped(_ :)))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addMenuItemButtonTapped(_:)))
         navigationItem.rightBarButtonItem = addButton
     }
     

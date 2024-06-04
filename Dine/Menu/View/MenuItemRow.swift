@@ -24,7 +24,7 @@ struct MenuItemRow: View {
                 Text("\(menuItem.name)")
                     .font(.headline)
                 
-                Text("\(menuItem.price)")
+                Text(String(menuItem.price))
                     .font(.subheadline)
                 
                 Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")

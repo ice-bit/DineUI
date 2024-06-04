@@ -31,7 +31,7 @@
 		5524F5672BEA1F61003F500C /* MenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F5662BEA1F61003F500C /* MenuViewController.swift */; };
 		5524F56A2BEA3E3B003F500C /* MenuSectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F5692BEA3E3B003F500C /* MenuSectionTableViewCell.swift */; };
 		5524F56E2BEB3FFC003F500C /* MenuItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F56D2BEB3FFC003F500C /* MenuItemCell.swift */; };
-		5524F5732BEB418D003F500C /* MenuListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F5722BEB418D003F500C /* MenuListViewController.swift */; };
+		5524F5732BEB418D003F500C /* AddToCartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F5722BEB418D003F500C /* AddToCartViewController.swift */; };
 		5524F5772BEB4BE4003F500C /* AddItemViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F5762BEB4BE4003F500C /* AddItemViewController.swift */; };
 		5524F62B2BECD422003F500C /* MenuItemDummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F62A2BECD422003F500C /* MenuItemDummy.swift */; };
 		5524F62E2BEDE57C003F500C /* OrderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F62D2BEDE57C003F500C /* OrderCell.swift */; };
@@ -92,6 +92,10 @@
 		5548B6A92C059EA8000E99C8 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 5548B6A82C059EA8000E99C8 /* SQLite */; };
 		5548B6AD2C05AAD9000E99C8 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6AC2C05AAD9000E99C8 /* DatabaseManager.swift */; };
 		5548B6AF2C075907000E99C8 /* MenuItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6AE2C075907000E99C8 /* MenuItemTableViewCell.swift */; };
+		5548B6B12C09FA91000E99C8 /* MenuCartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6B02C09FA91000E99C8 /* MenuCartView.swift */; };
+		5548B6B42C0A50B5000E99C8 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6B32C0A50B5000E99C8 /* ToastView.swift */; };
+		5548B6B72C0B8DB1000E99C8 /* Notification+Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */; };
+		5548B6BA2C0EE27B000E99C8 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 5548B6B92C0EE27B000E99C8 /* Toast */; };
 		55F966692BF214C400557C92 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966682BF214C400557C92 /* DatabaseService.swift */; };
 		55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666A2BF3344B00557C92 /* QuantityButton.swift */; };
 		55F9666D2BF364D000557C92 /* MenuItemOrderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */; };
@@ -135,7 +139,7 @@
 		5524F5662BEA1F61003F500C /* MenuViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewController.swift; sourceTree = "<group>"; };
 		5524F5692BEA3E3B003F500C /* MenuSectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSectionTableViewCell.swift; sourceTree = "<group>"; };
 		5524F56D2BEB3FFC003F500C /* MenuItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuItemCell.swift; sourceTree = "<group>"; };
-		5524F5722BEB418D003F500C /* MenuListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuListViewController.swift; sourceTree = "<group>"; };
+		5524F5722BEB418D003F500C /* AddToCartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToCartViewController.swift; sourceTree = "<group>"; };
 		5524F5762BEB4BE4003F500C /* AddItemViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemViewController.swift; sourceTree = "<group>"; };
 		5524F62A2BECD422003F500C /* MenuItemDummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemDummy.swift; sourceTree = "<group>"; };
 		5524F62D2BEDE57C003F500C /* OrderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderCell.swift; sourceTree = "<group>"; };
@@ -195,6 +199,9 @@
 		5548B6A52C04BC96000E99C8 /* MockDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDatabase.swift; sourceTree = "<group>"; };
 		5548B6AC2C05AAD9000E99C8 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
 		5548B6AE2C075907000E99C8 /* MenuItemTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemTableViewCell.swift; sourceTree = "<group>"; };
+		5548B6B02C09FA91000E99C8 /* MenuCartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCartView.swift; sourceTree = "<group>"; };
+		5548B6B32C0A50B5000E99C8 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
+		5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Name.swift"; sourceTree = "<group>"; };
 		55F966682BF214C400557C92 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		55F9666A2BF3344B00557C92 /* QuantityButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityButton.swift; sourceTree = "<group>"; };
 		55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemOrderTableViewCell.swift; sourceTree = "<group>"; };
@@ -216,6 +223,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5548B6BA2C0EE27B000E99C8 /* Toast in Frameworks */,
 				5548B6A92C059EA8000E99C8 /* SQLite in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -247,7 +255,7 @@
 				5524F5762BEB4BE4003F500C /* AddItemViewController.swift */,
 				5524F5662BEA1F61003F500C /* MenuViewController.swift */,
 				5524F6362BEE688D003F500C /* MenuDetailViewController.swift */,
-				5524F5722BEB418D003F500C /* MenuListViewController.swift */,
+				5524F5722BEB418D003F500C /* AddToCartViewController.swift */,
 				551AAE2B2BFDEF7700E50FE7 /* MenuSectionViewController.swift */,
 				551AAE482BFF873B00E50FE7 /* MenuListingViewController.swift */,
 			);
@@ -260,6 +268,7 @@
 				5548B6AE2C075907000E99C8 /* MenuItemTableViewCell.swift */,
 				5524F56D2BEB3FFC003F500C /* MenuItemCell.swift */,
 				551AAE412BFF7C7300E50FE7 /* MenuItemRow.swift */,
+				5548B6B02C09FA91000E99C8 /* MenuCartView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -291,6 +300,8 @@
 		5524F54A2BE9E836003F500C /* Dine */ = {
 			isa = PBXGroup;
 			children = (
+				5548B6B52C0B8D8C000E99C8 /* Notification */,
+				5548B6B22C0A5086000E99C8 /* ToastKit */,
 				5548B6AB2C05AA9C000E99C8 /* Database */,
 				551AAE372BFE0A2400E50FE7 /* Bill */,
 				5548B69E2C045752000E99C8 /* Order */,
@@ -554,6 +565,22 @@
 			path = Database;
 			sourceTree = "<group>";
 		};
+		5548B6B22C0A5086000E99C8 /* ToastKit */ = {
+			isa = PBXGroup;
+			children = (
+				5548B6B32C0A50B5000E99C8 /* ToastView.swift */,
+			);
+			path = ToastKit;
+			sourceTree = "<group>";
+		};
+		5548B6B52C0B8D8C000E99C8 /* Notification */ = {
+			isa = PBXGroup;
+			children = (
+				5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */,
+			);
+			path = Notification;
+			sourceTree = "<group>";
+		};
 		55F9667E2BF7680400557C92 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
@@ -611,6 +638,7 @@
 			name = Dine;
 			packageProductDependencies = (
 				5548B6A82C059EA8000E99C8 /* SQLite */,
+				5548B6B92C0EE27B000E99C8 /* Toast */,
 			);
 			productName = Dine;
 			productReference = 5524F5482BE9E836003F500C /* Dine.app */;
@@ -642,6 +670,7 @@
 			mainGroup = 5524F53F2BE9E836003F500C;
 			packageReferences = (
 				5548B6A72C059EA8000E99C8 /* XCRemoteSwiftPackageReference "SQLite.swift" */,
+				5548B6B82C0EE27B000E99C8 /* XCRemoteSwiftPackageReference "toast-swift" */,
 			);
 			productRefGroup = 5524F5492BE9E836003F500C /* Products */;
 			projectDirPath = "";
@@ -705,6 +734,7 @@
 				5524F5672BEA1F61003F500C /* MenuViewController.swift in Sources */,
 				552D37EC2BF1F4F0005B1D19 /* Bill.swift in Sources */,
 				5524F5652BEA1F59003F500C /* TablesViewController.swift in Sources */,
+				5548B6B42C0A50B5000E99C8 /* ToastView.swift in Sources */,
 				55F966CA2BFB650200557C92 /* TableRow.swift in Sources */,
 				5524F62E2BEDE57C003F500C /* OrderCell.swift in Sources */,
 				552D37AD2BF1F09F005B1D19 /* SQLiteError.swift in Sources */,
@@ -729,6 +759,7 @@
 				552D37C02BF1F17F005B1D19 /* String+OrderFormatting.swift in Sources */,
 				552D37BC2BF1F13A005B1D19 /* CSVParseError.swift in Sources */,
 				5524F5612BEA1F1D003F500C /* OrderViewController.swift in Sources */,
+				5548B6B72C0B8DB1000E99C8 /* Notification+Name.swift in Sources */,
 				552D37DB2BF1F4F0005B1D19 /* OrderItem.swift in Sources */,
 				55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */,
 				552D37B22BF1F09F005B1D19 /* Query.swift in Sources */,
@@ -740,7 +771,7 @@
 				55F9667B2BF610F700557C92 /* AddTableFormView.swift in Sources */,
 				552D37AF2BF1F09F005B1D19 /* DatabaseTables.swift in Sources */,
 				552D38142BF1F856005B1D19 /* CustomNotifications.swift in Sources */,
-				5524F5732BEB418D003F500C /* MenuListViewController.swift in Sources */,
+				5524F5732BEB418D003F500C /* AddToCartViewController.swift in Sources */,
 				551AAE362BFE0A1400E50FE7 /* BillItem.swift in Sources */,
 				552D37EE2BF1F4F0005B1D19 /* DataService.swift in Sources */,
 				552D37E32BF1F4F0005B1D19 /* Filename.swift in Sources */,
@@ -765,6 +796,7 @@
 				552D37FF2BF1F5A0005B1D19 /* TableController.swift in Sources */,
 				552D38042BF1F5A0005B1D19 /* OrderController.swift in Sources */,
 				552D37EB2BF1F4F0005B1D19 /* RestaurantMenu.swift in Sources */,
+				5548B6B12C09FA91000E99C8 /* MenuCartView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -995,6 +1027,14 @@
 				minimumVersion = 0.15.3;
 			};
 		};
+		5548B6B82C0EE27B000E99C8 /* XCRemoteSwiftPackageReference "toast-swift" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/BastiaanJansen/toast-swift";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.1.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1002,6 +1042,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 5548B6A72C059EA8000E99C8 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
 			productName = SQLite;
+		};
+		5548B6B92C0EE27B000E99C8 /* Toast */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5548B6B82C0EE27B000E99C8 /* XCRemoteSwiftPackageReference "toast-swift" */;
+			productName = Toast;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

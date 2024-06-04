@@ -8,19 +8,25 @@
 import UIKit
 import SwiftUI
 
-class MenuListViewController: UIViewController {
+class AddToCartViewController: UIViewController {
     private var tableView: UITableView!
     
     private var addItemsButton: UIButton!
+    private var menuCartView: MenuCartView!
     let searchController = UISearchController()
     
     private var filteredItems: [MenuItem] = []
     
-    private var menuItemCart: [MenuItem] = [] {
+    private var menuItemCart: [MenuItem: Int] = [:] {
         didSet {
             if !menuItemCart.isEmpty {
                 navigationItem.rightBarButtonItem?.isHidden = false
+                menuCartView.isHidden = false
+            } else {
+                navigationItem.rightBarButtonItem?.isHidden = true
+                menuCartView.isHidden = true
             }
+            
         }
     }
     
@@ -47,21 +53,15 @@ class MenuListViewController: UIViewController {
         setupNavBar()
         configureView()
         setupSearchBar()
+        setupCartView()
     }
-    
-    @objc func tableSelectionButtonTapped(sender: UIBarButtonItem) {
-        // TODO: Push the table selection VC
-        let chooseTableVC = ChooseTableViewController()
-        self.navigationController?.pushViewController(chooseTableVC, animated: true)
-    }
-    
     
     // MARK: - CUSTOM Methods
     private func setupNavBar() {
         title = "Menu"
         navigationController?.navigationBar.prefersLargeTitles = true
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped))
-        let proceedbutton = UIBarButtonItem(title: "Proceed", style: .plain, target: self, action: #selector(proceedButtonAction(_ :)))
+        let proceedbutton = UIBarButtonItem(title: "Proceed", style: .plain, target: self, action: #selector(proceedButtonAction(_:)))
         navigationItem.rightBarButtonItem = proceedbutton
         navigationItem.rightBarButtonItem?.isHidden = true // Initially hidden
         navigationItem.leftBarButtonItem = cancelButton
@@ -72,11 +72,27 @@ class MenuListViewController: UIViewController {
     }
     
     @objc func proceedButtonAction(_ sender: UIBarButtonItem) {
-        for item in menuItemCart {
-            print(item.name)
+        for (menuItem, numOfItem) in menuItemCart {
+            print("\(menuItem.name) - \(numOfItem)")
         }
-//        let chooseTableVC = ChooseTableViewController()
-//        navigationController?.pushViewController(chooseTableVC, animated: true)
+        let chooseTableVC = ChooseTableViewController(selectedMenuItems: menuItemCart)
+        navigationController?.pushViewController(chooseTableVC, animated: true)
+    }
+    
+    private func setupCartView() {
+        menuCartView = MenuCartView()
+        menuCartView.layer.cornerRadius = 30 // Half of the height (60 / 2)
+        menuCartView.backgroundColor = .secondarySystemBackground
+        menuCartView.isHidden = true
+        menuCartView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.addSubview(menuCartView)
+        
+        NSLayoutConstraint.activate([
+            menuCartView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            menuCartView.widthAnchor.constraint(greaterThanOrEqualTo: view.widthAnchor, multiplier: 0.43),
+            menuCartView.heightAnchor.constraint(equalToConstant: 60),
+            menuCartView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+        ])
     }
     
     private func loadMenu() {
@@ -103,25 +119,6 @@ class MenuListViewController: UIViewController {
         tableView.register(MenuItemTableViewCell.self, forCellReuseIdentifier: MenuItemTableViewCell.reuseIdentifier)
     }
     
-    private func setupAddButton() {
-        addItemsButton = UIButton()
-        addItemsButton.setTitleColor(.label, for: .normal)
-        addItemsButton.layer.cornerRadius = 12
-        addItemsButton.backgroundColor = UIColor(named: "teritiaryBgColor")
-        addItemsButton.addTarget(self, action: #selector(tableSelectionButtonTapped), for: .touchUpInside)
-        tableView.addSubview(addItemsButton)
-        addItemsButton.setTitle("Choose Table", for: .normal)
-        view.addSubview(addItemsButton)
-        addItemsButton.translatesAutoresizingMaskIntoConstraints = false
-        
-        NSLayoutConstraint.activate([
-            addItemsButton.heightAnchor.constraint(equalToConstant: 55),
-            addItemsButton.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
-            addItemsButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -14),
-            addItemsButton.centerXAnchor.constraint(equalTo: view.centerXAnchor)
-        ])
-    }
-    
     // MARK: - SearchBar Methods
     private func setupSearchBar() {
         searchController.searchResultsUpdater = self
@@ -140,7 +137,7 @@ class MenuListViewController: UIViewController {
     }
 }
 
-extension MenuListViewController: UITableViewDelegate, UITableViewDataSource {
+extension AddToCartViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         isFiltering ? filteredItems.count : menuItems.count
     }
@@ -168,29 +165,38 @@ extension MenuListViewController: UITableViewDelegate, UITableViewDataSource {
      }
 }
 
-extension MenuListViewController: MenuItemDelegate {
+extension AddToCartViewController: MenuItemDelegate {
     func menuItemDidAdd(_ item: MenuItem) {
         menuItems.append(item)
     }
 }
 
-extension MenuListViewController: UISearchResultsUpdating {
+extension AddToCartViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         filterContentForSearchText(searchBar.text!)
     }
 }
 
-extension MenuListViewController: MenuItemTableViewCellDelegate {
+extension AddToCartViewController: MenuItemTableViewCellDelegate {
     func menuTableViewCell(_ cell: MenuItemTableViewCell, didChangeItemCount count: Int, for menuItem: MenuItem) {
-        menuItemCart.removeAll { $0 == menuItem }
+        // Remove the key if the count is zero.
+        if count > 0 {
+            menuItemCart[menuItem] = count
+            // Update the cart view to reflect the new count of items
+            let totalItemCount = menuItemCart.values.reduce(0, +)
+            menuCartView.setItemCount(totalItemCount)
+        } else {
+            // Remove the menuItem if the count is 0
+            menuItemCart.removeValue(forKey: menuItem)
+        }
         
-        for _ in 0..<count {
-            menuItemCart.append(menuItem)
+        for (item, count) in menuItemCart {
+            print("\(item.name) - \(count)")
         }
     }
 }
 
 #Preview {
-    MenuListViewController()
+    AddToCartViewController()
 }

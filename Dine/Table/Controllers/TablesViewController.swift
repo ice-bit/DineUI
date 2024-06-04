@@ -37,7 +37,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource {
         setupAppearance()
         loadTables()
         let defaultCenter = NotificationCenter.default
-        defaultCenter.addObserver(self, selector: #selector(didAddTable(_ :)), name: .didAddTable, object: nil)
+        defaultCenter.addObserver(self, selector: #selector(didAddTable(_:)), name: .didAddTable, object: nil)
     }
     
     // MARK: - OBJC methods

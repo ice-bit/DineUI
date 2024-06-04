@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Toast
 
 class OrderViewController: UIViewController {
     private let orderService: OrderService
@@ -13,27 +14,31 @@ class OrderViewController: UIViewController {
     
     private var tableView: UITableView!
     
+    // BarButtons
+    private var addBarButton: UIBarButtonItem!
+    private var quickMenuBarButton: UIBarButtonItem!
+    private var doneBarButton: UIBarButtonItem!
+    
+    private var billButton: UIBarButtonItem!
+    private var deleteButton: UIBarButtonItem!
+    
     private var orderData: [Order] = [] {
         didSet {
             tableView.reloadData()
         }
     }
     
-    private let cellData = [
-        OrderDummy(status: "Preparing", itemCount: 12, billStatus: true),
-        OrderDummy(status: "Preparing", itemCount: 8, billStatus: true),
-        OrderDummy(status: "Preparing", itemCount: 9, billStatus: true),
-        OrderDummy(status: "Preparing", itemCount: 12, billStatus: true),
-        OrderDummy(status: "Preparing", itemCount: 16, billStatus: true),
-        OrderDummy(status: "Completed", itemCount: 32, billStatus: true),
-        OrderDummy(status: "Cancelled", itemCount: 11, billStatus: true),
-        OrderDummy(status: "Preparing", itemCount: 1, billStatus: true),
-        OrderDummy(status: "Preparing", itemCount: 2, billStatus: true),
-        OrderDummy(status: "Completed", itemCount: 22, billStatus: true),
-        OrderDummy(status: "Preparing", itemCount: 5, billStatus: true),
-        OrderDummy(status: "Preparing", itemCount: 92, billStatus: true),
-        OrderDummy(status: "Preparing", itemCount: 37, billStatus: true),
-    ]
+    private var selectedOrders: [Order] = [] {
+        didSet {
+            if !selectedOrders.isEmpty {
+                billButton.isEnabled = true
+                deleteButton.isEnabled = true
+            } else {
+                billButton.isEnabled = false
+                deleteButton.isEnabled = false
+            }
+        }
+    }
     
     init(orderService: OrderService, menuService: MenuService) {
         self.orderService = orderService
@@ -48,31 +53,150 @@ class OrderViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupAppearance()
-        tableView = UITableView(frame: view.bounds)
-        view.addSubview(tableView)
+        setupNavigationBar()
+        setupTableView()
+        view = tableView
+        setupToolbar()
+        loadOrderData()
+        NotificationCenter.default.addObserver(self, selector: #selector(didAddOrder(_:)), name: .didAddNewOrderNotification, object: nil)
+    }
+    
+    private func setSelection(_ editing: Bool, animated: Bool) {
+        self.tableView.setEditing(editing, animated: animated)
+        
+        if tableView.isEditing {
+            setRightBarButtons(doneBarButton)
+            // Show toolbar in editing state
+            setToolbarActive(true)
+        } else {
+            // Set the default bar buttons
+            setRightBarButtons(addBarButton, quickMenuBarButton)
+            // Hide the toolbar in non editing state
+            setToolbarActive(false)
+        }
+    }
+    
+    private func setupToolbar() {
+        // Create toolbar items
+        billButton = UIBarButtonItem(title: "Bill", style: .plain, target: self, action: #selector(billButtonAction(_:)))
+        deleteButton = UIBarButtonItem(title: "Delete", style: .plain, target: self, action: #selector(deleteButtonAction(_:)))
+        
+        billButton.isEnabled = false
+        deleteButton.isEnabled = false
+
+        toolbarItems = [
+            billButton,
+            UIBarButtonItem(systemItem: .flexibleSpace),
+            deleteButton
+        ]
+    }
+    
+    private func setToolbarActive(_ isActive: Bool) {
+        if isActive {
+            navigationController?.setToolbarHidden(false, animated: true)
+        } else {
+            navigationController?.setToolbarHidden(true, animated: true)
+        }
+    }
+    
+    @objc private func billButtonAction(_ sender: UIBarButtonItem) {
+        print("Bill orders")
+        // Bill the selected orders
+        do {
+            let databaseAccess = try SQLiteDataAccess.openDatabase()
+            let orderService = OrderServiceImpl(databaseAccess: databaseAccess)
+            let billService = BillServiceImpl(databaseAccess: databaseAccess)
+            let billingController = BillingController(billService: billService, orderService: orderService)
+            for order in selectedOrders {
+                try billingController.createBill(for: order, tip: nil)
+            }
+            // Notify BillViewController about changes
+            NotificationCenter.default.post(name: .billDidAddNotification, object: nil)
+            // Come out of editing mode
+            setSelection(false, animated: true)
+            // Show toast view
+            let toast = Toast.text("Bill Added")
+            toast.show(haptic: .success)
+        } catch {
+            print("Unable to bill the order - \(error)")
+        }
+        
+    }
+    
+    @objc private func deleteButtonAction(_ sender: UIBarButtonItem) {
+        print("Delete orders")
+    }
+    
+    private func setupTableView() {
+        tableView = UITableView(frame: .zero)
+        tableView.allowsMultipleSelectionDuringEditing = true
         tableView.delegate = self
         tableView.dataSource = self
         tableView.register(OrderCell.self, forCellReuseIdentifier: OrderCell.reuseIdentifier)
+    }
+    
+    @objc private func didAddOrder(_ sender: NotificationCenter) {
+        // Load order and reload table
         loadOrderData()
-        setupNavigationBar()
     }
     
     @objc private func addOrder() {
-        let menuListVC = MenuListViewController()
+        let menuListVC = AddToCartViewController()
         let navController = UINavigationController(rootViewController: menuListVC)
         present(navController, animated: true)
     }
     
     private func setupNavigationBar() {
-        let addBarButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .done, target: self, action: #selector(addOrder))
-        navigationItem.rightBarButtonItem = addBarButton
+        addBarButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .done, target: self, action: #selector(addOrder))
+        doneBarButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneBarButtonAction(_:)))
+        createMenuBarButton()
+        navigationItem.rightBarButtonItems = [addBarButton, quickMenuBarButton]
+    }
+    
+    private func setRightBarButtons(_ barButtons: UIBarButtonItem...) {
+        // Remove existing barButton
+        navigationItem.rightBarButtonItems?.removeAll()
+        for barButton in barButtons {
+            navigationItem.rightBarButtonItems?.append(barButton)
+        }
+    }
+    
+    private func createMenuBarButton() {
+        // Define actions
+        let selectAction = UIAction(title: "Select Orders", image: UIImage(systemName: "checkmark.circle")) { [weak self] action in
+            guard let self else { return }
+            print("Select Order action")
+            // Set tableView selection mode
+            self.setSelection(true, animated: true)
+        }
+        // Create menu
+        let menu = UIMenu(children: [selectAction])
+        quickMenuBarButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: menu)
+        
+        quickMenuBarButton.menu = menu
+    }
+    
+    @objc private func doneBarButtonAction(_ sender: UIBarButtonItem) {
+        // TODO: Bill the selected orders...
+        print("Billing orders...")
+        selectedOrders.removeAll()
+        setSelection(false, animated: true)
+    }
+    
+    @objc private func quickMenuAction(_ sender: UIBarButtonItem) {
+        print(#function)
     }
     
     private func loadOrderData() {
-        if let orders = try? orderService.fetch() {
-            orderData = orders
-        } else {
-            print("Order data not found!")
+        do {
+            let dataAccess = try SQLiteDataAccess.openDatabase()
+            let orderService = OrderServiceImpl(databaseAccess: dataAccess)
+            let results = try orderService.fetch()
+            if let results {
+                orderData = results
+            }
+        } catch {
+            print("Unable to load orders - \(error)")
         }
     }
     
@@ -81,17 +205,15 @@ class OrderViewController: UIViewController {
         view.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
     }
-
+    
 }
 
 extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let data = orderData[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: OrderCell.reuseIdentifier, for: indexPath) as! OrderCell
-//        cell.configure(status: data.status, itemCount: data.itemCount, orderID: "fuwfewf", tableID: "fwefewfewf", date: data.date, isOrderBilled: true)
-//        cell.configure(status: data.orderStatusValue.rawValue, itemCount: data.menuItems.count, orderID: data.orderIdValue.uuidString, tableID: data.tableIDValue.uuidString, date: data.getDate, isOrderBilled: data.isOrderBilledValue)
+        let order = orderData[indexPath.row]
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: OrderCell.reuseIdentifier, for: indexPath) as? OrderCell else { return UITableViewCell() }
+        cell.configureCell(with: order)
         cell.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
-        cell.configure(status: data.orderStatusValue.rawValue, itemCount: data.menuItems.count, orderID: "7264rhr74ry34r", tableID: "d476139424", date: data.getDate, isOrderBilled: data.isOrderBilledValue)
         return cell
     }
     
@@ -102,14 +224,31 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         75
     }
-}
-
-struct OrderDummy {
-    let status: String
-    let itemCount: Int
-    let orderID = UUID()
-    let tableID = UUID()
-    let date = Date()
-    let billStatus: Bool
     
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            let selectedOrder = orderData[indexPath.row]
+            selectedOrders.append(selectedOrder)
+            
+            for order in selectedOrders {
+                print(order.orderIdValue)
+            }
+            print("-----------------------------------")
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {
+        if tableView.isEditing {
+            let selectedOrder = orderData[indexPath.row]
+            if let selectedOrderIndex = selectedOrders.firstIndex(where: { $0.orderIdValue == selectedOrder.orderIdValue}) {
+                selectedOrders.remove(at: selectedOrderIndex)
+            }
+            
+            for order in selectedOrders {
+                print(order.orderIdValue)
+            }
+            
+            print("---------------")
+        }
+     }
 }

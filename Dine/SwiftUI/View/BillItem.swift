@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct BillItem: View {
-    var billData: BillData
+    var billData: Bill
     
     var body: some View {
         HStack {
@@ -17,7 +17,7 @@ struct BillItem: View {
                     .font(.title3)
                     .padding(.bottom, 5)
                 
-                Text("Items \(billData.items.count)")
+                Text("Items _")
                     .font(.caption)
             }
             .padding()
@@ -30,7 +30,7 @@ struct BillItem: View {
             
             VStack(alignment: .leading) {
                 HStack {
-                    Label(billData.billStatus.rawValue, systemImage: "circle.dashed.inset.fill")
+                    Label(billData.paymentStatus.rawValue, systemImage: "circle.dashed.inset.fill")
                         .font(.subheadline)
                         .foregroundStyle(.primary)
                     
@@ -46,7 +46,7 @@ struct BillItem: View {
                 }
                 .padding(.bottom, 8)
                 
-                Text(billData.id.uuidString)
+                Text(billData.billId.uuidString)
                     .font(.caption2)
                     .padding(.trailing)
             }
@@ -57,14 +57,7 @@ struct BillItem: View {
 }
 
 #Preview {
-    let billData = BillData(
-        id: UUID(), date: Date(),
-        billStatus: .waitingForConfirmation,
-        items: [
-            Item(id: UUID(), name: "Sushi", price: 4.8),
-            Item(id: UUID(), name: "Sushi", price: 4.8),
-            Item(id: UUID(), name: "Sushi", price: 4.8)
-        ])
+    let billData = Bill(amount: 30, tip: 9, tax: 89, isPaid: true)
     
     return BillItem(billData: billData)
 }

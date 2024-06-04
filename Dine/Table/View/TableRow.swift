@@ -8,10 +8,7 @@
 import SwiftUI
 
 struct TableRow: View {
-    var table: RestaurantTable
-    @ObservedObject var tableSelection = TableSelector()
-    
-    @State private var isSelected: Bool = false
+    @ObservedObject var table: RestaurantTable
     
     var body: some View {
         HStack {
@@ -22,7 +19,7 @@ struct TableRow: View {
                 Text("Capacity: \(table.capacity)")
                     .font(.caption)
                 
-                Text("\(UUID().uuidString)")
+                Text(table.tableId.uuidString)
                     .font(.caption2)
                     
             }
@@ -30,27 +27,16 @@ struct TableRow: View {
             
             Spacer()
             
-            Button(action: {
-                // Action for the plus button
-                /*isSelected.toggle()
-                print("Plus button tapped")*/
-                tableSelection.toggleTableSelection()
-            }) {
-                Image(systemName: isSelected ? "checkmark" : "plus")
-                    .foregroundColor(isSelected ? .black : .white)
-                    .padding()
-                    .background(isSelected ? Color.white : Color.black)
-                    .clipShape(Circle())
-            }
-            .padding(.trailing)
+            Image(systemName: table.isSelected ? "checkmark" : "plus")
+                .foregroundColor(table.isSelected ? .black : .white)
+                .padding()
+                .background(table.isSelected ? Color.white : Color.black)
+                .clipShape(Circle())
+                .padding(.trailing)
         }
         .background(Color("AppColor"))
         .cornerRadius(20)
     }
-}
-
-extension Notification.Name {
-    static let tableSelectionNotification = Notification.Name("com.euphoria.Dine.tableSelectionNotification")
 }
 
 #Preview {

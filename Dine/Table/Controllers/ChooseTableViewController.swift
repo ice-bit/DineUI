@@ -7,14 +7,27 @@
 
 import UIKit
 import SwiftUI
+import Toast
 
 class ChooseTableViewController: UIViewController {
     
     // MARK: - Properties
+    private var selectedMenuItems: [MenuItem: Int]
+    
     private var tableData: [RestaurantTable] = []
-    private var selectedTables: [RestaurantTable] = []
+    private var selectedTable: RestaurantTable?
     
     private var collectionView: UICollectionView!
+    
+    init(selectedMenuItems: [MenuItem: Int]) {
+        self.selectedMenuItems = selectedMenuItems
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -22,9 +35,15 @@ class ChooseTableViewController: UIViewController {
         setupCollectionView()
         view = collectionView
         setupNavigationBar()
+        NotificationCenter.default.addObserver(self, selector: #selector(didSelectTable(_:)), name: .tableSelectionNotification, object: nil)
     }
     
-    // MARK: - Private methods
+    @objc private func didSelectTable(_ sender: NotificationCenter) {
+        print(#function)
+        
+    }
+    
+    // MARK: - Methods
     
     private func loadTables() {
         do {
@@ -81,13 +100,28 @@ class ChooseTableViewController: UIViewController {
     private func setupNavigationBar() {
         title = "Choose Table"
         navigationController?.navigationBar.prefersLargeTitles = true
-        let confirmBarButton = UIBarButtonItem(title: "Confirm", style: .plain, target: self, action: #selector(confirmBarButtonTapped(_ :)))
+        let confirmBarButton = UIBarButtonItem(title: "Confirm", style: .plain, target: self, action: #selector(confirmButtonAction(_:)))
         navigationItem.rightBarButtonItem = confirmBarButton
     }
     
-    @objc private func confirmBarButtonTapped(_ sender: UIBarButtonItem) {
-        let confirmOrderVC = ConfirmOrderViewController()
-        self.navigationController?.pushViewController(confirmOrderVC, animated: true)
+    @objc private func confirmButtonAction(_ sender: UIBarButtonItem) {
+        do {
+            let dataAccess = try SQLiteDataAccess.openDatabase()
+            let orderService = OrderServiceImpl(databaseAccess: dataAccess)
+            let tableService = TableServiceImpl(databaseAccess: dataAccess)
+            let orderController = OrderController(orderService: orderService, tableService: tableService)
+            if let selectedTable {
+                try orderController.createOrder(for: selectedTable, menuItems: selectedMenuItems)
+                NotificationCenter.default.post(name: .didAddNewOrderNotification, object: nil)
+                self.dismiss(animated: true) {
+                    // Show toast after completion
+                    let toast = Toast.text("New Order Created")
+                    toast.show(haptic: .success)
+                }
+            }
+        } catch {
+            print("Unable to create order - \(error)")
+        }
     }
 }
 
@@ -102,14 +136,26 @@ extension ChooseTableViewController: UICollectionViewDataSource, UICollectionVie
     }
     
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let selectedTable = tableData[indexPath.item]
-        selectedTables.append(selectedTable)
-        // print(selectedTables.description)
+        let currentTable = tableData[indexPath.item]
+        for table in self.tableData {
+            if table.tableId == currentTable.tableId {
+                currentTable.isSelected.toggle()
+                // Haptic feedback
+                let feedBackGen = UISelectionFeedbackGenerator()
+                feedBackGen.prepare()
+                feedBackGen.selectionChanged()
+            } else {
+                table.isSelected = false
+            }
+        }
+        
+        // Setting the selected table
+        selectedTable = currentTable
     }
 }
 
 #Preview {
-    UINavigationController(rootViewController: ChooseTableViewController())
+    UINavigationController(rootViewController: ChooseTableViewController(selectedMenuItems: [:]))
 }
 
 class TableSelector: ObservableObject {

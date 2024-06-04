@@ -8,11 +8,12 @@
 import Foundation
 import SQLite3
 
-class RestaurantTable {
+class RestaurantTable: ObservableObject {
     private let _tableId: UUID
     var tableStatus: TableStatus
     private let maxCapacity: Int
     private let _locationIdentifier: Int
+    @Published var isSelected: Bool = false // For Dynamically changing SwiftUIView 
     
     var tableId: UUID {
         return _tableId

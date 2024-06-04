@@ -78,7 +78,7 @@ extension MenuViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let section = sectionData[indexPath.row]
-        let detailVC = MenuListViewController()
+        let detailVC = AddToCartViewController()
         navigationController?.pushViewController(detailVC, animated: true)
     }
     

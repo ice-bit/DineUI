@@ -12,7 +12,12 @@ class BillViewController: UIViewController, UITableViewDataSource {
     // MARK: - Properties
     private var tableView: UITableView!
     private var cellReuseIdentifier = "BillItem"
-    private var billData: [BillData] = ModelData().bills
+//    private var billData: [BillData] = ModelData().bills
+    private var billData: [Bill] = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     
     // MARK: -View LifeCycle Methods
     override func viewDidLoad() {
@@ -20,6 +25,12 @@ class BillViewController: UIViewController, UITableViewDataSource {
         setupTableView()
         view = tableView
         setupAppearance()
+        loadBillData()
+        NotificationCenter.default.addObserver(self, selector: #selector(billDidAdd(_:)), name: .billDidAddNotification, object: nil)
+    }
+    
+    @objc private func billDidAdd(_ sender: NotificationCenter) {
+        loadBillData()
     }
     
     // MARK: - Methods
@@ -29,9 +40,23 @@ class BillViewController: UIViewController, UITableViewDataSource {
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseIdentifier)
         tableView.dataSource = self
     }
+    
     private func setupAppearance() {
         self.title = "Bills"
         navigationController?.navigationBar.prefersLargeTitles = true
+    }
+    
+    private func loadBillData() {
+        do {
+            let databaseAccess = try SQLiteDataAccess.openDatabase()
+            let billService = BillServiceImpl(databaseAccess: databaseAccess)
+            let results = try billService.fetch()
+            if let results {
+                billData = results
+            }
+        } catch {
+            print("Unable to load bills = \(error)")
+        }
     }
     
     // MARK: - TableViewDataSource

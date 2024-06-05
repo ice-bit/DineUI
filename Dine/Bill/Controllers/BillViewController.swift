@@ -50,7 +50,7 @@ class BillViewController: UIViewController, UITableViewDataSource {
     }
     
     private func setupBarButton() {
-        filterBarButton = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(filterAction(_:)))
+        filterBarButton = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal.decrease.circle"), style: .plain, target: self, action: #selector(filterAction(_:)))
         navigationItem.rightBarButtonItem = filterBarButton
     }
     

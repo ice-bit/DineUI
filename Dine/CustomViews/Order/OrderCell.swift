@@ -13,7 +13,7 @@ class OrderCell: UITableViewCell {
     
     private lazy var containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "quaternaryBgColor")
+        view.backgroundColor = UIColor(red: 1, green: 0.643, blue: 0.000, alpha: 0.75) // faded yellow
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 10
         return view
@@ -22,6 +22,7 @@ class OrderCell: UITableViewCell {
     private lazy var statusLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12)
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -29,13 +30,14 @@ class OrderCell: UITableViewCell {
     private lazy var itemCountLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 12)
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     private lazy var overlayContainerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(named: "secondaryBgColor")
+        view.backgroundColor = .app
         view.layer.cornerRadius = 10
         view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -45,6 +47,7 @@ class OrderCell: UITableViewCell {
     private lazy var orderIDLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 8)
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -52,6 +55,7 @@ class OrderCell: UITableViewCell {
     private lazy var tableIDLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 8)
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -59,6 +63,7 @@ class OrderCell: UITableViewCell {
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 10)
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -66,6 +71,7 @@ class OrderCell: UITableViewCell {
     private lazy var billStatusLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 10)
+        label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()

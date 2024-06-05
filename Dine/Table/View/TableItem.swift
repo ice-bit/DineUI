@@ -35,7 +35,8 @@ struct TableItem: View {
         }
         .font(.subheadline)
         .padding()
-        .background(Color.app)
+        .background(.app)
+        .foregroundStyle(.black)
         .cornerRadius(15)
         .shadow(radius: 5)
     }

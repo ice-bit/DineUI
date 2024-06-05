@@ -38,7 +38,6 @@ struct BillItem: View {
                     
                     Text(billData.date, style: .date)
                         .font(.caption2)
-//                        .padding(.trailing)
                     
                     Image(systemName: "chevron.right")
                         .padding(.trailing)
@@ -53,6 +52,7 @@ struct BillItem: View {
         }
         .background(.app)
         .clipShape(.rect(cornerRadius: 10))
+        .foregroundStyle(.black)
     }
 }
 

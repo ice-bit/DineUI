@@ -39,6 +39,7 @@ struct MenuItemRow: View {
         .padding()
         .background(.app)
         .clipShape(.rect(cornerRadius: 10))
+        .foregroundStyle(.black)
     }
     
     

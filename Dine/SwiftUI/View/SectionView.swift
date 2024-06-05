@@ -25,6 +25,7 @@ struct SectionView: View {
         }
         .background(Color.app)
         .clipShape(.rect(cornerRadius: 10))
+        .foregroundStyle(.black)
     }
 }
 

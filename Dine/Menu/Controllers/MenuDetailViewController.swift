@@ -16,6 +16,7 @@ class MenuDetailViewController: UIViewController {
     private var priceTag: UILabel!
     private var staticAboutTag: UILabel!
     private var descriptionTag: UILabel!
+    private var scrollView: UIScrollView!
 //    private var addButton:
     
     init(menu: MenuItem) {
@@ -40,12 +41,26 @@ class MenuDetailViewController: UIViewController {
     }
     
     private func setupSubview() {
+        setupScrollView()
+        view.addSubview(scrollView)
         setupMenuImage()
         setupItemTitle()
         setupPriceLabel()
         setupAboutTag()
         setupDescriptionTag()
         setupConstraints()
+    }
+    
+    private func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            scrollView.heightAnchor.constraint(equalToConstant: 1500),
+        ])
     }
     
     private func setupNavbar() {
@@ -63,7 +78,7 @@ class MenuDetailViewController: UIViewController {
         itemImageView.layer.cornerRadius = 14
         itemImageView.clipsToBounds = true
         itemImageView.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(itemImageView)
+        scrollView.addSubview(itemImageView)
     }
     
     private func setupItemTitle() {
@@ -73,7 +88,7 @@ class MenuDetailViewController: UIViewController {
         nameTag.textAlignment = .center
         nameTag.font = .systemFont(ofSize: 28, weight: .bold)
         nameTag.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(nameTag)
+        scrollView.addSubview(nameTag)
     }
     
     private func setupPriceLabel() {
@@ -81,7 +96,7 @@ class MenuDetailViewController: UIViewController {
         priceTag.text = "$\(String(menu.price))"
         priceTag.font = .systemFont(ofSize: 20)
         priceTag.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(priceTag)
+        scrollView.addSubview(priceTag)
     }
     
     private func setupAboutTag() {
@@ -89,7 +104,7 @@ class MenuDetailViewController: UIViewController {
         staticAboutTag.text = "About"
         staticAboutTag.font = .systemFont(ofSize: 19, weight: .semibold)
         staticAboutTag.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(staticAboutTag)
+        scrollView.addSubview(staticAboutTag)
     }
     
     private func setupDescriptionTag() {
@@ -101,7 +116,7 @@ class MenuDetailViewController: UIViewController {
         """
         descriptionTag.font = .systemFont(ofSize: 16)
         descriptionTag.translatesAutoresizingMaskIntoConstraints = false
-        view.addSubview(descriptionTag)
+        scrollView.addSubview(descriptionTag)
     }
     
     private func setupConstraints() {
@@ -127,4 +142,8 @@ class MenuDetailViewController: UIViewController {
         ])
     }
     
+}
+
+#Preview {
+    MenuDetailViewController(menu: MenuItem(name: "Mac n Cheese", price: 4.3, menuSection: .mainCourse))
 }

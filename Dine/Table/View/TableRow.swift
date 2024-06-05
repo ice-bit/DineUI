@@ -36,6 +36,7 @@ struct TableRow: View {
         }
         .background(Color("AppColor"))
         .cornerRadius(20)
+        .foregroundStyle(.black)
     }
 }
 

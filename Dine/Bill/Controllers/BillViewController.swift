@@ -8,16 +8,36 @@
 import UIKit
 import SwiftUI
 
-class BillViewController: UIViewController, UITableViewDataSource {
+class BillViewController: UIViewController {
     // MARK: - Properties
     private var tableView: UITableView!
     private var cellReuseIdentifier = "BillItem"
-//    private var billData: [BillData] = ModelData().bills
+    //    private var billData: [BillData] = ModelData().bills
     private var billData: [Bill] = [] {
         didSet {
             tableView.reloadData()
         }
     }
+    
+    private var todaysBills: [Bill] {
+        billData.filter { Calendar.current.isDateInToday($0.date) }
+    }
+    
+    private var yesterdaysBills: [Bill] {
+        billData.filter { Calendar.current.isDateInYesterday($0.date) }
+    }
+    
+    private var previousBills: [Bill] {
+        billData.filter {
+            guard let twoDaysAgo = Calendar.current.date(byAdding: .day, value: -2, to: Date()) else { return false }
+            return Calendar.current.isDate($0.date, inSameDayAs: twoDaysAgo)
+        }
+    }
+    
+    private var tableViewData: [BillSection: [Bill]] {
+        [.today: todaysBills, .yesterday: yesterdaysBills, .previous: previousBills]
+    }
+    
     
     private var filterBarButton: UIBarButtonItem!
     
@@ -42,6 +62,7 @@ class BillViewController: UIViewController, UITableViewDataSource {
         tableView.separatorStyle = .none
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseIdentifier)
         tableView.dataSource = self
+        tableView.delegate = self
     }
     
     private func setupAppearance() {
@@ -73,18 +94,46 @@ class BillViewController: UIViewController, UITableViewDataSource {
     }
     
     // MARK: - TableViewDataSource
+    
+    enum BillSection: Int, CaseIterable {
+        case today
+        case yesterday
+        case previous
+        
+        var title: String {
+            switch self {
+            case .today: return "Today"
+            case .yesterday: return "Yesterday"
+            case .previous: return "Previous"
+            }
+        }
+    }
+}
+
+extension BillViewController: UITableViewDataSource, UITableViewDelegate {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        BillSection.allCases.count
+    }
+    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        billData.count
+        guard let billSection = BillSection(rawValue: section) else { return 0 }
+        return tableViewData[billSection]?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
-        let item = billData[indexPath.row]
+        guard let billSection = BillSection(rawValue: indexPath.section) else { return cell }
+        guard let bill = tableViewData[billSection]?[indexPath.row] else { return cell }
         cell.selectionStyle = .none
         cell.contentConfiguration = UIHostingConfiguration {
-            BillItem(billData: item)
+            BillItem(billData: bill)
         }
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        guard let billSection = BillSection(rawValue: section) else { return nil }
+        return billSection.title
     }
 }
 

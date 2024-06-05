@@ -132,8 +132,8 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let menuItem = isFiltering ? filteredItems[indexPath.row] : menuData[indexPath.row]
-        let detailVC = MenuDetailViewController(menu: menuItem)
-        navigationController?.pushViewController(detailVC, animated: true)
+        let menuDetailViewHostVC = UIHostingController(rootView: MenuDetailView(menuItem: menuItem))
+        navigationController?.pushViewController(menuDetailViewHostVC, animated: true)
     }
 }
 

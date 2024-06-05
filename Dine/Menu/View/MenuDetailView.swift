@@ -8,35 +8,33 @@
 import SwiftUI
 
 struct MenuDetailView: View {
+    var menuItem: MenuItem
     var body: some View {
-        NavigationStack {
-            ScrollView {
+        ScrollView {
+            VStack {
+                Image(.burger)
+                    .frame(width: 300, height: 300)
+                    .clipShape(.rect(cornerRadius: 30))
+                
+                Text(menuItem.name)
+                    .font(.title)
+                
+                Text(String(menuItem.price))
+                    .font(.title3)
+                
                 VStack {
-                    Image(.burger)
-                        .frame(width: 300, height: 300)
-                        .clipShape(.rect(cornerRadius: 30))
-                    
-                    Text("Mac n Cheese")
-                        .font(.title)
-                    
-                    Text("$23.09")
-                        .font(.title3)
-                    
-                    VStack {
-                        Text("About")
-                            .font(.headline)
-                        Text("I want a UIAlertController which helps in editing, to text field and one picker to scroll and pick from")
-                            .frame(maxWidth: 300)
-                            .multilineTextAlignment(.center)
-                    }
-                    .padding()
+                    Text("About")
+                        .font(.headline)
+                    Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
+                        .frame(maxWidth: 300)
+                        .multilineTextAlignment(.center)
                 }
+                .padding()
             }
         }
-        .navigationTitle("Mac n Cheese")
     }
 }
 
 #Preview {
-    MenuDetailView()
+    MenuDetailView(menuItem: MenuItem(name: "Mac n Cheese", price: 7.9, menuSection: .mainCourse))
 }

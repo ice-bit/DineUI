@@ -44,14 +44,14 @@ class TablesViewController: UIViewController, UICollectionViewDataSource {
     // Observer method
     @objc private func didAddTable(_ notification: NotificationCenter) {
         do {
-            let result = try tableService.fetch()
-            guard let result else {
-                print("Failed to unwrap! - (type error)")
-                return
+            let databaseAccess = try SQLiteDataAccess.openDatabase()
+            let tableService = TableServiceImpl(databaseAccess: databaseAccess)
+            let results = try tableService.fetch()
+            if let results {
+                tables = results
             }
-            tables = result
         } catch {
-            print("Failed to load tables")
+            print("Unable to load table - \(error)")
         }
     }
     

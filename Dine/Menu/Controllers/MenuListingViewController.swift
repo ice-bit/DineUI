@@ -11,11 +11,21 @@ import SwiftUI
 class MenuListingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     private var tableView: UITableView!
-    private var searchController: UISearchController!
     private let cellReuseID = "MenuItemRow"
     private let activeSection: MenuSection
     
     private var menuData: [MenuItem] = []
+    
+    // Search essentials
+    private var filteredItems: [MenuItem] = []
+    private var searchController: UISearchController!
+    var isFiltering: Bool {
+        searchController.isActive && !isSearchBarEmpty
+    }
+    
+    var isSearchBarEmpty: Bool {
+        searchController.searchBar.text?.isEmpty ?? true
+    }
     
     init(activeSection: MenuSection) {
         self.activeSection = activeSection
@@ -90,19 +100,30 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     
     private func setupSearchBar() {
         searchController = UISearchController()
-        navigationItem.searchController = searchController
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
         searchController.searchBar.placeholder = "Search Items"
+        navigationItem.searchController = searchController
         definesPresentationContext = true
+    }
+    
+    private func filterContentForSearch(_ searchText: String)  {
+        filteredItems = menuData.filter { (menuData: MenuItem) -> Bool in
+            menuData.name.lowercased().contains(searchText.lowercased())
+        }
+        
+        tableView.reloadData()
     }
     
     // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        menuData.count
+        isFiltering ? filteredItems.count : menuData.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseID, for: indexPath)
-        let menuItem = menuData[indexPath.row]
+        cell.selectionStyle = .none
+        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuData[indexPath.row]
         cell.contentConfiguration = UIHostingConfiguration {
             MenuItemRow(menuItem: menuItem)
         }
@@ -110,9 +131,16 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let menuItem = menuData[indexPath.row] // TODO: Provide real data
+        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuData[indexPath.row]
         let detailVC = MenuDetailViewController(menu: menuItem)
         navigationController?.pushViewController(detailVC, animated: true)
+    }
+}
+
+extension MenuListingViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        filterContentForSearch(searchBar.text!)
     }
 }
 

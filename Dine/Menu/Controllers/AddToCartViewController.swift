@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import Toast
 
 class AddToCartViewController: UIViewController {
     private var tableView: UITableView!
@@ -14,6 +15,9 @@ class AddToCartViewController: UIViewController {
     private var addItemsButton: UIButton!
     private var menuCartView: MenuCartView!
     let searchController = UISearchController()
+    
+    // BarButton
+    private var proceedbutton: UIBarButtonItem!
     
     private var filteredItems: [MenuItem] = []
     
@@ -61,7 +65,7 @@ class AddToCartViewController: UIViewController {
         title = "Menu"
         navigationController?.navigationBar.prefersLargeTitles = true
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped))
-        let proceedbutton = UIBarButtonItem(title: "Proceed", style: .plain, target: self, action: #selector(proceedButtonAction(_:)))
+        proceedbutton = UIBarButtonItem(title: "Proceed", style: .plain, target: self, action: #selector(proceedButtonAction(_:)))
         navigationItem.rightBarButtonItem = proceedbutton
         navigationItem.rightBarButtonItem?.isHidden = true // Initially hidden
         navigationItem.leftBarButtonItem = cancelButton
@@ -75,8 +79,21 @@ class AddToCartViewController: UIViewController {
         for (menuItem, numOfItem) in menuItemCart {
             print("\(menuItem.name) - \(numOfItem)")
         }
+        
         let chooseTableVC = ChooseTableViewController(selectedMenuItems: menuItemCart)
-        navigationController?.pushViewController(chooseTableVC, animated: true)
+        // Check if the tables are available
+        if chooseTableVC.isTablesAvailable() {
+            navigationController?.pushViewController(chooseTableVC, animated: true)
+        } else {
+            /*let alert = UIAlertController(title: "Cannot Proceed", message: "No available tables.", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .default, handler: { _ in
+            NSLog("The \"OK\" alert occured.")
+            }))
+            self.present(alert, animated: true, completion: nil)*/
+            let toast = Toast.default(image: UIImage(systemName: "exclamationmark.circle.fill")!, title: "No Tables Available")
+            toast.show(haptic: .error)
+            proceedbutton.isEnabled = false
+        }
     }
     
     private func setupCartView() {
@@ -146,6 +163,7 @@ extension AddToCartViewController: UITableViewDelegate, UITableViewDataSource {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemTableViewCell.reuseIdentifier, for: indexPath) as? MenuItemTableViewCell else {
             return UITableViewCell()
         }
+        cell.selectionStyle = .none
         
         let menuItem = isFiltering ? filteredItems[indexPath.row] : menuItems[indexPath.row]
         cell.configure(menuItem: menuItem)

@@ -24,6 +24,7 @@ class OrderViewController: UIViewController {
     
     private var orderData: [Order] = [] {
         didSet {
+//            loadOrderData()
             tableView.reloadData()
         }
     }
@@ -112,10 +113,13 @@ class OrderViewController: UIViewController {
             }
             // Notify BillViewController about changes
             NotificationCenter.default.post(name: .billDidAddNotification, object: nil)
+            // Reload the tableView for updated orders
+            loadOrderData()
+            tableView.reloadData()
             // Come out of editing mode
             setSelection(false, animated: true)
             // Show toast view
-            let toast = Toast.text("Bill Added")
+            let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Bill Added")
             toast.show(haptic: .success)
         } catch {
             print("Unable to bill the order - \(error)")
@@ -169,11 +173,29 @@ class OrderViewController: UIViewController {
             // Set tableView selection mode
             self.setSelection(true, animated: true)
         }
+        
+        let selectAllAction = UIAction(title: "Select All Orders", image: UIImage(systemName: "checkmark.rectangle.stack.fill")) { [weak self] action in
+            guard let self else { return }
+            print("Select All Order action")
+            // Set tableView selection mode
+            setSelection(true, animated: true)
+            selectAll()
+        }
+        
         // Create menu
-        let menu = UIMenu(children: [selectAction])
+        let menu = UIMenu(children: [selectAction, selectAllAction])
         quickMenuBarButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: menu)
         
         quickMenuBarButton.menu = menu
+    }
+    
+    private func selectAll() {
+        for row in 0..<tableView.numberOfRows(inSection: 0) {
+            let indexPath = IndexPath(row: row, section: 0)
+            let currentOrder = orderData[indexPath.row]
+            tableView.selectRow(at: indexPath, animated: true, scrollPosition: .bottom)
+            selectedOrders.append(currentOrder)
+        }
     }
     
     @objc private func doneBarButtonAction(_ sender: UIBarButtonItem) {
@@ -193,7 +215,8 @@ class OrderViewController: UIViewController {
             let orderService = OrderServiceImpl(databaseAccess: dataAccess)
             let results = try orderService.fetch()
             if let results {
-                orderData = results
+                let unbilledOrder = results.filter { $0.orderStatusValue != .completed }
+                orderData = unbilledOrder
             }
         } catch {
             print("Unable to load orders - \(error)")

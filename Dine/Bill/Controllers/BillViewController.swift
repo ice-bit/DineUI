@@ -19,12 +19,15 @@ class BillViewController: UIViewController, UITableViewDataSource {
         }
     }
     
+    private var filterBarButton: UIBarButtonItem!
+    
     // MARK: -View LifeCycle Methods
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
         view = tableView
         setupAppearance()
+        setupBarButton()
         loadBillData()
         NotificationCenter.default.addObserver(self, selector: #selector(billDidAdd(_:)), name: .billDidAddNotification, object: nil)
     }
@@ -44,6 +47,16 @@ class BillViewController: UIViewController, UITableViewDataSource {
     private func setupAppearance() {
         self.title = "Bills"
         navigationController?.navigationBar.prefersLargeTitles = true
+    }
+    
+    private func setupBarButton() {
+        filterBarButton = UIBarButtonItem(barButtonSystemItem: .organize, target: self, action: #selector(filterAction(_:)))
+        navigationItem.rightBarButtonItem = filterBarButton
+    }
+    
+    @objc private func filterAction(_ sender: UIBarButtonItem) {
+        print("Filter button tapped!")
+        
     }
     
     private func loadBillData() {
@@ -67,6 +80,7 @@ class BillViewController: UIViewController, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
         let item = billData[indexPath.row]
+        cell.selectionStyle = .none
         cell.contentConfiguration = UIHostingConfiguration {
             BillItem(billData: item)
         }

@@ -96,6 +96,7 @@
 		5548B6B42C0A50B5000E99C8 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6B32C0A50B5000E99C8 /* ToastView.swift */; };
 		5548B6B72C0B8DB1000E99C8 /* Notification+Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */; };
 		5548B6BA2C0EE27B000E99C8 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 5548B6B92C0EE27B000E99C8 /* Toast */; };
+		5548B6BC2C0F12DE000E99C8 /* MenuDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6BB2C0F12DE000E99C8 /* MenuDetailView.swift */; };
 		55F966692BF214C400557C92 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966682BF214C400557C92 /* DatabaseService.swift */; };
 		55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666A2BF3344B00557C92 /* QuantityButton.swift */; };
 		55F9666D2BF364D000557C92 /* MenuItemOrderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */; };
@@ -202,6 +203,7 @@
 		5548B6B02C09FA91000E99C8 /* MenuCartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCartView.swift; sourceTree = "<group>"; };
 		5548B6B32C0A50B5000E99C8 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Name.swift"; sourceTree = "<group>"; };
+		5548B6BB2C0F12DE000E99C8 /* MenuDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDetailView.swift; sourceTree = "<group>"; };
 		55F966682BF214C400557C92 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		55F9666A2BF3344B00557C92 /* QuantityButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityButton.swift; sourceTree = "<group>"; };
 		55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemOrderTableViewCell.swift; sourceTree = "<group>"; };
@@ -269,6 +271,7 @@
 				5524F56D2BEB3FFC003F500C /* MenuItemCell.swift */,
 				551AAE412BFF7C7300E50FE7 /* MenuItemRow.swift */,
 				5548B6B02C09FA91000E99C8 /* MenuCartView.swift */,
+				5548B6BB2C0F12DE000E99C8 /* MenuDetailView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -518,6 +521,7 @@
 		5548B69E2C045752000E99C8 /* Order */ = {
 			isa = PBXGroup;
 			children = (
+				5548B6BD2C0F37ED000E99C8 /* View */,
 				5548B69F2C04575B000E99C8 /* Controllers */,
 			);
 			path = Order;
@@ -579,6 +583,13 @@
 				5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */,
 			);
 			path = Notification;
+			sourceTree = "<group>";
+		};
+		5548B6BD2C0F37ED000E99C8 /* View */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = View;
 			sourceTree = "<group>";
 		};
 		55F9667E2BF7680400557C92 /* SwiftUI */ = {
@@ -720,6 +731,7 @@
 				552D37DE2BF1F4F0005B1D19 /* TableService.swift in Sources */,
 				552D38122BF1F5FE005B1D19 /* UserDefault.swift in Sources */,
 				552D38062BF1F5A0005B1D19 /* RestaurantController.swift in Sources */,
+				5548B6BC2C0F12DE000E99C8 /* MenuDetailView.swift in Sources */,
 				5524F54C2BE9E836003F500C /* AppDelegate.swift in Sources */,
 				55F9666D2BF364D000557C92 /* MenuItemOrderTableViewCell.swift in Sources */,
 				5548B6A42C04BA23000E99C8 /* ConfirmOrderViewController.swift in Sources */,

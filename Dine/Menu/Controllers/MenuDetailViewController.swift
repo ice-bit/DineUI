@@ -30,6 +30,7 @@ class MenuDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Item"
+        setupNavbar()
         setupSubview()
         configView()
     }
@@ -47,7 +48,14 @@ class MenuDetailViewController: UIViewController {
         setupConstraints()
     }
     
+    private func setupNavbar() {
+        let editBarButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonAction(_:)))
+        navigationItem.rightBarButtonItem = editBarButton
+    }
     
+    @objc private func editButtonAction(_ sender: UIBarButtonItem) {
+        
+    }
     
     private func setupMenuImage() {
         itemImageView = UIImageView()

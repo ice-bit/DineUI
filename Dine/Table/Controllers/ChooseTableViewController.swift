@@ -38,6 +38,20 @@ class ChooseTableViewController: UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(didSelectTable(_:)), name: .tableSelectionNotification, object: nil)
     }
     
+    private func setupNoTablesView() {
+        let errorLabel = UILabel()
+        view.addSubview(errorLabel)
+        errorLabel.text = "No tables Available"
+        errorLabel.font = .systemFont(ofSize: 24, weight: .medium)
+        errorLabel.textColor = .systemGray3
+        errorLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            errorLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            errorLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+        ])
+    }
+    
     @objc private func didSelectTable(_ sender: NotificationCenter) {
         print(#function)
         
@@ -54,14 +68,32 @@ class ChooseTableViewController: UIViewController {
             handleDatabaseError(error)
         }
     }
+    
+    func isTablesAvailable() -> Bool {
+        do {
+            let databaseAccess = try SQLiteDataAccess.openDatabase()
+            let tableService = TableServiceImpl(databaseAccess: databaseAccess)
+            if let results = try tableService.fetch() {
+                let availableTables = results.filter { $0.tableStatus == .free }
+                if !availableTables.isEmpty {
+                    return true
+                }
+            }
+            return false
+        } catch {
+            handleDatabaseError(error)
+            return false
+        }
+    }
 
     private func fetchTables(using tableService: TableService) throws {
-        guard let result = try tableService.fetch() else {
+        guard let results = try tableService.fetch() else {
             print("No `RestaurantTable` records found in the database.")
             return
         }
+        let availableTables = results.filter { $0.tableStatus == .free }
         // Process the result here if needed
-        tableData = result
+        tableData = availableTables
     }
 
     private func handleDatabaseError(_ error: Error) {
@@ -115,7 +147,7 @@ class ChooseTableViewController: UIViewController {
                 NotificationCenter.default.post(name: .didAddNewOrderNotification, object: nil)
                 self.dismiss(animated: true) {
                     // Show toast after completion
-                    let toast = Toast.text("New Order Created")
+                    let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Order Added")
                     toast.show(haptic: .success)
                 }
             }

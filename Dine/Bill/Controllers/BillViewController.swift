@@ -132,7 +132,7 @@ extension BillViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let billSection = BillSection(rawValue: section) else { return nil }
+        guard let billSection = BillSection(rawValue: section) else { return nil   }
         return billSection.title
     }
 }

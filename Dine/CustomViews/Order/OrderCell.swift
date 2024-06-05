@@ -13,7 +13,6 @@ class OrderCell: UITableViewCell {
     
     private lazy var containerView: UIView = {
         let view = UIView()
-        view.backgroundColor = UIColor(red: 1, green: 0.643, blue: 0.000, alpha: 0.75) // faded yellow
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 10
         return view
@@ -35,18 +34,9 @@ class OrderCell: UITableViewCell {
         return label
     }()
     
-    private lazy var overlayContainerView: UIView = {
-        let view = UIView()
-        view.backgroundColor = .app
-        view.layer.cornerRadius = 10
-        view.layer.maskedCorners = [.layerMaxXMinYCorner, .layerMaxXMaxYCorner]
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
     private lazy var orderIDLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 8)
+        label.font = .systemFont(ofSize: 12)
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -54,7 +44,7 @@ class OrderCell: UITableViewCell {
     
     private lazy var tableIDLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 8)
+        label.font = .systemFont(ofSize: 12)
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -62,7 +52,7 @@ class OrderCell: UITableViewCell {
     
     private lazy var dateLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 10)
+        label.font = .systemFont(ofSize: 12)
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -70,10 +60,18 @@ class OrderCell: UITableViewCell {
     
     private lazy var billStatusLabel: UILabel = {
         let label = UILabel()
-        label.font = .systemFont(ofSize: 10)
+        label.font = .systemFont(ofSize: 12)
         label.textColor = .black
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
+    }()
+    
+    private lazy var vStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .vertical
+        stackView.layer.cornerRadius = 20
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
     }()
     
 
@@ -97,50 +95,67 @@ class OrderCell: UITableViewCell {
     
     private func setupSubViews() {
         contentView.addSubview(containerView)
-        containerView.addSubview(overlayContainerView)
-        containerView.addSubview(statusLabel)
-        containerView.addSubview(itemCountLabel)
-        overlayContainerView.addSubview(orderIDLabel)
-        overlayContainerView.addSubview(tableIDLabel)
-        overlayContainerView.addSubview(dateLabel)
-        overlayContainerView.addSubview(billStatusLabel)
+
+        let footerVStackView = UIStackView()
+        footerVStackView.backgroundColor = .app
+        footerVStackView.axis = .vertical
+        footerVStackView.alignment = .center
+        footerVStackView.distribution = .fillEqually
+        footerVStackView.layer.cornerRadius = 10
+        footerVStackView.layer.maskedCorners = [.layerMinXMaxYCorner, .layerMaxXMaxYCorner]
+        footerVStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let headerHStackView = UIStackView()
+        headerHStackView.backgroundColor = UIColor(red: 1, green: 0.643, blue: 0.000, alpha: 0.85) // faded yellow
+        headerHStackView.axis = .horizontal
+        headerHStackView.layer.cornerRadius = 10
+        headerHStackView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+        headerHStackView.distribution = .fillEqually
+        headerHStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        containerView.addSubview(vStackView)
+        vStackView.addArrangedSubview(headerHStackView)
+        vStackView.addArrangedSubview(footerVStackView)
+        
+        let headerLeadingVStackView = UIStackView()
+        headerLeadingVStackView.axis = .vertical
+        headerLeadingVStackView.distribution = .fillEqually
+        headerLeadingVStackView.alignment = .center
+        headerLeadingVStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        let headerTrailingVStackView = UIStackView()
+        headerTrailingVStackView.axis = .vertical
+        headerTrailingVStackView.distribution = .fillEqually
+        headerTrailingVStackView.alignment = .center
+        headerTrailingVStackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        headerHStackView.addArrangedSubview(headerLeadingVStackView)
+        headerHStackView.addArrangedSubview(headerTrailingVStackView)
+        
+        headerLeadingVStackView.addArrangedSubview(itemCountLabel)
+        headerLeadingVStackView.addArrangedSubview(statusLabel)
+        
+        headerTrailingVStackView.addArrangedSubview(dateLabel)
+        headerTrailingVStackView.addArrangedSubview(billStatusLabel)
+        
+        footerVStackView.addArrangedSubview(orderIDLabel)
+        footerVStackView.addArrangedSubview(tableIDLabel)
+        
         
         NSLayoutConstraint.activate([
-            // containerView constraints
-            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
-            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
-            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 5),
-            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -5),
-            // overlayContainerView constraints
-            overlayContainerView.topAnchor.constraint(equalTo: containerView.topAnchor),
-            overlayContainerView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor),
-            overlayContainerView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
-            overlayContainerView.widthAnchor.constraint(equalTo: containerView.widthAnchor, multiplier: 0.8),
-            // statusLabel constraints
-            statusLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            statusLabel.topAnchor.constraint(equalTo: containerView.topAnchor, constant:12),
-            statusLabel.trailingAnchor.constraint(equalTo: overlayContainerView.leadingAnchor, constant: -4),
             
-            // itemCountLabel constraints
-            itemCountLabel.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 8),
-            itemCountLabel.bottomAnchor.constraint(equalTo: containerView.bottomAnchor, constant: -8),
-            itemCountLabel.trailingAnchor.constraint(equalTo: overlayContainerView.leadingAnchor, constant: -4),
-            itemCountLabel.heightAnchor.constraint(equalToConstant: 22),
-            // orderIDLabel constriants
-            orderIDLabel.leadingAnchor.constraint(equalTo: overlayContainerView.leadingAnchor, constant: 8),
-            orderIDLabel.topAnchor.constraint(equalTo: overlayContainerView.topAnchor, constant: 12),
-//            orderIDLabel.trailingAnchor.constraint(equalTo: dateLabel.leadingAnchor, constant: -4),
-            // tableIDLabel Constraints
-            tableIDLabel.leadingAnchor.constraint(equalTo: overlayContainerView.leadingAnchor, constant: 8),
-            tableIDLabel.bottomAnchor.constraint(equalTo: overlayContainerView.bottomAnchor, constant: -8),
-//            tableIDLabel.trailingAnchor.constraint(equalTo: billStatusLabel.leadingAnchor, constant: -4),
-            // dateLabel constraints
-            dateLabel.topAnchor.constraint(equalTo: overlayContainerView.topAnchor, constant: 12),
-            dateLabel.trailingAnchor.constraint(equalTo: overlayContainerView.trailingAnchor, constant: -4),
-            // billStatusLabel constraints
-            billStatusLabel.bottomAnchor.constraint(equalTo: overlayContainerView.bottomAnchor, constant: -4),
-            billStatusLabel.trailingAnchor.constraint(equalTo: overlayContainerView.trailingAnchor, constant: -4),
-            billStatusLabel.heightAnchor.constraint(equalToConstant: 22)
+            // New Constraints
+            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
+            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+            
+            vStackView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 14),
+            vStackView.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -14),
+            vStackView.topAnchor.constraint(equalTo: containerView.topAnchor),
+            vStackView.bottomAnchor.constraint(equalTo: containerView.bottomAnchor),
+            
+            footerVStackView.heightAnchor.constraint(equalTo: vStackView.heightAnchor, multiplier: 0.4),
         ])
     }
     
@@ -150,10 +165,14 @@ class OrderCell: UITableViewCell {
         orderIDLabel.text = /*orderID.uuidString*/order.orderIdValue.uuidString
         tableIDLabel.text = order.tableIDValue.uuidString
         
-        dateLabel.text = Date().formatted()
+        dateLabel.text = Date().formattedDateString()
         billStatusLabel.text = "Unbilled"
     }
-    
-    
-    
+}
+
+#Preview {
+    let cell = OrderCell()
+    let order = Order(tableId: UUID(), orderStatus: .completed, menuItems: [])
+    cell.configureCell(with: order)
+    return cell
 }

@@ -128,7 +128,34 @@ class OrderViewController: UIViewController {
     }
     
     @objc private func deleteButtonAction(_ sender: UIBarButtonItem) {
-        print("Delete orders")
+        deleteSelectedOrders()
+    }
+    
+    private func deleteSelectedOrders() {
+        do {
+            let databaseAccess = try SQLiteDataAccess.openDatabase()
+            let orderService = OrderServiceImpl(databaseAccess: databaseAccess)
+            let tableService = TableServiceImpl(databaseAccess: databaseAccess)
+            guard let tablesResult = try tableService.fetch() else { throw DatabaseError.fetchFailed }
+            for order in selectedOrders {
+                guard let orderIndex = orderData.firstIndex(where: { $0.isOrderBilledValue == order.isOrderBilledValue }) else { return }
+                guard let tableIndex = tablesResult.firstIndex(where: { $0.tableId == order.tableIDValue}) else { return }
+                let table = tablesResult[tableIndex]
+                table.changeTableStatus(to: .free)
+                try tableService.update(table)
+                
+                try orderService.delete(order)
+                orderData.remove(at: orderIndex)
+                
+                let toastView = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "Bills Deleted")
+                toastView.show(haptic: .success)
+                
+                setSelection(false, animated: true)
+                tableView.reloadData()
+            }
+        } catch {
+             print("Unable to delete order - \(error)")
+        }
     }
     
     private func setupTableView() {

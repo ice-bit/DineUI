@@ -13,6 +13,7 @@ enum DatabaseError: Error {
     case dataInsertionFailed(reason: String)
     case missingRequiredValue
     case conversionFailed
+    case fetchFailed
 
     var localizedDescription: String {
         switch self {
@@ -26,6 +27,8 @@ enum DatabaseError: Error {
             return "Required value missing"
         case .conversionFailed:
             return "Conversion from cString failed"
+        case .fetchFailed:
+            return "Failed to fetch table"
         }
     }
 }

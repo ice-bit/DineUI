@@ -138,18 +138,21 @@ class ChooseTableViewController: UIViewController {
     
     @objc private func confirmButtonAction(_ sender: UIBarButtonItem) {
         do {
+            guard let selectedTable else {
+                let toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: "Failed", subtitle: "Please select a table")
+                toast.show(haptic: .error)
+                return
+            }
             let dataAccess = try SQLiteDataAccess.openDatabase()
             let orderService = OrderServiceImpl(databaseAccess: dataAccess)
             let tableService = TableServiceImpl(databaseAccess: dataAccess)
             let orderController = OrderController(orderService: orderService, tableService: tableService)
-            if let selectedTable {
-                try orderController.createOrder(for: selectedTable, menuItems: selectedMenuItems)
-                NotificationCenter.default.post(name: .didAddNewOrderNotification, object: nil)
-                self.dismiss(animated: true) {
-                    // Show toast after completion
-                    let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Order Added")
-                    toast.show(haptic: .success)
-                }
+            try orderController.createOrder(for: selectedTable, menuItems: selectedMenuItems)
+            NotificationCenter.default.post(name: .didAddNewOrderNotification, object: nil)
+            self.dismiss(animated: true) {
+                // Show toast after completion
+                let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Order Added")
+                toast.show(haptic: .success)
             }
         } catch {
             print("Unable to create order - \(error)")

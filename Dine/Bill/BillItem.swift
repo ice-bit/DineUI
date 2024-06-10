@@ -17,7 +17,7 @@ struct BillItem: View {
                     .font(.title3)
                     .padding(.bottom, 5)
                 
-                Text("Items _")
+                Text("Items 􀓔")
                     .font(.caption)
             }
             .padding()

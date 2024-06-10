@@ -38,6 +38,10 @@ class BillViewController: UIViewController {
         [.today: todaysBills, .yesterday: yesterdaysBills, .previous: previousBills]
     }
     
+    private var nonEmptySection: [BillSection] {
+        BillSection.allCases.filter { tableViewData[$0]?.isEmpty == false }
+    }
+    
     
     private var filterBarButton: UIBarButtonItem!
     
@@ -111,18 +115,19 @@ class BillViewController: UIViewController {
 }
 
 extension BillViewController: UITableViewDataSource, UITableViewDelegate {
+    
     func numberOfSections(in tableView: UITableView) -> Int {
-        BillSection.allCases.count
+        nonEmptySection.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        guard let billSection = BillSection(rawValue: section) else { return 0 }
+        let billSection = nonEmptySection[section]
         return tableViewData[billSection]?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
-        guard let billSection = BillSection(rawValue: indexPath.section) else { return cell }
+        let billSection = nonEmptySection[indexPath.section]
         guard let bill = tableViewData[billSection]?[indexPath.row] else { return cell }
         cell.selectionStyle = .none
         cell.contentConfiguration = UIHostingConfiguration {
@@ -132,9 +137,16 @@ extension BillViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        guard let billSection = BillSection(rawValue: section) else { return nil   }
+        let billSection = nonEmptySection[section]
         return billSection.title
     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let customBillVC = CustomBillViewController()
+        customBillVC.modalPresentationStyle = .popover
+        present(customBillVC, animated: true)
+    }
+    
 }
 
 #Preview  {

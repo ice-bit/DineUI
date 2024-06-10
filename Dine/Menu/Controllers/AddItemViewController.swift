@@ -49,6 +49,12 @@ class AddItemViewController: UIViewController {
         pickerView.dataSource = self
         
         alert.view.addSubview(pickerView)
+        // Configure popover presentation for iPad
+        if let popoverPresentationController = alert.popoverPresentationController {
+            popoverPresentationController.sourceView = self.view
+            popoverPresentationController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0)
+            popoverPresentationController.permittedArrowDirections = []
+        }
         
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { _ in

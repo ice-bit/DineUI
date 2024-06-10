@@ -49,7 +49,11 @@ class AddItemViewController: UIViewController {
         pickerView.dataSource = self
         
         alert.view.addSubview(pickerView)
-        
+        if let popoverController = alert.popoverPresentationController {
+            popoverController.sourceView = self.view // Specify the view from which the popover should originate
+            popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0) // Set the rectangle for the popover
+            popoverController.permittedArrowDirections = [] // Optional: specify allowed arrow directions
+        }
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
         alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { _ in
             let selectedIndex = self.pickerView.selectedRow(inComponent: 0)

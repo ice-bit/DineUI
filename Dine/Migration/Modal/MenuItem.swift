@@ -21,6 +21,7 @@ class MenuItem {
     var name: String
     var price: Double
     let menuSection: MenuSection
+    var count: Int = 0
     
     init(itemId: UUID, name: String, price: Double, menuSection: MenuSection) {
         self.itemId = itemId

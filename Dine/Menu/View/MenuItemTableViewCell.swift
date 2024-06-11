@@ -16,21 +16,18 @@ class MenuItemTableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "MenuItemTableViewCell"
     weak var delegate: MenuItemTableViewCellDelegate?
-    var menuItem: MenuItem?
-    // For tracking the count
-    private var _itemCount: Int = 0 {
+    var menuItem: MenuItem? {
         didSet {
-            if _itemCount != 0 {
-                itemCountLabel.isHidden = false
-                itemCountLabel.text = String(_itemCount)
-            } else {
-                itemCountLabel.isHidden = true
-            }
+            
         }
     }
-    
-    var itemCount: Int {
-        _itemCount
+    // For tracking the count
+    private var itemCount: Int = 0 {
+        didSet {
+            itemCountLabel.text = String(itemCount)
+            itemCountLabel.isHidden = itemCount == 0
+            stepper.value = Double(itemCount)
+        }
     }
     
     private lazy var itemImage: UIImageView = {
@@ -145,9 +142,11 @@ class MenuItemTableViewCell: UITableViewCell {
         let selectionFeedback = UISelectionFeedbackGenerator()
         selectionFeedback.prepare()
         selectionFeedback.selectionChanged()
-        _itemCount = Int(stepper.value)
+        
+        itemCount = Int(stepper.value)
+        menuItem?.count = itemCount
         if let menuItem {
-            delegate?.menuTableViewCell(self, didChangeItemCount: _itemCount, for: menuItem)
+            delegate?.menuTableViewCell(self, didChangeItemCount: itemCount, for: menuItem)
         }
     }
     
@@ -195,6 +194,12 @@ class MenuItemTableViewCell: UITableViewCell {
         let priceString = String(format: "%.2f", menuItem.price)
         priceLabel.text = "$ \(priceString)"
         secTitleLabel.text = "lorem ipsum save time"
+        itemCount = menuItem.count
+    }
+    
+    private func configureMenuItem() {
+        guard let menuItem else { return }
+        itemCount = menuItem.count
     }
 
 }

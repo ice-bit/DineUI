@@ -154,6 +154,7 @@ class AddToCartViewController: UIViewController {
     }
 }
 
+// MARK: - TableView built-in methods
 extension AddToCartViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         isFiltering ? filteredItems.count : menuItems.count
@@ -201,13 +202,20 @@ extension AddToCartViewController: MenuItemTableViewCellDelegate {
         // Remove the key if the count is zero.
         if count > 0 {
             menuItemCart[menuItem] = count
-            // Update the cart view to reflect the new count of items
-            let totalItemCount = menuItemCart.values.reduce(0, +)
-            menuCartView.setItemCount(totalItemCount)
         } else {
             // Remove the menuItem if the count is 0
             menuItemCart.removeValue(forKey: menuItem)
         }
+        // Note - Ensure the MenuItem count is updated
+        if let index = menuItems.firstIndex(where: { $0 == menuItem }) {
+            menuItems[index].count = count
+        }
+        
+        if let index = filteredItems.firstIndex(where: { $0 == menuItem }) {
+            filteredItems[index].count = count
+        }
+        
+        menuCartView.setItemCount(menuItemCart.values.reduce(0, +))
         
         for (item, count) in menuItemCart {
             print("\(item.name) - \(count)")

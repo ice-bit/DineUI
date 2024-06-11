@@ -13,6 +13,7 @@ class OrderViewController: UIViewController {
     private let menuService: MenuService
     
     private var tableView: UITableView!
+    private var placeholderLabel: UILabel!
     
     // BarButtons
     private var addBarButton: UIBarButtonItem!
@@ -24,8 +25,11 @@ class OrderViewController: UIViewController {
     
     private var orderData: [Order] = [] {
         didSet {
-//            loadOrderData()
-            tableView.reloadData()
+            if !orderData.isEmpty {
+                quickMenuBarButton.isHidden = false
+            } else {
+                quickMenuBarButton.isHidden = true
+            }
         }
     }
     
@@ -55,10 +59,8 @@ class OrderViewController: UIViewController {
         super.viewDidLoad()
         setupAppearance()
         setupNavigationBar()
-        setupTableView()
-        view = tableView
-        setupToolbar()
         loadOrderData()
+        setupToolbar()
         NotificationCenter.default.addObserver(self, selector: #selector(didAddOrder(_:)), name: .didAddNewOrderNotification, object: nil)
     }
     
@@ -244,10 +246,32 @@ class OrderViewController: UIViewController {
             if let results {
                 let unbilledOrder = results.filter { $0.orderStatusValue != .completed }
                 orderData = unbilledOrder
+                if !orderData.isEmpty {
+                    // Setup table view
+                    setupTableView()
+                    view = tableView
+                } else {
+                    setupEmptyDataLabel()
+                }
             }
         } catch {
             print("Unable to load orders - \(error)")
         }
+        
+    }
+    
+    private func setupEmptyDataLabel() {
+        placeholderLabel = UILabel()
+        view.addSubview(placeholderLabel)
+        placeholderLabel.text = "Add Orders to Continue"
+        placeholderLabel.textColor = .systemGray3
+        placeholderLabel.font = .preferredFont(forTextStyle: .title1)
+        placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        
+        NSLayoutConstraint.activate([
+            placeholderLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
+            placeholderLabel.centerYAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerYAnchor)
+        ])
     }
     
     private func setupAppearance() {

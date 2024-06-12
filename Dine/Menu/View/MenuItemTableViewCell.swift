@@ -107,7 +107,6 @@ class MenuItemTableViewCell: UITableViewCell {
         let label = UILabel()
         label.font = .systemFont(ofSize: 14, weight: .medium)
         label.isHidden = true // Initially is it hidden
-        label.backgroundColor = .systemBackground
         label.textAlignment = .center
         label.layer.cornerRadius = 5
         label.layer.masksToBounds = true
@@ -153,7 +152,7 @@ class MenuItemTableViewCell: UITableViewCell {
     // MARK: - View Setup
     private func setupSubviews() {
         contentView.addSubview(wrapperView)
-        contentView.addSubview(itemCountLabel)
+        stepper.addSubview(itemCountLabel)
         
         wrapperView.addSubview(hStackView)
         hStackView.addArrangedSubview(itemImage)
@@ -178,11 +177,11 @@ class MenuItemTableViewCell: UITableViewCell {
             hStackView.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor, constant: -12),
             hStackView.topAnchor.constraint(equalTo: wrapperView.topAnchor, constant: 12),
             hStackView.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor, constant: -12),
-            
-            itemCountLabel.leadingAnchor.constraint(equalTo: itemImage.leadingAnchor, constant: -4),
-            itemCountLabel.topAnchor.constraint(equalTo: itemImage.topAnchor, constant: -4),
+
             itemCountLabel.heightAnchor.constraint(equalToConstant: 20),
             itemCountLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 20),
+            itemCountLabel.centerXAnchor.constraint(equalTo: stepper.centerXAnchor),
+            itemCountLabel.centerYAnchor.constraint(equalTo: stepper.centerYAnchor)
         ])
     }
     

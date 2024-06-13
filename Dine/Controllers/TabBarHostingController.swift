@@ -5,9 +5,8 @@
 //  Created by doss-zstch1212 on 07/05/24.
 //
 
-/// file:///Users/doss-zstch1212/Library/Developer/CoreSimulator/Devices/577868CC-D185-4E22-A9D5-8CC5C04C3B10/data/Containers/Data/Application/A4E807C9-9E80-46D3-8B57-7B14A23B5E6A/Documents/dine.sqlite
-
 import UIKit
+import SwiftUI
 
 class TabBarHostingController: UITabBarController {
 
@@ -64,8 +63,11 @@ class TabBarHostingController: UITabBarController {
         let tableNavigationController = UINavigationController(rootViewController: tableViewController)
         let menuNavigationController = UINavigationController(rootViewController: menuSectionViewController)
         
+        let settingHostVC = UIHostingController(rootView: SettingsView(profile: .default))
+        settingHostVC.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: "gear"), selectedImage: UIImage(systemName: "gear.circle"))
         
-        let viewControllers = [orderNavigationController, billNavigationController, tableNavigationController, menuNavigationController]
+        
+        let viewControllers = [orderNavigationController, billNavigationController, tableNavigationController, menuNavigationController, settingHostVC]
         self.viewControllers = viewControllers
         hidesBottomBarWhenPushed = false
         

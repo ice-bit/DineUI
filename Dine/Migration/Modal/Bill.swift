@@ -18,7 +18,7 @@ class Bill {
     var date: Date
     private var tip: Double
     private var tax: Double
-    private var isPaid: Bool
+    var isPaid: Bool
     
     var billId: UUID {
         return _billId

@@ -140,6 +140,8 @@ struct SettingsView: View {
                         
                         Button(action: {
                             print("Log out action")
+                            UserDefaults.standard.set(false, forKey: "isUserLoggedIn")
+                            RootViewManager.didLoggedOutSuccessfully()
                         }, label: {
                             Text("Log out")
                                 .foregroundStyle(.red)

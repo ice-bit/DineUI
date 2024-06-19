@@ -1,14 +1,14 @@
 //
-//  BillItem.swift
+//  MenuCellView.swift
 //  Dine
 //
-//  Created by doss-zstch1212 on 22/05/24.
+//  Created by doss-zstch1212 on 17/06/24.
 //
 
 import SwiftUI
 
-struct BillItem: View {
-    var billData: Bill
+struct MenuCellView: View {
+    var order: Order
     
     var body: some View {
         HStack {
@@ -17,7 +17,7 @@ struct BillItem: View {
                     .font(.title3)
                     .padding(.bottom, 5)
                 
-                Text("Items _")
+                Text("Items \(order.menuItems.count)")
                     .font(.caption)
             }
             .padding()
@@ -30,13 +30,13 @@ struct BillItem: View {
             
             VStack(alignment: .leading) {
                 HStack {
-                    Label(billData.paymentStatus.rawValue, systemImage: billData.isPaid ? "checkmark.circle.fill" : "multiply.circle.fill")
-                        .font(.subheadline)
+                    Label(order.orderStatusValue.rawValue, systemImage: "circle.dashed.inset.fill")
+                        /*.font(.subheadline)*/ // While the tableView is in editing mode this label will truncate!
                         .foregroundStyle(.primary)
                     
                     Spacer()
                     
-                    Text(billData.date, style: .date)
+                    Text(order.getDate, style: .date)
                         .font(.caption2)
                     
                     Image(systemName: "chevron.right")
@@ -45,7 +45,7 @@ struct BillItem: View {
                 }
                 .padding(.bottom, 8)
                 
-                Text(billData.billId.uuidString)
+                Text(order.orderIdValue.uuidString)
                     .font(.caption2)
                     .padding(.trailing)
             }
@@ -57,7 +57,6 @@ struct BillItem: View {
 }
 
 #Preview {
-    let billData = Bill(amount: 30, tip: 9, tax: 89, isPaid: true)
-    
-    return BillItem(billData: billData)
+    let order = Order(tableId: UUID(), orderStatus: .received, menuItems: ModelData().menuItems)
+    return MenuCellView(order: order)
 }

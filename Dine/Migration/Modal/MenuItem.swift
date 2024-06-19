@@ -8,7 +8,7 @@
 import Foundation
 import SQLite3
 
-enum MenuSection: String {
+enum MenuSection: String, Codable {
     case starter = "Starters"
     case mainCourse = "Main Course"
     case side = "Side"
@@ -16,7 +16,7 @@ enum MenuSection: String {
     case beverages = "Beverages"
 }
 
-class MenuItem {
+class MenuItem: Codable {
     let itemId: UUID
     var name: String
     var price: Double

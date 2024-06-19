@@ -68,7 +68,12 @@ class BillViewController: UIViewController {
         loadBillData()
         
         // Register for notification when a bill is added
-        NotificationCenter.default.addObserver(self, selector: #selector(billDidAdd(_:)), name: .billDidAddNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(billDidAdd(_:)),
+            name: .billDidAddNotification,
+            object: nil
+        )
     }
     
     @objc private func billDidAdd(_ sender: Notification) {
@@ -124,7 +129,12 @@ class BillViewController: UIViewController {
     
     // Setup filter bar button
     private func setupBarButton() {
-        filterBarButton = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal.decrease.circle"), style: .plain, target: self, action: #selector(filterAction(_:)))
+        filterBarButton = UIBarButtonItem(
+            image: UIImage(systemName: "line.3.horizontal.decrease.circle"),
+            style: .plain,
+            target: self,
+            action: #selector(filterAction(_:))
+        )
         navigationItem.rightBarButtonItem = filterBarButton
     }
     

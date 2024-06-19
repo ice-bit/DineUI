@@ -80,6 +80,15 @@ class LoginViewController: UIViewController {
         setupSignUpLabelGesture()
         view.backgroundColor = .systemBackground
         title = "Login"
+        
+        let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
+        //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
+        // tap.cancelsTouchesInView = false
+        view.addGestureRecognizer(tap)
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
     }
     
     @objc private func loginButtonAction(_ sender: UIButton) {

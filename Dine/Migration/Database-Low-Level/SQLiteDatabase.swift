@@ -117,6 +117,14 @@ class SQLiteDatabase {
         return results
     }
     
+    /// Deletes a row from the database based on the provided `SQLDeletable` item.
+    ///
+    /// - Parameter item: An object conforming to the `SQLDeletable` protocol, which provides the SQL delete statement.
+    /// - Throws: An error of type `SQLiteError` if the delete operation fails.
+    ///
+    /// - Note: This is a very sensitive action. Ensure that the `createDeleteStatement` provided by the `item` includes a
+    ///   condition (e.g., WHERE clause) to specify which row(s) to delete. If no condition is provided, this method
+    ///   will delete the entire table, resulting in potential data loss.
     func delete(item: SQLDeletable) throws {
         let deleteStatement = try prepareStatement(sql: item.createDeleteStatement)
         defer {
@@ -128,9 +136,18 @@ class SQLiteDatabase {
         print("Successfully delete row.")
     }
     
+    /// Deletes rows from the specified table based on the provided condition.
+    ///
+    /// - Parameters:
+    ///   - tableName: The name of the table from which rows should be deleted.
+    ///   - condition: An optional condition to specify which rows to delete. If no condition is provided, all rows in the table will be deleted.
+    /// - Throws: An error of type `SQLiteError` if the delete operation fails.
+    ///
+    /// - Note: This is a very sensitive action. Ensure that the `condition` is provided to specify which row(s) to delete.
+    ///   If no condition is provided, this method will delete all rows in the table, resulting in potential data loss.
     func delete(from tableName: String, where condition: String? = nil) throws {
         var query = "DELETE FROM \(tableName) "
-        if let condition = condition {
+        if let condition {
             query += "WHERE \(condition)"
         }
         query += ";"

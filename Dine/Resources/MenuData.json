@@ -1,0 +1,87 @@
+[
+    {
+        "itemId": "AE8F1C7C-2B73-4112-8A4F-2558F57B60D9",
+        "name": "Caesar Salad",
+        "price": 5.99,
+        "menuSection": "Starters",
+        "count": 10
+    },
+    {
+        "itemId": "BB4D62B3-6F94-42AF-B1B7-3FF8C6BFA545",
+        "name": "Grilled Chicken",
+        "price": 12.49,
+        "menuSection": "Main Course",
+        "count": 15
+    },
+    {
+        "itemId": "CD1D3AE6-3B1A-4B0D-8F70-8B8D1E1DE9D8",
+        "name": "French Fries",
+        "price": 3.99,
+        "menuSection": "Side",
+        "count": 20
+    },
+    {
+        "itemId": "DE53A179-3070-4BC2-B9A4-1E1A84A8B726",
+        "name": "Chocolate Cake",
+        "price": 4.99,
+        "menuSection": "Desserts",
+        "count": 8
+    },
+    {
+        "itemId": "EA7D89D4-1F3A-43D6-82AD-FD06B9A89672",
+        "name": "Coca-Cola",
+        "price": 1.99,
+        "menuSection": "Beverages",
+        "count": 50
+    },
+    {
+        "itemId": "DE53A179-3070-4BC2-B9A4-1E1A84A8B726",
+        "name": "Chocolate Cake",
+        "price": 4.99,
+        "menuSection": "Desserts",
+        "count": 8
+    },
+    {
+        "itemId": "DE53A179-3070-4BC2-B9A4-1E1A84A8B726",
+        "name": "Chocolate Cake",
+        "price": 4.99,
+        "menuSection": "Desserts",
+        "count": 8
+    },
+    {
+        "itemId": "BB4D62B3-6F94-42AF-B1B7-3FF8C6BFA545",
+        "name": "Grilled Chicken",
+        "price": 12.49,
+        "menuSection": "Main Course",
+        "count": 15
+    },
+    {
+        "itemId": "BB4D62B3-6F94-42AF-B1B7-3FF8C6BFA545",
+        "name": "Grilled Chicken",
+        "price": 12.49,
+        "menuSection": "Main Course",
+        "count": 15
+    },
+    {
+        "itemId": "DE53A179-3070-4BC2-B9A4-1E1A84A8B726",
+        "name": "Chocolate Cake",
+        "price": 4.99,
+        "menuSection": "Desserts",
+        "count": 8
+    },
+    {
+        "itemId": "DE53A179-3070-4BC2-B9A4-1E1A84A8B726",
+        "name": "Chocolate Cake",
+        "price": 4.99,
+        "menuSection": "Desserts",
+        "count": 8
+    },
+    {
+        "itemId": "DE53A179-3070-4BC2-B9A4-1E1A84A8B726",
+        "name": "Chocolate Cake",
+        "price": 4.99,
+        "menuSection": "Desserts",
+        "count": 8
+    }
+]
+ 

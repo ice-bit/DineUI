@@ -97,9 +97,18 @@
 		5548B6B72C0B8DB1000E99C8 /* Notification+Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */; };
 		5548B6BA2C0EE27B000E99C8 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 5548B6B92C0EE27B000E99C8 /* Toast */; };
 		5548B6BC2C0F12DE000E99C8 /* MenuDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6BB2C0F12DE000E99C8 /* MenuDetailView.swift */; };
+		557B5CA42C2057F9004E5C49 /* BillDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CA32C2057F9004E5C49 /* BillDetailViewController.swift */; };
+		557B5CA62C206EA8004E5C49 /* MenuCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CA52C206EA8004E5C49 /* MenuCellView.swift */; };
+		557B5CA92C215219004E5C49 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CA82C215219004E5C49 /* SignUpViewController.swift */; };
+		557B5CAC2C21522F004E5C49 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CAB2C21522F004E5C49 /* LoginViewController.swift */; };
+		557B5CAE2C2191CC004E5C49 /* UIWindow+setRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CAD2C2191CC004E5C49 /* UIWindow+setRootViewController.swift */; };
+		557B5CB02C21B633004E5C49 /* RootViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CAF2C21B633004E5C49 /* RootViewManager.swift */; };
 		5590DEEF2C1ABF6A007E1F75 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEEE2C1ABF6A007E1F75 /* SettingsView.swift */; };
 		5590DEF22C1B1170007E1F75 /* ProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF12C1B1170007E1F75 /* ProfileEditor.swift */; };
 		5590DEF42C1B11D6007E1F75 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF32C1B11D6007E1F75 /* Profile.swift */; };
+		5590DEF82C1B2134007E1F75 /* CustomBillDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF72C1B2134007E1F75 /* CustomBillDetailViewController.swift */; };
+		5590DEFA2C1C131A007E1F75 /* OrderDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF92C1C131A007E1F75 /* OrderDetailViewController.swift */; };
+		5590DEFC2C1C5434007E1F75 /* PlainMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */; };
 		55F966692BF214C400557C92 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966682BF214C400557C92 /* DatabaseService.swift */; };
 		55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666A2BF3344B00557C92 /* QuantityButton.swift */; };
 		55F9666D2BF364D000557C92 /* MenuItemOrderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */; };
@@ -207,9 +216,18 @@
 		5548B6B32C0A50B5000E99C8 /* ToastView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ToastView.swift; sourceTree = "<group>"; };
 		5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Name.swift"; sourceTree = "<group>"; };
 		5548B6BB2C0F12DE000E99C8 /* MenuDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDetailView.swift; sourceTree = "<group>"; };
+		557B5CA32C2057F9004E5C49 /* BillDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillDetailViewController.swift; sourceTree = "<group>"; };
+		557B5CA52C206EA8004E5C49 /* MenuCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCellView.swift; sourceTree = "<group>"; };
+		557B5CA82C215219004E5C49 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
+		557B5CAB2C21522F004E5C49 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
+		557B5CAD2C2191CC004E5C49 /* UIWindow+setRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+setRootViewController.swift"; sourceTree = "<group>"; };
+		557B5CAF2C21B633004E5C49 /* RootViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewManager.swift; sourceTree = "<group>"; };
 		5590DEEE2C1ABF6A007E1F75 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5590DEF12C1B1170007E1F75 /* ProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileEditor.swift; sourceTree = "<group>"; };
 		5590DEF32C1B11D6007E1F75 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
+		5590DEF72C1B2134007E1F75 /* CustomBillDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBillDetailViewController.swift; sourceTree = "<group>"; };
+		5590DEF92C1C131A007E1F75 /* OrderDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailViewController.swift; sourceTree = "<group>"; };
+		5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainMenuItemView.swift; sourceTree = "<group>"; };
 		55F966682BF214C400557C92 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		55F9666A2BF3344B00557C92 /* QuantityButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityButton.swift; sourceTree = "<group>"; };
 		55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemOrderTableViewCell.swift; sourceTree = "<group>"; };
@@ -309,6 +327,7 @@
 		5524F54A2BE9E836003F500C /* Dine */ = {
 			isa = PBXGroup;
 			children = (
+				557B5CA72C2151FB004E5C49 /* UserAuth */,
 				5590DEEB2C1ABF51007E1F75 /* Settings */,
 				5548B6B52C0B8D8C000E99C8 /* Notification */,
 				5548B6B22C0A5086000E99C8 /* ToastKit */,
@@ -332,6 +351,7 @@
 				55F966682BF214C400557C92 /* DatabaseService.swift */,
 				55F9666F2BF3708100557C92 /* UIAlertController+DefaultStyle.swift */,
 				5548B6A52C04BC96000E99C8 /* MockDatabase.swift */,
+				557B5CAD2C2191CC004E5C49 /* UIWindow+setRootViewController.swift */,
 			);
 			path = Dine;
 			sourceTree = "<group>";
@@ -539,6 +559,7 @@
 			children = (
 				5524F5602BEA1F1D003F500C /* OrderViewController.swift */,
 				5548B6A32C04BA23000E99C8 /* ConfirmOrderViewController.swift */,
+				5590DEF92C1C131A007E1F75 /* OrderDetailViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -547,6 +568,8 @@
 			isa = PBXGroup;
 			children = (
 				5524F5622BEA1F49003F500C /* BillViewController.swift */,
+				5590DEF72C1B2134007E1F75 /* CustomBillDetailViewController.swift */,
+				557B5CA32C2057F9004E5C49 /* BillDetailViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -595,8 +618,28 @@
 		5548B6BD2C0F37ED000E99C8 /* View */ = {
 			isa = PBXGroup;
 			children = (
+				5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */,
+				557B5CA52C206EA8004E5C49 /* MenuCellView.swift */,
 			);
 			path = View;
+			sourceTree = "<group>";
+		};
+		557B5CA72C2151FB004E5C49 /* UserAuth */ = {
+			isa = PBXGroup;
+			children = (
+				557B5CAA2C21521F004E5C49 /* Controllers */,
+				557B5CAF2C21B633004E5C49 /* RootViewManager.swift */,
+			);
+			path = UserAuth;
+			sourceTree = "<group>";
+		};
+		557B5CAA2C21521F004E5C49 /* Controllers */ = {
+			isa = PBXGroup;
+			children = (
+				557B5CA82C215219004E5C49 /* SignUpViewController.swift */,
+				557B5CAB2C21522F004E5C49 /* LoginViewController.swift */,
+			);
+			path = Controllers;
 			sourceTree = "<group>";
 		};
 		5590DEEB2C1ABF51007E1F75 /* Settings */ = {
@@ -747,6 +790,7 @@
 				552D37C12BF1F17F005B1D19 /* String+DateExtension.swift in Sources */,
 				552D37DE2BF1F4F0005B1D19 /* TableService.swift in Sources */,
 				552D38122BF1F5FE005B1D19 /* UserDefault.swift in Sources */,
+				557B5CAE2C2191CC004E5C49 /* UIWindow+setRootViewController.swift in Sources */,
 				552D38062BF1F5A0005B1D19 /* RestaurantController.swift in Sources */,
 				5548B6BC2C0F12DE000E99C8 /* MenuDetailView.swift in Sources */,
 				5524F54C2BE9E836003F500C /* AppDelegate.swift in Sources */,
@@ -763,6 +807,7 @@
 				5524F5672BEA1F61003F500C /* MenuViewController.swift in Sources */,
 				552D37EC2BF1F4F0005B1D19 /* Bill.swift in Sources */,
 				5524F5652BEA1F59003F500C /* TablesViewController.swift in Sources */,
+				5590DEFC2C1C5434007E1F75 /* PlainMenuItemView.swift in Sources */,
 				5548B6B42C0A50B5000E99C8 /* ToastView.swift in Sources */,
 				55F966CA2BFB650200557C92 /* TableRow.swift in Sources */,
 				5524F62E2BEDE57C003F500C /* OrderCell.swift in Sources */,
@@ -785,6 +830,7 @@
 				5590DEF42C1B11D6007E1F75 /* Profile.swift in Sources */,
 				551AAE2C2BFDEF7700E50FE7 /* MenuSectionViewController.swift in Sources */,
 				5524F56A2BEA3E3B003F500C /* MenuSectionTableViewCell.swift in Sources */,
+				5590DEF82C1B2134007E1F75 /* CustomBillDetailViewController.swift in Sources */,
 				552D37AE2BF1F09F005B1D19 /* SQLiteDataAccess.swift in Sources */,
 				552D37C02BF1F17F005B1D19 /* String+OrderFormatting.swift in Sources */,
 				552D37BC2BF1F13A005B1D19 /* CSVParseError.swift in Sources */,
@@ -794,8 +840,10 @@
 				55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */,
 				552D37B22BF1F09F005B1D19 /* Query.swift in Sources */,
 				55F966722BF378E400557C92 /* DTextField.swift in Sources */,
+				557B5CA42C2057F9004E5C49 /* BillDetailViewController.swift in Sources */,
 				551AAE392BFE2C9700E50FE7 /* BillData.swift in Sources */,
 				552D37E62BF1F4F0005B1D19 /* MenuSection.swift in Sources */,
+				557B5CA62C206EA8004E5C49 /* MenuCellView.swift in Sources */,
 				552D37AC2BF1F09F005B1D19 /* DatabaseError.swift in Sources */,
 				551AAE422BFF7C7300E50FE7 /* MenuItemRow.swift in Sources */,
 				55F9667B2BF610F700557C92 /* AddTableFormView.swift in Sources */,
@@ -804,13 +852,16 @@
 				5524F5732BEB418D003F500C /* AddToCartViewController.swift in Sources */,
 				551AAE362BFE0A1400E50FE7 /* BillItem.swift in Sources */,
 				552D37EE2BF1F4F0005B1D19 /* DataService.swift in Sources */,
+				557B5CAC2C21522F004E5C49 /* LoginViewController.swift in Sources */,
 				552D37E32BF1F4F0005B1D19 /* Filename.swift in Sources */,
 				552D38032BF1F5A0005B1D19 /* AuthorizationController.swift in Sources */,
 				552D38102BF1F5C0005B1D19 /* AuthenticationValidator.swift in Sources */,
 				552D37E82BF1F4F0005B1D19 /* OrderItemDSO.swift in Sources */,
 				551AAE2E2BFDF10F00E50FE7 /* SectionData.swift in Sources */,
 				551AAE452BFF7EEE00E50FE7 /* MenuData.swift in Sources */,
+				557B5CB02C21B633004E5C49 /* RootViewManager.swift in Sources */,
 				551AAE202BFCAA0200E50FE7 /* TableItem.swift in Sources */,
+				5590DEFA2C1C131A007E1F75 /* OrderDetailViewController.swift in Sources */,
 				552D37E42BF1F4F0005B1D19 /* MenuService.swift in Sources */,
 				552D37F02BF1F4F0005B1D19 /* FoodItem.swift in Sources */,
 				552D38072BF1F5A0005B1D19 /* UpdateStatusController.swift in Sources */,
@@ -824,6 +875,7 @@
 				55F966702BF3708100557C92 /* UIAlertController+DefaultStyle.swift in Sources */,
 				5524F5772BEB4BE4003F500C /* AddItemViewController.swift in Sources */,
 				552D38002BF1F5A0005B1D19 /* AdminController.swift in Sources */,
+				557B5CA92C215219004E5C49 /* SignUpViewController.swift in Sources */,
 				552D37FF2BF1F5A0005B1D19 /* TableController.swift in Sources */,
 				552D38042BF1F5A0005B1D19 /* OrderController.swift in Sources */,
 				552D37EB2BF1F4F0005B1D19 /* RestaurantMenu.swift in Sources */,
@@ -977,11 +1029,14 @@
 				ENABLE_APP_SANDBOX = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Dine/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Dine;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1008,11 +1063,14 @@
 				ENABLE_APP_SANDBOX = NO;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Dine/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Dine;
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.food-and-drink";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchStoryboardName = LaunchScreen;
 				INFOPLIST_KEY_UIMainStoryboardFile = "";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
 				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPhone = "UIInterfaceOrientationPortrait UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight";
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

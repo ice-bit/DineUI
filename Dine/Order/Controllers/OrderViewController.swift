@@ -5,6 +5,7 @@
 //  Created by doss-zstch1212 on 07/05/24.
 //
 import UIKit
+import SwiftUI
 import Toast
 
 class OrderViewController: UIViewController {
@@ -12,6 +13,9 @@ class OrderViewController: UIViewController {
     
     private let orderService: OrderService
     private let menuService: MenuService
+    
+    // Cell reuse identifier
+    private let cellReuseIdentifier: String = "MenuCellView"
     
     // UI Elements
     private var tableView: UITableView!
@@ -50,6 +54,7 @@ class OrderViewController: UIViewController {
     
     // MARK: - View LifeCycle Methods
     override func viewDidLoad() {
+        print(UUID())
         super.viewDidLoad()
         setupAppearance()
         setupNavigationBar()
@@ -72,9 +77,11 @@ class OrderViewController: UIViewController {
     private func setupTableView() {
         tableView = UITableView()
         tableView.allowsMultipleSelectionDuringEditing = true
+        tableView.separatorStyle = .none
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.register(OrderCell.self, forCellReuseIdentifier: OrderCell.reuseIdentifier)
+        // tableView.register(OrderCell.self, forCellReuseIdentifier: OrderCell.reuseIdentifier)
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseIdentifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
         
@@ -277,9 +284,13 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let order = orderData[indexPath.row]
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: OrderCell.reuseIdentifier, for: indexPath) as? OrderCell else { return UITableViewCell() }
-        cell.configureCell(with: order)
-        cell.backgroundColor = .systemBackground
+        //guard let cell = tableView.dequeueReusableCell(withIdentifier: OrderCell.reuseIdentifier, for: indexPath) as? OrderCell else { return UITableViewCell() }
+        //cell.configureCell(with: order)
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
+        cell.contentConfiguration = UIHostingConfiguration {
+            MenuCellView(order: order)
+        }
+        //cell.backgroundColor = .systemBackground
         return cell
     }
     
@@ -288,11 +299,14 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let selectedOrder = orderData[indexPath.row]
         if tableView.isEditing {
-            let selectedOrder = orderData[indexPath.row]
             selectedOrders.append(selectedOrder)
             printSelectedOrders()
         }
+        // Not in editing mode...push to detail vc
+        let detailVC = OrderDetailViewController(order: selectedOrder)
+        navigationController?.pushViewController(detailVC, animated: true)
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {

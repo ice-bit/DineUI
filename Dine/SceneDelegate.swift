@@ -19,11 +19,23 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         guard let windowScene = (scene as? UIWindowScene) else { return }
         window = UIWindow(windowScene: windowScene)
         
-        let viewController = TabBarHostingController()
-        window?.rootViewController = viewController
+        let rootViewController = determineRootViewController(isUserLoggedIn: UserDefaults.standard.bool(forKey: "isUserLoggedIn"))
+        
+        window?.rootViewController = rootViewController
         window?.makeKeyAndVisible()
     }
-
+    
+    /// Determines the root view controller based on the user's login status.
+    /// - Parameter isUserLoggedIn: A boolean value indicating the user's login status. Pass `true` if the user is logged in, and `false` otherwise.
+    /// - Returns: An instance of `UIViewController`. If the user is logged in, a `TabBarHostingController` is returned. If the user is not logged in, a `UINavigationController` with `LoginViewController` as its root view controller is returned.
+    private func determineRootViewController(isUserLoggedIn: Bool) -> UIViewController {
+      if isUserLoggedIn {
+        return TabBarHostingController()
+      } else {
+        return UINavigationController(rootViewController: LoginViewController())
+      }
+    }
+    
     func sceneDidDisconnect(_ scene: UIScene) {
         // Called as the scene is being released by the system.
         // This occurs shortly after the scene enters the background, or when its session is discarded.

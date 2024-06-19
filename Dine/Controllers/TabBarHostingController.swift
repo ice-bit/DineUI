@@ -12,22 +12,11 @@ class TabBarHostingController: UITabBarController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupDBTables()
         setupAppearance()
         setupTabBar()
     }
     
     // MARK: - Private methods
-    
-    private func setupDBTables() {
-        let databaseService = DatabaseServiceImpl()
-        databaseService.createMenuItemTable()
-        databaseService.createAccountTable()
-        databaseService.createBillTable()
-        databaseService.createOrderItemTable()
-        databaseService.createOrderTable()
-        databaseService.createTableDataTable()
-    }
     
     private func setupAppearance() {
         view.backgroundColor = .systemBackground

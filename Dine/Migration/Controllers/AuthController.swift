@@ -13,7 +13,7 @@ protocol ApplicationModeDelegate: AnyObject {
 
 protocol Authentication {
     func createAccount(username: String, password: String, userRole: UserRole) throws
-    func login(username: String, password: String) -> Bool
+    func login(username: String, password: String) throws
 }
 
 class AuthController: Authentication {
@@ -24,12 +24,12 @@ class AuthController: Authentication {
     weak var applicationModeDelegate: ApplicationModeDelegate?
     
     func createAccount(username: String, password: String, userRole: UserRole) throws {
-        //        guard !userRepository.checkUserPresence(username: username) else { throw AuthenticationError.userAlreadyExists }
+        guard !isUserPresent(username: username) else { throw AuthenticationError.userAlreadyExists }
         guard AuthenticationValidator.isValidUsername(username) else {
-            throw AuthenticationError.invalidUsername(reason: "")
+            throw AuthenticationError.invalidUsername(reason: "Username format invalid!")
         }
         guard AuthenticationValidator.isStrongPassword(password) else {
-            throw AuthenticationError.invalidPassword(reason: "Please provide a strong password/")
+            throw AuthenticationError.notStrongPassword
         }
         
         let account = Account(username: username, password: password, accountStatus: .active, userRole: userRole)
@@ -38,19 +38,22 @@ class AuthController: Authentication {
         try databaseAccess.insert(account)
     }
     
-    func login(username: String, password: String) -> Bool {
+    private func isUserPresent(username: String) -> Bool {
+        let fetchQuery = "SELECT * FROM \(DatabaseTables.accountTable.rawValue) WHERE Username = '\(username)';"
+        guard let user = try? databaseAccess.retrieve(query: fetchQuery, parseRow: Account.parseRow).first as? Account else {
+            return false
+        }
+        return true
+    }
+    
+    func login(username: String, password: String) throws {
         let result = isLoginValid(username: username, password: password)
 
         switch result {
         case .success(let account):
-            UserStore.setUser(userID: account.userId)
-            UserStatus.isUserLoggedIn.updateStatus(true)
-            applicationModeDelegate?.applicationModeDidChange(to: .signedIn)
-            NotificationCenter.default.post(name: .applicationModeDidChanged, object: nil, userInfo: ["newMode": ApplicationMode.signedIn])
-            return true
+            return
         case .failure(let error):
-            handleLoginError(error, username: username)
-            return false
+            throw error
         }
     }
     
@@ -68,6 +71,10 @@ class AuthController: Authentication {
             print("No user found under username: \(username)")
         case .other(let error):
             print("An error occurred: \(error.localizedDescription)")
+        case .incorretPassword:
+            print("Incorrect Password")
+        case .notStrongPassword:
+            print("Password is not strong")
         }
     }
     
@@ -83,7 +90,7 @@ class AuthController: Authentication {
             }
             
             guard user.password == password else {
-                throw AuthenticationError.invalidPassword(reason: "Incorrect password")
+                throw AuthenticationError.incorretPassword
             }
             return .success(user)
         } catch let error as AuthenticationError {

@@ -16,25 +16,24 @@ struct MetricCard: View {
                 Text(viewModal.title)
                     .padding(.trailing)
                 
-                Text(viewModal.percentageChange)
+                Text(viewModal.percentageChange ?? "")
                     .font(.caption)
                     .foregroundStyle(.darkGreen)
             }
             .padding(.bottom, 1)
             
-            Text(viewModal.amount)
+            Text(viewModal.data)
                 .font(.title)
                 .bold(true)
             
-            Text(viewModal.comparison)
+            Text(viewModal.footnote ?? "")
                 .font(.footnote)
                 .foregroundStyle(.gray)
         }
         .padding()
         .background(.app)
-        .clipShape(.rect(cornerRadius: 24))
+        .clipShape(.rect(cornerRadius: 12))
         .foregroundStyle(.black)
-        .frame(width: 200)
     }
 }
 
@@ -42,8 +41,8 @@ struct MetricCard: View {
     let viewModal = MetricCardViewModal(
         title: "Sales",
         percentageChange: "+2.5%",
-        amount: "$10345",
-        comparison: "Compared to \n($1900 last year)"
+        data: "$10345",
+        footnote: "$1900"
     )
     
     return MetricCard(viewModal: viewModal)

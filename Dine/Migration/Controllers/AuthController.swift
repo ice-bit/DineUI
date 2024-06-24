@@ -38,11 +38,10 @@ class AuthController: Authentication {
         try databaseAccess.insert(account)
     }
     
-    private func isUserPresent(username: String) -> Bool {
+    func isUserPresent(username: String) -> Bool {
         let fetchQuery = "SELECT * FROM \(DatabaseTables.accountTable.rawValue) WHERE Username = '\(username)';"
-        guard let user = try? databaseAccess.retrieve(query: fetchQuery, parseRow: Account.parseRow).first as? Account else {
-            return false
-        }
+        guard let _ = try? databaseAccess.retrieve(query: fetchQuery, parseRow: Account.parseRow).first as? Account else { return false }
+        
         return true
     }
     

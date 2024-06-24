@@ -139,7 +139,7 @@ class ChooseTableViewController: UIViewController {
     @objc private func confirmButtonAction(_ sender: UIBarButtonItem) {
         do {
             guard let selectedTable else {
-                let toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: "Failed", subtitle: "Please select a table")
+                let toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: "Select Table")
                 toast.show(haptic: .error)
                 return
             }
@@ -148,7 +148,7 @@ class ChooseTableViewController: UIViewController {
             let tableService = TableServiceImpl(databaseAccess: dataAccess)
             let orderController = OrderController(orderService: orderService, tableService: tableService)
             try orderController.createOrder(for: selectedTable, menuItems: selectedMenuItems)
-            NotificationCenter.default.post(name: .didAddNewOrderNotification, object: nil)
+            NotificationCenter.default.post(name: .orderDidChangeNotification, object: nil)
             self.dismiss(animated: true) {
                 // Show toast after completion
                 let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Order Added")

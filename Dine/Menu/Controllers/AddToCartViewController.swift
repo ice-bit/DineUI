@@ -16,6 +16,9 @@ class AddToCartViewController: UIViewController {
     private var menuCartView: MenuCartView!
     let searchController = UISearchController()
     
+    /// View that represents toast
+    private var toast: Toast!
+    
     // BarButton
     private var proceedbutton: UIBarButtonItem!
     
@@ -25,10 +28,10 @@ class AddToCartViewController: UIViewController {
         didSet {
             if !menuItemCart.isEmpty {
                 navigationItem.rightBarButtonItem?.isHidden = false
-                menuCartView.isHidden = false
+                // menuCartView.isHidden = false
             } else {
                 navigationItem.rightBarButtonItem?.isHidden = true
-                menuCartView.isHidden = true
+                // menuCartView.isHidden = true
             }
             
         }
@@ -51,13 +54,15 @@ class AddToCartViewController: UIViewController {
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        //setupToast()
         setupTableView()
         view = tableView
         loadMenu()
         setupNavBar()
         configureView()
         setupSearchBar()
-        setupCartView()
+        // setupCartView()
     }
     
     // MARK: - CUSTOM Methods
@@ -111,6 +116,36 @@ class AddToCartViewController: UIViewController {
             menuCartView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
     }
+    
+    // Toast View for the showing number of items
+    func showToast() {
+        let config = ToastConfiguration(
+            direction: .bottom,
+            dismissBy: [.time(time: 3.0), .swipe(direction: .natural), .longPress],
+            animationTime: 0.2,
+            enteringAnimation: .fade(alpha: 1.0),
+            exitingAnimation: .fade(alpha: 0.5)
+        )
+        
+        let itemCount = menuItemCart.values.reduce(0, +)
+        toast = Toast.default(image: UIImage(systemName: "cart")!, title: "Items \(itemCount)", config: config)
+        toast.show()
+    }
+    
+    // Setup toast
+    /*private func setupToast() {
+        let config = ToastConfiguration(
+            direction: .bottom,
+            dismissBy: [.time(time: 4.0), .swipe(direction: .natural), .longPress],
+            animationTime: 0.2
+        )
+        
+        toast = Toast.default(
+            image: UIImage(systemName: "cart")!,
+            title: "Items 0",
+            config: config
+        )
+    }*/
     
     private func loadMenu() {
         do {
@@ -215,7 +250,10 @@ extension AddToCartViewController: MenuItemTableViewCellDelegate {
             filteredItems[index].count = count
         }
         
-        menuCartView.setItemCount(menuItemCart.values.reduce(0, +))
+        // menuCartView.setItemCount(menuItemCart.values.reduce(0, +))
+        
+        // Update the toast view with proper item count
+        showToast()
         
         for (item, count) in menuItemCart {
             print("\(item.name) - \(count)")

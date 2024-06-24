@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct OrderData: Identifiable {
+    let id = UUID()
+    let date: Date
+    let orderCount: Int
+}

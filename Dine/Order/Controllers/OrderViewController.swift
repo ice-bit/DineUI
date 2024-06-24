@@ -63,7 +63,7 @@ class OrderViewController: UIViewController {
         loadOrderData()
         setupToolbar()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(didAddOrder(_:)), name: .didAddNewOrderNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(didAddOrder(_:)), name: .orderDidChangeNotification, object: nil)
     }
     
     // MARK: - UI Setup Methods
@@ -152,7 +152,7 @@ class OrderViewController: UIViewController {
             let orderService = OrderServiceImpl(databaseAccess: dataAccess)
             if let results = try orderService.fetch() {
                 orderData = results.filter { $0.orderStatusValue != .completed }
-                tableView.reloadData()
+                tableView.reloadData() // Reload
             }
         } catch {
             print("Unable to load orders - \(error)")
@@ -229,6 +229,21 @@ class OrderViewController: UIViewController {
         }
     }
     
+    private func billOrder(_ order: Order) {
+        do {
+            let databaseAccess = try SQLiteDataAccess.openDatabase()
+            let orderService = OrderServiceImpl(databaseAccess: databaseAccess)
+            let billService = BillServiceImpl(databaseAccess: databaseAccess)
+            let billingController = BillingController(billService: billService, orderService: orderService)
+            
+            try billingController.createBill(for: order, tip: nil)
+            
+            NotificationCenter.default.post(name: .billDidAddNotification, object: nil)
+        } catch {
+            print("Failed to perform \(#function) - \(error)")
+        }
+    }
+    
     @objc private func deleteButtonAction(_ sender: UIBarButtonItem) {
         deleteSelectedOrders()
         loadOrderData()
@@ -273,6 +288,25 @@ class OrderViewController: UIViewController {
     
     private func setToolbarActive(_ isActive: Bool) {
         navigationController?.setToolbarHidden(!isActive, animated: true)
+    }
+    
+    private func printSelectedOrders() {
+        for order in selectedOrders {
+            print(order.orderIdValue)
+        }
+        print("-----------------------------------")
+    }
+    
+    // MARK: - Destructive
+    private func deleteOrder(_ order: Order) {
+        do {
+            let tableService = try TableServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            let orderService = try OrderServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            let orderController = OrderController(orderService: orderService, tableService: tableService)
+            try orderController.deleteOrder(order)
+        } catch {
+            print("Failed to perform \(#function) - \(error)")
+        }
     }
 }
 
@@ -319,11 +353,40 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
         }
     }
     
-    private func printSelectedOrders() {
-        for order in selectedOrders {
-            print(order.orderIdValue)
+    func tableView(_ tableView: UITableView, leadingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let selectedOrder = orderData[indexPath.row]
+        let billAction = UIContextualAction(style: .normal, title: "Bill") { [weak self] action, view, completionHandler in
+            guard let self else { return }
+            print("Bill")
+            self.billOrder(selectedOrder)
+            let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Bill Added")
+            toast.show(haptic: .success)
+            completionHandler(true)
         }
-        print("-----------------------------------")
+        
+        billAction.backgroundColor = .app
+        
+        let configuration = UISwipeActionsConfiguration(actions: [billAction])
+        return configuration
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let selectedOrder = orderData[indexPath.row]
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completionHandler in
+            guard let self else { return }
+            
+            print("Delete")
+            self.deleteOrder(selectedOrder)
+            
+            loadOrderData() // Reload is handled inside this method
+            
+            completionHandler(true)
+        }
+        
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
+    }
+    
 }
 

@@ -18,10 +18,15 @@ class Bill {
     var date: Date
     private var tip: Double
     private var tax: Double
+    private var orderId: UUID
     var isPaid: Bool
     
     var billId: UUID {
         return _billId
+    }
+    
+    var getOrderId: UUID {
+        orderId
     }
     
     var csvString: String {
@@ -32,21 +37,34 @@ class Bill {
         isPaid ? PaymentStatus.paid : PaymentStatus.unpaid
     }
     
-    init(_billId: UUID, amount: Double, date: Date, tip: Double, tax: Double, isPaid: Bool) {
+    var getTotalAmount: Double {
+        amount + tip + tax
+    }
+    
+    var getTip: Double {
+        tip
+    }
+    
+    var getTax: Double {
+        tax
+    }
+    
+    init(_billId: UUID, amount: Double, date: Date, tip: Double, tax: Double, orderId: UUID,isPaid: Bool) {
         self._billId = _billId
         self.amount = amount
         self.date = date
         self.tip = tip
         self.tax = tax
+        self.orderId = orderId
         self.isPaid = isPaid
     }
     
-    convenience init(amount: Double, tip: Double, tax: Double, isPaid: Bool) {
-        self.init(_billId: UUID(), amount: amount, date: Date(), tip: tip, tax: tax, isPaid: isPaid)
+    convenience init(amount: Double, tip: Double, tax: Double, orderId: UUID, isPaid: Bool) {
+        self.init(_billId: UUID(), amount: amount, date: Date(), tip: tip, tax: tax, orderId: orderId, isPaid: isPaid)
     }
     
-    convenience init(amount: Double, tax: Double, isPaid: Bool) {
-        self.init(amount: amount, tip: 0.0, tax: tax, isPaid: isPaid)
+    convenience init(amount: Double, tax: Double, orderId: UUID, isPaid: Bool) {
+        self.init(amount: amount, tip: 0.0, tax: tax, orderId: orderId, isPaid: isPaid)
     }
     
     func displayBill() -> String {
@@ -68,6 +86,20 @@ class Bill {
     }
 }
 
+extension Bill {
+    var getOrderedItems: [MenuItem]? {
+        do {
+            let orderService = try OrderServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            guard let order = try? orderService.fetch(orderId) else { return nil }
+            return order.menuItems
+        } catch {
+            print("Unable to fetch orders - \(error)")
+        }
+        
+        return nil
+    }
+}
+
 extension Bill: Parsable {}
 
 extension Bill: SQLTable {
@@ -83,6 +115,7 @@ extension Bill: SQLTable {
             BillDate TEXT NOT NULL,
             Tip REAL,
             Tax REAL NOT NULL,
+            OrderID VARCHAR(32),
             IsBillPaid TEXT NOT NULL
         );
         """
@@ -96,6 +129,7 @@ extension Bill: SQLUpdatable {
         SET Amount = \(amount),
             Tip = \(tip),
             Tax = \(tax),
+            OrderID = '\(orderId)',
             IsBillPaid = '\(isPaid)'
         WHERE BillID = '\(billId)';
         """
@@ -105,8 +139,8 @@ extension Bill: SQLUpdatable {
 extension Bill: SQLInsertable {
     var createInsertStatement: String {
         """
-        INSERT INTO \(DatabaseTables.billTable.rawValue) (BillID, Amount, BillDate, Tip, Tax, IsBillPaid)
-        VALUES ('\(billId.uuidString)', \(amount), '\(date)', \(tip), \(tax), '\(isPaid)');
+        INSERT INTO \(DatabaseTables.billTable.rawValue) (BillID, Amount, BillDate, Tip, Tax, OrderID, IsBillPaid)
+        VALUES ('\(billId.uuidString)', \(amount), '\(date)', \(tip), \(tax), '\(orderId)', '\(isPaid)');
         """
     }
 }
@@ -116,7 +150,8 @@ extension Bill: DatabaseParsable {
         guard let statement = statement else { return nil }
         guard let billIdCString = sqlite3_column_text(statement, 0),
               let dateCString = sqlite3_column_text(statement, 2),
-              let isPaidCString = sqlite3_column_text(statement, 5) else {
+              let orderIdCString = sqlite3_column_text(statement, 5),
+              let isPaidCString = sqlite3_column_text(statement, 6) else {
             throw DatabaseError.missingRequiredValue
         }
         
@@ -129,11 +164,12 @@ extension Bill: DatabaseParsable {
         
         guard let billId = UUID(uuidString: String(cString: billIdCString)),
               let date = dateFormatter.date(from: String(cString: dateCString)),
+              let orderId = UUID(uuidString: String(cString: orderIdCString)),
               let isPaid = Bool(String(cString: isPaidCString)) else {
             throw DatabaseError.conversionFailed
         }
         
-        let bill = Bill(_billId: billId, amount: amount, date: date, tip: tip, tax: tax, isPaid: isPaid)
+        let bill = Bill(_billId: billId, amount: amount, date: date, tip: tip, tax: tax, orderId: orderId, isPaid: isPaid)
         return bill
     }
 }

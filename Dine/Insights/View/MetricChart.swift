@@ -6,13 +6,23 @@
 //
 
 import SwiftUI
+import Charts
 
 struct MetricChart: View {
+    var orderData: [OrderData]
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Chart(orderData) { data in
+            BarMark(
+                x: .value("Day", data.date.weekday),
+                y: .value("Count", data.orderCount)
+            )
+        }
     }
 }
 
 #Preview {
-    MetricChart()
+    MetricChart(orderData: OrderData.generateRandomData(days: 7))
 }
+
+

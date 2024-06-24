@@ -12,7 +12,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     
     private var tableView: UITableView!
     private let cellReuseID = "MenuItemRow"
-    private let activeSection: MenuSection
+    private let activeSection: MenuSectionType
     
     private var menuData: [MenuItem] = []
     
@@ -27,7 +27,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         searchController.searchBar.text?.isEmpty ?? true
     }
     
-    init(activeSection: MenuSection) {
+    init(activeSection: MenuSectionType) {
         self.activeSection = activeSection
         super.init(nibName: nil, bundle: nil)
     }

@@ -78,4 +78,24 @@ class OrderController: OrderServicable {
         let unbilledOrders = resultOrder.filter { $0.isOrderBilledValue == false }
         return unbilledOrders
     }
+    
+    func deleteOrder(_ order: Order) throws {
+        // Release the table that the order holds
+        guard let resultTables = try tableService.fetch() else {
+            print("Failed to fetch tables")
+            return
+        }
+        guard let tableIndex = resultTables.firstIndex(where: { $0.tableId == order.tableIDValue }) else {
+            print("No tables found under UUID: \(order.tableIDValue) for updating")
+            return
+        }
+        
+        let choosenTable = resultTables[tableIndex]
+        choosenTable.tableStatus = .free
+        
+        try tableService.update(choosenTable)
+        
+        // Delete the order
+        try orderService.delete(order)
+    }
 }

@@ -17,7 +17,7 @@ struct BillItem: View {
                     .font(.title3)
                     .padding(.bottom, 5)
                 
-                Text("Items _")
+                Text("Items \(billData.getOrderedItems?.count ?? 0)")
                     .font(.caption)
             }
             .padding()
@@ -57,7 +57,7 @@ struct BillItem: View {
 }
 
 #Preview {
-    let billData = Bill(amount: 30, tip: 9, tax: 89, isPaid: true)
+    let billData = Bill(amount: 30, tip: 9, tax: 89, orderId: UUID(), isPaid: true)
     
     return BillItem(billData: billData)
 }

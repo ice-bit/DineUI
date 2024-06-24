@@ -16,8 +16,8 @@ class AddItemViewController: UIViewController {
     
     // MARK: - Properties
     
-    private let pickerData: [MenuSection] = [.starter, .mainCourse, .side, .desserts, .beverages]
-    private var selectedMenuSection: MenuSection?
+    private let pickerData: [MenuSectionType] = [.starter, .mainCourse, .side, .desserts, .beverages]
+    private var selectedMenuSection: MenuSectionType?
     
     private var stackView: UIStackView!
     private var itemImageView: UIImageView!
@@ -58,7 +58,7 @@ class AddItemViewController: UIViewController {
         alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { _ in
             let selectedIndex = self.pickerView.selectedRow(inComponent: 0)
             let selectedSection = self.pickerData[selectedIndex].rawValue
-            self.selectedMenuSection = MenuSection(rawValue: selectedSection)
+            self.selectedMenuSection = MenuSectionType(rawValue: selectedSection)
             self.sectionSelectionButton.setTitle(selectedSection, for: .normal)
         }))
         

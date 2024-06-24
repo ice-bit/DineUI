@@ -52,11 +52,12 @@ class TabBarHostingController: UITabBarController {
         let tableNavigationController = UINavigationController(rootViewController: tableViewController)
         let menuNavigationController = UINavigationController(rootViewController: menuSectionViewController)
         
-        let settingHostVC = UIHostingController(rootView: SettingsView(profile: .default))
-        settingHostVC.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: "gear"), selectedImage: UIImage(systemName: "gear.circle"))
+        let metricViewController = MetricViewController()
+        metricViewController.tabBarItem = UITabBarItem(title: "Insights", image: UIImage(systemName: "book.pages"), selectedImage: UIImage(systemName: "book.pages.fill"))
+        let metricNavigationController = UINavigationController(rootViewController: metricViewController)
         
         
-        let viewControllers = [orderNavigationController, billNavigationController, tableNavigationController, menuNavigationController, settingHostVC]
+        let viewControllers = [metricNavigationController, orderNavigationController, billNavigationController, tableNavigationController, menuNavigationController]
         self.viewControllers = viewControllers
         hidesBottomBarWhenPushed = false
         

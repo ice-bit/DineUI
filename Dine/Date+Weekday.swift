@@ -6,3 +6,12 @@
 //
 
 import Foundation
+
+extension Date {
+    var weekday: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEE" // or "EEEE" for non-abbreviated day
+        return dateFormatter.string(from: self)
+    }
+}
+

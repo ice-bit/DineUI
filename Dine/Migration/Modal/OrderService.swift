@@ -60,6 +60,37 @@ struct OrderServiceImpl: OrderService {
         return mappedOrders
     }
     
+    func fetch(_ id: UUID) throws -> Order? {
+        var mappedOrders = [Order]()
+        let query = "SELECT * FROM \(DatabaseTables.orderTable.rawValue) WHERE OrderID = '\(id)';"
+        guard let resultOrders = try databaseAccess.retrieve(query: query, parseRow: Order.parseRow) as? [Order] else {
+            print("Invalid order data")
+            return nil
+        }
+        for resultOrder in resultOrders {
+            let menuItemTable = DatabaseTables.menuItem.rawValue
+            let orderItemTable = DatabaseTables.orderMenuItemTable.rawValue
+            let menuItemQuery = """
+                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).MenuSection
+                FROM OrderItems
+                JOIN \(menuItemTable) ON \(orderItemTable).MenuItemID = \(menuItemTable).MenuItemID
+                WHERE \(orderItemTable).OrderID = '\(resultOrder.orderIdValue.uuidString)';
+                """
+            guard let resultOrderMenuItems = try databaseAccess.retrieve(query: menuItemQuery, parseRow: OrderItem.parseRow) as? [OrderItem] else {
+                print("Failed to convert to MenuItems")
+                return nil
+            }
+            for orderMenuItem in resultOrderMenuItems {
+                for _ in 0..<orderMenuItem.quantity {
+                    let menuItem = MenuItem(itemId: orderMenuItem.menuItemID, name: orderMenuItem.menuItemName, price: orderMenuItem.price, menuSection: .mainCourse)
+                    resultOrder.menuItems.append(menuItem)
+                }
+            }
+            mappedOrders.append(resultOrder)
+        }
+        return mappedOrders[0]
+    }
+    
     func update(_ order: Order) throws {
         try databaseAccess.update(order)
     }

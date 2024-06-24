@@ -38,6 +38,7 @@ class LoginViewController: UIViewController {
     private lazy var passwordTextField: UITextField = {
         let textField = DTextField()
         textField.backgroundColor = .secondarySystemBackground
+        textField.isSecureTextEntry = true
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Password"
@@ -78,6 +79,7 @@ class LoginViewController: UIViewController {
         setupSubviews()
         //createTrackingConstraints()
         setupSignUpLabelGesture()
+        setupForgetLabelGesture()
         view.backgroundColor = .systemBackground
         title = "Login"
         
@@ -85,6 +87,21 @@ class LoginViewController: UIViewController {
         //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
         // tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+        
+        fetchAccounts()
+    }
+    
+    // This method is meant to be removed
+    private func fetchAccounts() {
+        do {
+            let accountService = try AccountServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            guard let results = try accountService.fetch() else { return }
+            for account in results {
+                print("Username: \(account.username)\nPassword: \(account.password)\n")
+            }
+        } catch {
+            print("Unable to fetch accounts: \(error)")
+        }
     }
     
     @objc private func dismissKeyboard() {
@@ -183,6 +200,19 @@ class LoginViewController: UIViewController {
         let signUpViewController = SignUpViewController()
         navigationController?.pushViewController(signUpViewController, animated: true)
     }
+    
+    private func setupForgetLabelGesture() {
+        forgotPasswordLabel.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(forgotLabelLabelAction(_:)))
+        forgotPasswordLabel.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func forgotLabelLabelAction(_ sender: UILabel) {
+        print(#function)
+        let recoverPasswordViewController = RecoverPasswordViewController()
+        self.present(UINavigationController(rootViewController: recoverPasswordViewController), animated: true)
+    }
+    
 }
 
 #Preview {

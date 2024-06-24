@@ -8,7 +8,7 @@
 import Foundation
 import SQLite3
 
-enum MenuSection: String, Codable {
+enum MenuSectionType: String, Codable {
     case starter = "Starters"
     case mainCourse = "Main Course"
     case side = "Side"
@@ -20,17 +20,17 @@ class MenuItem: Codable {
     let itemId: UUID
     var name: String
     var price: Double
-    let menuSection: MenuSection
+    let menuSection: MenuSectionType
     var count: Int = 0
     
-    init(itemId: UUID, name: String, price: Double, menuSection: MenuSection) {
+    init(itemId: UUID, name: String, price: Double, menuSection: MenuSectionType) {
         self.itemId = itemId
         self.name = name
         self.price = price
         self.menuSection = menuSection
     }
     
-    convenience init(name: String, price: Double, menuSection: MenuSection) {
+    convenience init(name: String, price: Double, menuSection: MenuSectionType) {
         self.init(itemId: UUID(), name: name, price: price, menuSection: menuSection)
     }
 }
@@ -102,7 +102,7 @@ extension MenuItem: DatabaseParsable {
         let price = sqlite3_column_double(statement, 2)
         
         guard let itemId = UUID(uuidString: String(cString: itemIdCString)),
-              let menuSection = MenuSection(rawValue: String(cString: menuSectionCString)) else {
+              let menuSection = MenuSectionType(rawValue: String(cString: menuSectionCString)) else {
             throw DatabaseError.conversionFailed
         }
         

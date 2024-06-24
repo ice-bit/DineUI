@@ -39,6 +39,7 @@ class SignUpViewController: UIViewController {
     private lazy var passwordTextField: UITextField = {
         let textField = DTextField()
         textField.backgroundColor = .secondarySystemBackground
+        textField.isSecureTextEntry = true
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Password"
@@ -49,6 +50,7 @@ class SignUpViewController: UIViewController {
         let textField = DTextField()
         textField.backgroundColor = .secondarySystemBackground
         textField.layer.cornerRadius = 10
+        textField.isSecureTextEntry = true
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Confirm Password"
         return textField

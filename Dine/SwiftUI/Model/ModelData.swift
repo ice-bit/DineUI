@@ -9,6 +9,18 @@ import Foundation
 
 @Observable
 class ModelData {
+    var orders: [Order] {
+        do {
+            let orderService = try OrderServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            if let results = try? orderService.fetch() {
+                return results
+            }
+        } catch {
+            print(error)
+        }
+        return [Order(tableId: UUID(), orderStatus: .preparing, menuItems: [MenuItem(name: "Bus", price: 3.9, menuSection: .mainCourse)])]
+    }
+    
     var tables: [RestaurantTable] = [
         RestaurantTable(tableStatus: .free, maxCapacity: 12, locationIdentifier: 103),
         RestaurantTable(tableStatus: .free, maxCapacity: 12, locationIdentifier: 103),
@@ -16,7 +28,19 @@ class ModelData {
     ]
     
     var sections: [SectionData] = load("SectionData.json")
-    var bills: [BillData] = load("BillData.json")
+    // var bills: [BillData] = load("BillData.json")
+    var bills: [Bill] {
+        do {
+            let billService = try BillServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            if let results = try? billService.fetch() {
+                return results
+            }
+        } catch {
+            print(error)
+        }
+        return [Bill(amount: 69.9, tax: 0.76, orderId: UUID(), isPaid: false)]
+    }
+    
     var menuItems: [MenuItem] = load("MenuData.json")
 }
 

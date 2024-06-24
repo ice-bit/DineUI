@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import Toast
 
 class OrderDetailViewController: UIViewController {
     
@@ -18,7 +19,10 @@ class OrderDetailViewController: UIViewController {
     /// View to hold the scrollable content
     private var contentView: UIView!
     
-    private lazy var cardStackView: UIStackView = {
+    private var billButton: UIButton!
+    private var editButton: UIButton!
+    
+    private lazy var verticalStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.layer.cornerRadius = 12
         stackView.layer.masksToBounds = true
@@ -26,6 +30,15 @@ class OrderDetailViewController: UIViewController {
         stackView.axis = .vertical
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.distribution = .fillEqually
+        return stackView
+    }()
+    
+    private lazy var horizontalButtonStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.distribution = .fillEqually
+        stackView.spacing = 8
+        stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
     
@@ -52,12 +65,55 @@ class OrderDetailViewController: UIViewController {
         populateOrderedItems()
         populateMenuItems()
         setupTableView()
-        setupStackView()
+        setupVerticalStackView()
+        setupButtonStackView()
+    }
+    
+    private func populateOrderedItems() {
+        for item in menuModelData {
+            if let count = orderedItems[item] {
+                orderedItems[item] = count + 1
+            } else {
+                orderedItems[item] = 1
+            }
+        }
+    }
+    
+    private func populateMenuItems() {
+        for (item, count) in orderedItems {
+            let menuitem = item
+            menuitem.count = count
+            menuItems.append(menuitem)
+        }
+    }
+    
+    private func populateMenuModelData() {
+        menuModelData = order.menuItems
     }
     
     private func setupNavbar() {
         // TODO: Setup edit buttons
     }
+    
+    private func setupBillButton() {
+        billButton = UIButton()
+        contentView.addSubview(billButton)
+        billButton.setTitle("Bill", for: .normal)
+        billButton.setTitleColor(.black, for: .normal)
+        billButton.backgroundColor = .app
+        billButton.layer.cornerRadius = 12
+        billButton.translatesAutoresizingMaskIntoConstraints = false
+        billButton.addTarget(self, action: #selector(billButtonAction(_ :)), for: .touchUpInside)
+        
+        NSLayoutConstraint.activate([
+            billButton.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            billButton.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.88),
+            billButton.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor, constant: 20),
+            billButton.heightAnchor.constraint(equalToConstant: 55)
+        ])
+    }
+    
+    
     
     private func setupScrollView() {
         scrollView = UIScrollView()
@@ -98,28 +154,6 @@ class OrderDetailViewController: UIViewController {
         ])
     }
     
-    private func populateOrderedItems() {
-        for item in menuModelData {
-            if let count = orderedItems[item] {
-                orderedItems[item] = count + 1
-            } else {
-                orderedItems[item] = 1
-            }
-        }
-    }
-    
-    private func populateMenuItems() {
-        for (item, count) in orderedItems {
-            let menuitem = item
-            menuitem.count = count
-            menuItems.append(menuitem)
-        }
-    }
-    
-    private func populateMenuModelData() {
-        menuModelData = order.menuItems
-    }
-    
     private func setupTableView() {
         tableView = DynamicTableView()
         tableView.layoutIfNeeded()
@@ -140,27 +174,90 @@ class OrderDetailViewController: UIViewController {
         ])
     }
     
-    private func setupStackView() {
-        let tableIDView = CustomIDView()
-        let orderIDView = CustomIDView()
-        let statusView = CustomIDView()
-        let dateView = CustomIDView()
+    private func setupVerticalStackView() {
+        let tableIDView = TitleAndDescriptionView()
+        let orderIDView = TitleAndDescriptionView()
+        let statusView = TitleAndDescriptionView()
+        let dateView = TitleAndDescriptionView()
         dateView.configureView(title: "Date", description: order.getDate.formatted())
         statusView.configureView(title: "Status", description: order.orderStatusValue.rawValue)
         tableIDView.configureView(title: "Table", description: order.tableIDValue.uuidString)
         orderIDView.configureView(title: "Order", description: order.orderIdValue.uuidString)
         //view.addSubview(cardStackView)
-        contentView.addSubview(cardStackView)
-        cardStackView.addArrangedSubview(orderIDView)
-        cardStackView.addArrangedSubview(tableIDView)
-        cardStackView.addArrangedSubview(statusView)
-        cardStackView.addArrangedSubview(dateView)
+        contentView.addSubview(verticalStackView)
+        verticalStackView.addArrangedSubview(orderIDView)
+        verticalStackView.addArrangedSubview(tableIDView)
+        verticalStackView.addArrangedSubview(statusView)
+        verticalStackView.addArrangedSubview(dateView)
         
         NSLayoutConstraint.activate([
-            cardStackView.centerXAnchor.constraint(equalTo: contentView/*.safeAreaLayoutGuide*/.centerXAnchor),
-            cardStackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 20),
-            cardStackView.widthAnchor.constraint(equalTo: contentView/*.safeAreaLayoutGuide*/.widthAnchor, multiplier: 0.88)
+            verticalStackView.centerXAnchor.constraint(equalTo: contentView/*.safeAreaLayoutGuide*/.centerXAnchor),
+            verticalStackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 20),
+            verticalStackView.widthAnchor.constraint(equalTo: contentView/*.safeAreaLayoutGuide*/.widthAnchor, multiplier: 0.88),
+            verticalStackView.heightAnchor.constraint(equalToConstant: 300)
         ])
+    }
+    
+    private func setupButtonStackView() {
+        billButton = UIButton()
+        billButton.setTitle("Bill", for: .normal)
+        billButton.setTitleColor(.systemBackground, for: .normal)
+        // billButton.setTitleColor(.lightGray, for: .disabled)
+        billButton.backgroundColor = .label
+        billButton.layer.cornerRadius = 12
+        billButton.translatesAutoresizingMaskIntoConstraints = false
+        billButton.addTarget(self, action: #selector(billButtonAction(_ :)), for: .touchUpInside)
+        
+        editButton = UIButton()
+        editButton.setTitle("Edit", for: .normal)
+        editButton.setTitleColor(.systemBackground, for: .normal)
+        editButton.backgroundColor = .label
+        editButton.layer.cornerRadius = 12
+        editButton.translatesAutoresizingMaskIntoConstraints = false
+        editButton.addTarget(self, action: #selector(editButtonAction(_ :)), for: .touchUpInside)
+
+        contentView.addSubview(horizontalButtonStackView)
+        horizontalButtonStackView.addArrangedSubview(editButton)
+        horizontalButtonStackView.addArrangedSubview(billButton)
+        
+        NSLayoutConstraint.activate([
+            horizontalButtonStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            horizontalButtonStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.88),
+            horizontalButtonStackView.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor, constant: 20),
+            horizontalButtonStackView.heightAnchor.constraint(equalToConstant: 55)
+        ])
+    }
+    
+    @objc private func billButtonAction(_ sender: UIButton) {
+        print(#function)
+        do {
+            let databaseAccess = try SQLiteDataAccess.openDatabase()
+            let orderService = OrderServiceImpl(databaseAccess: databaseAccess)
+            let billService = BillServiceImpl(databaseAccess: databaseAccess)
+            let billingController = BillingController(billService: billService, orderService: orderService)
+            
+            try billingController.createBill(for: order, tip: 0.0)
+            
+            NotificationCenter.default.post(name: .billDidAddNotification, object: nil)
+            NotificationCenter.default.post(name: .orderDidChangeNotification, object: nil)
+            
+            // Disable bill button
+            // billButton.isEnabled = false
+            
+            // Hidden the `horizontalStackView`
+            horizontalButtonStackView.isHidden = true
+            
+            let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Bill Added")
+            toast.show(haptic: .success)
+        } catch {
+            print("Unable to bill the order - \(error)")
+        }
+        
+    }
+    
+    @objc private func editButtonAction(_ sender: UIButton) {
+        print(#function)
+        
     }
 }
 
@@ -193,68 +290,6 @@ class DynamicTableView: UITableView {
     
     override var intrinsicContentSize: CGSize {
         return contentSize
-    }
-}
-
-class CustomIDView: UIView {
-    
-    private lazy var contentWrapperStackView: UIStackView = {
-        let stackView = UIStackView()
-        stackView.spacing = 2
-        stackView.axis = .vertical
-        stackView.distribution = .fillEqually
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        return stackView
-    }()
-    
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        label.font = .preferredFont(forTextStyle: .title2)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    // Mostly representing UUID
-    private lazy var descriptionLabel: UILabel = {
-        let label = UILabel()
-        label.textColor = .black
-        label.font = .preferredFont(forTextStyle: .caption1)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
-    
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        commonInit()
-    }
-    
-    required init?(coder: NSCoder) {
-        super.init(coder: coder)
-        commonInit()
-    }
-    
-    private func commonInit() {
-        // Initialization code...
-        setupSubviews()
-    }
-    
-    private func setupSubviews() {
-        self.addSubview(contentWrapperStackView)
-        contentWrapperStackView.addArrangedSubview(titleLabel)
-        contentWrapperStackView.addArrangedSubview(descriptionLabel)
-        
-        NSLayoutConstraint.activate([
-            contentWrapperStackView.leadingAnchor.constraint(equalTo: self.leadingAnchor, constant: 18),
-            contentWrapperStackView.topAnchor.constraint(equalTo: self.topAnchor, constant: 8),
-            contentWrapperStackView.trailingAnchor.constraint(equalTo: self.trailingAnchor, constant: -12),
-            contentWrapperStackView.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -8),
-        ])
-    }
-    
-    func configureView(title: String, description: String) {
-        titleLabel.text = title
-        descriptionLabel.text = description
     }
 }
 

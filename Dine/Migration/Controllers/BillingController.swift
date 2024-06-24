@@ -28,9 +28,9 @@ class BillingController: BillServicable {
         
         let bill: Bill
         if let tip = tip {
-            bill = Bill(amount: totalAmount, tip: tip, tax: tax, isPaid: false)
+            bill = Bill(amount: totalAmount, tip: tip, tax: tax, orderId: order.orderIdValue, isPaid: false)
         } else {
-            bill = Bill(amount: totalAmount, tax: tax, isPaid: false)
+            bill = Bill(amount: totalAmount, tax: tax, orderId: order.orderIdValue, isPaid: false)
         }
         
         // Change bill status

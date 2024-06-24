@@ -9,10 +9,54 @@ import SwiftUI
 
 struct InsightView: View {
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        ScrollView {
+            LazyVGrid(columns: [GridItem(.fixed(2))]) {
+                LazyHGrid(rows: [GridItem(.fixed(2))]) {
+                    MetricCard(
+                        viewModal: MetricCardViewModal(
+                            title: "Sales",
+                            percentageChange: "+2.5%",
+                            data: "$13453",
+                            footnote: "$29304"
+                        )
+                    )
+                    
+                    MetricCard(
+                        viewModal: MetricCardViewModal(
+                            title: "Sales",
+                            percentageChange: "+2.5%",
+                            data: "$13453",
+                            footnote: "$29304"
+                        )
+                    )
+                }
+                
+                LazyHGrid(rows: [GridItem(.fixed(2))]) {
+                    MetricCard(
+                        viewModal: MetricCardViewModal(
+                            title: "Sales",
+                            percentageChange: "+2.5%",
+                            data: "$13453",
+                            footnote: "$29304"
+                        )
+                    )
+                    
+                    MetricCard(
+                        viewModal: MetricCardViewModal(
+                            title: "Sales",
+                            percentageChange: "+2.5%",
+                            data: "$13453",
+                            footnote: "$29304"
+                        )
+                    )
+                }
+            }
+        }
     }
 }
 
 #Preview {
     InsightView()
 }
+
+

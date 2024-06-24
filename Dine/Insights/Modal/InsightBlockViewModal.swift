@@ -6,3 +6,10 @@
 //
 
 import Foundation
+
+struct MetricCardViewModal {
+    let title: String
+    var percentageChange: String?
+    let data: String
+    var footnote: String?
+}

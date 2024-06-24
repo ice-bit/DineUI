@@ -8,7 +8,7 @@
 import Foundation
 
 extension Notification.Name {
-    static let didAddNewOrderNotification = Notification.Name("com.euphoria.Dine.didAddNewOrderNotification")
+    static let orderDidChangeNotification = Notification.Name("com.euphoria.Dine.didAddNewOrderNotification")
     static let tableSelectionNotification = Notification.Name("com.euphoria.Dine.tableSelectionNotification")
     static let didAddTable = Notification.Name("com.euphoria.Dine.didAddTable")
     static let didAddMenuItemNotification = Notification.Name("com.euphoria.Dine.didAddMenuItemNotification")

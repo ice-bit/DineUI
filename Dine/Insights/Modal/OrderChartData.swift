@@ -6,3 +6,9 @@
 //
 
 import Foundation
+
+struct OrderChartData: Identifiable {
+    let id = UUID()
+    let date: String
+    let count: Int
+}

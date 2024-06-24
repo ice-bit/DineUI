@@ -157,7 +157,15 @@ class BillViewController: UIViewController {
         }
     }
     
-    // MARK: - TableViewDataSource
+    private func deleteBill(_ bill: Bill) {
+        do {
+            let billService = try BillServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            try billService.delete(bill)
+        } catch {
+            print("Failed to perform \(#function) - \(error)")
+        }
+    }
+    
     enum BillSection: Int, CaseIterable {
         case today
         case yesterday
@@ -173,7 +181,9 @@ class BillViewController: UIViewController {
     }
 }
 
+// MARK: - TableView DataSource & Delegate methods
 extension BillViewController: UITableViewDataSource, UITableViewDelegate {
+    
     func numberOfSections(in tableView: UITableView) -> Int {
         nonEmptyBillSection.count
     }
@@ -197,6 +207,35 @@ extension BillViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         let billSection = nonEmptyBillSection[section]
         return billSection.title
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let data = billData[indexPath.row]
+        let billDetailViewController = BillDetailViewController(bill: data)
+        navigationController?.pushViewController(billDetailViewController, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let selectedBill = billData[indexPath.row]
+        
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completionHandler in
+            guard let self else { return }
+            
+            print("Delete")
+            self.deleteBill(selectedBill)
+            // Either reload and remove the bill or call loadBills() (FYI calling loadBills() will be slower)
+            /* tableView.reloadData()
+            if let index = billData.firstIndex(where: { $0.billId == selectedBill.billId }) {
+                billData.remove(at: index)
+            }*/
+            
+            loadBillData() // Reload is handled inside this method
+            
+            completionHandler(true)
+        }
+        
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
     }
 }
 

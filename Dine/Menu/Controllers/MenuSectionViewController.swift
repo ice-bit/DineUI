@@ -68,7 +68,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     // MARK: - UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = sectionData[indexPath.item]
-        guard let selectedSection = MenuSection(rawValue: item.sectionTitle) else {
+        guard let selectedSection = MenuSectionType(rawValue: item.sectionTitle) else {
             print("Invalid section data!")
             return
         }

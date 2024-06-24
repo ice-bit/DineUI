@@ -13,7 +13,7 @@ struct OrderItem {
     let menuItemID: UUID
     let menuItemName: String
     let price: Double
-    let section: MenuSection
+    let section: MenuSectionType
     let quantity: Int
 }
 extension OrderItem: SQLTable {
@@ -65,7 +65,7 @@ extension OrderItem: DatabaseParsable {
         let quantityPointer = sqlite3_column_int(statement, 3)
         let resultQuantity = Int(quantityPointer)
         guard let itemId = UUID(uuidString: String(cString: itemIdCString)),
-              let menuSection = MenuSection(rawValue: menuSectionRawValue)
+              let menuSection = MenuSectionType(rawValue: menuSectionRawValue)
         else {
             throw DatabaseError.conversionFailed
         }

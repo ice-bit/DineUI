@@ -154,16 +154,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     }
     
     private func handleSwipe(item: MenuCategory) {
-        do {
-            let categoryService = try CategoryServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
-            try categoryService.delete(item)
-            if let index = categories.firstIndex(where: { $0.id == item.id }) {
-                categories.remove(at: index)
-                collectionView.reloadData()
-            }
-        } catch {
-            print("Counldn't delete category")
-        }
+        presentWarning(for: item)
     }
     
     private func filterContentsForSearch(_ searchText: String) {
@@ -172,6 +163,42 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         }
         
         collectionView.reloadData()
+    }
+    
+    func presentWarning(for item: MenuCategory) {
+        // Create the alert controller
+        let alertController = UIAlertController(title: "Delete", message: "Do you want to delete the order?", preferredStyle: .alert)
+        
+        // Create the 'Delete' action
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            guard let self else { return }
+            // Handle the delete action
+            print("Order deleted")
+            do {
+                let categoryService = try CategoryServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+                try categoryService.delete(item)
+                if let index = categories.firstIndex(where: { $0.id == item.id }) {
+                    categories.remove(at: index)
+                    collectionView.reloadData()
+                }
+            } catch {
+                print("Counldn't delete category")
+            }
+        }
+        
+        // Create the 'Add Items' action
+        let addItemsAction = UIAlertAction(title: "Cancel", style: .default) { [weak self] _ in
+            // Handle the add items action
+            guard let self else { return }
+            print("Cancelled")
+        }
+        
+        // Add the actions to the alert controller
+        alertController.addAction(addItemsAction)
+        alertController.addAction(deleteAction)
+        
+        // Present the alert controller
+        self.present(alertController, animated: true, completion: nil)
     }
     
     // MARK: - UICollectionViewDataSource

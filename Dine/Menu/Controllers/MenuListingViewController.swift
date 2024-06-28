@@ -166,6 +166,35 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         }
     }
     
+    func presentWarning(for item: MenuItem) {
+        // Create the alert controller
+        let alertController = UIAlertController(title: "Delete", message: "Do you want to delete the order?", preferredStyle: .alert)
+        
+        // Create the 'Delete' action
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            guard let self else { return }
+            // Handle the delete action
+            print("Order deleted")
+            self.deleteMenuItem(item) // delete
+            populateMenuData() // fetch
+            tableView.reloadData() // reload to reflect
+        }
+        
+        // Create the 'Add Items' action
+        let addItemsAction = UIAlertAction(title: "Cancel", style: .default) { [weak self] _ in
+            // Handle the add items action
+            guard let self else { return }
+            print("Cancelled")
+        }
+        
+        // Add the actions to the alert controller
+        alertController.addAction(addItemsAction)
+        alertController.addAction(deleteAction)
+        
+        // Present the alert controller
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
     // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         isFiltering ? filteredItems.count : menuData.count
@@ -192,10 +221,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completionHandler in
             guard let self else { return }
             print("Delete action")
-            
-            self.deleteMenuItem(item) // delete
-            populateMenuData() // fetch
-            tableView.reloadData() // reload to reflect
+            presentWarning(for: item)
             
             completionHandler(true)
         }

@@ -322,6 +322,35 @@ class OrderViewController: UIViewController {
             print("Failed to perform \(#function) - \(error)")
         }
     }
+    
+    func presentWarning(for item: Order) {
+        // Create the alert controller
+        let alertController = UIAlertController(title: "Delete", message: "Do you want to delete the order?", preferredStyle: .alert)
+        
+        // Create the 'Delete' action
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            guard let self else { return }
+            // Handle the delete action
+            print("Order deleted")
+            self.deleteOrder(item)
+            
+            loadOrderData() // Reload is handled inside this method
+        }
+        
+        // Create the 'Add Items' action
+        let addItemsAction = UIAlertAction(title: "Cancel", style: .default) { [weak self] _ in
+            // Handle the add items action
+            guard let self else { return }
+            print("Cancelled")
+        }
+        
+        // Add the actions to the alert controller
+        alertController.addAction(addItemsAction)
+        alertController.addAction(deleteAction)
+        
+        // Present the alert controller
+        self.present(alertController, animated: true, completion: nil)
+    }
 }
 
 // MARK: - TableView Delegate and DataSource
@@ -392,11 +421,8 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
         
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completionHandler in
             guard let self else { return }
-            
-            print("Delete")
-            self.deleteOrder(selectedOrder)
-            
-            loadOrderData() // Reload is handled inside this method
+            print("Delete Action")
+            presentWarning(for: selectedOrder)
             
             completionHandler(true)
         }

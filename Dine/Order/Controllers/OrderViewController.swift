@@ -348,13 +348,16 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedOrder = orderData[indexPath.row]
-        if tableView.isEditing {
-            selectedOrders.append(selectedOrder)
-            printSelectedOrders()
+        
+        guard tableView.isEditing else {
+            // Not in editing mode...push to detail vc
+            let detailVC = OrderDetailViewController(order: selectedOrder)
+            navigationController?.pushViewController(detailVC, animated: true)
+            return
         }
-        // Not in editing mode...push to detail vc
-        let detailVC = OrderDetailViewController(order: selectedOrder)
-        navigationController?.pushViewController(detailVC, animated: true)
+        
+        selectedOrders.append(selectedOrder)
+        printSelectedOrders()
     }
     
     func tableView(_ tableView: UITableView, didDeselectRowAt indexPath: IndexPath) {

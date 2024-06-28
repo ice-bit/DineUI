@@ -21,6 +21,16 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     }
     private let menuService: MenuService
     
+    // Search Components
+    private var filteredCategories: [MenuCategory] = []
+    private var searchController: UISearchController!
+    var isSearchBarEmpty: Bool {
+        searchController.searchBar.text?.isEmpty ?? true
+    }
+    var isFiltering: Bool {
+        searchController.isActive && !isSearchBarEmpty
+    }
+    
     // MARK: - Init
     init(menuService: MenuService) {
         self.menuService = menuService
@@ -34,14 +44,14 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     // MARK: - View lifecycle methods
     override func viewDidLoad() {
         super.viewDidLoad()
-        title = "Menu"
+        title = "Categories"
+        view.backgroundColor = .systemBackground
         navigationController?.navigationBar.prefersLargeTitles = true
         setupCollectionView()
         setupPlaceholderLabel()
-        populateCategoryData()
-        
+        setupSearchBar()
         setupBarButton()
-        
+        populateCategoryData()
         NotificationCenter.default.addObserver(self, selector: #selector(categoryDataDidChange(_:)), name: .categoryDataDidChangeNotification, object: nil)
     }
     
@@ -87,6 +97,15 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         placeholderLabel.isHidden = true
     }
     
+    private func setupSearchBar() {
+        searchController = UISearchController()
+        searchController.searchResultsUpdater = self
+        searchController.obscuresBackgroundDuringPresentation = false
+        searchController.searchBar.placeholder = "Search Items"
+        navigationItem.searchController = searchController
+        definesPresentationContext = true
+    }
+    
     private func setupBarButton() {
         addButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addButtonAction(_:)))
         navigationItem.rightBarButtonItem = addButton
@@ -121,7 +140,6 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         let layout = UICollectionViewCompositionalLayout.list(using: listConfig)
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = /*.systemGroupedBackground*/.systemBackground
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -148,14 +166,22 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         }
     }
     
-    // MARK: - UICollectionViewDataSource
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let item = categories[indexPath.item]
-        return collectionView.dequeueConfiguredReusableCell(using: sectionViewRegistration, for: indexPath, item: item)
+    private func filterContentsForSearch(_ searchText: String) {
+        filteredCategories = categories.filter{ (category: MenuCategory) -> Bool in
+            category.categoryName.lowercased().contains(searchText.lowercased())
+        }
+        
+        collectionView.reloadData()
     }
     
+    // MARK: - UICollectionViewDataSource
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        categories.count
+        isFiltering ? filteredCategories.count : categories.count
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let item = isFiltering ? filteredCategories[indexPath.item] : categories[indexPath.item]
+        return collectionView.dequeueConfiguredReusableCell(using: sectionViewRegistration, for: indexPath, item: item)
     }
     
     private var sectionViewRegistration: UICollectionView.CellRegistration<UICollectionViewCell, MenuCategory> = {
@@ -170,8 +196,15 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     
     // MARK: - UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        let item = categories[indexPath.item]
+        let item = isFiltering ? filteredCategories[indexPath.item] : categories[indexPath.item]
         let sectionDetailVC = MenuListingViewController(activeSection: .mainCourse, category: item)
         navigationController?.pushViewController(sectionDetailVC, animated: true)
+    }
+}
+
+extension MenuSectionViewController: UISearchResultsUpdating {
+    func updateSearchResults(for searchController: UISearchController) {
+        let searchBar = searchController.searchBar
+        filterContentsForSearch(searchBar.text!)
     }
 }

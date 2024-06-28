@@ -69,7 +69,7 @@ extension MenuItem: SQLUpdatable {
     var createUpdateStatement: String {
         """
         UPDATE \(DatabaseTables.menuItem.rawValue)
-        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), catergory_id = '\(category.id)'
+        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), category_id = '\(category.id)'
         WHERE MenuItemID = '\(itemId)';
         """
     }

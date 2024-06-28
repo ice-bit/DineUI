@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import Toast
 
 class MenuListingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
@@ -53,10 +54,10 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         setupSearchBar()
         setupNavbar()
         populateMenuData()
-        NotificationCenter.default.addObserver(self, selector: #selector(didAddMenuItem(_:)), name: .didAddMenuItemNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(menuItemDidChange(_:)), name: .menuItemDidChangeNotification, object: nil)
     }
     
-    @objc private func didAddMenuItem(_ sender: NotificationCenter) {
+    @objc private func menuItemDidChange(_ sender: NotificationCenter) {
         populateMenuData()
         tableView.reloadData()
     }
@@ -101,7 +102,10 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             let results = try menuService.fetch()
             if let results = results {
                 let menuItemForSection = results.filter { $0.category.id == category.id }
-                menuData = menuItemForSection
+                DispatchQueue.main.async {
+                    self.menuData = menuItemForSection
+                    self.tableView.reloadData()
+                }
             }
         } catch {
             print("Unable to fetch menu items - \(error)")
@@ -181,14 +185,14 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         // Create the 'Add Items' action
-        let addItemsAction = UIAlertAction(title: "Cancel", style: .default) { [weak self] _ in
+        let cancelAction = UIAlertAction(title: "Cancel", style: .default) { _ in
             // Handle the add items action
-            guard let self else { return }
+            // guard let self else { return }
             print("Cancelled")
         }
         
         // Add the actions to the alert controller
-        alertController.addAction(addItemsAction)
+        alertController.addAction(cancelAction)
         alertController.addAction(deleteAction)
         
         // Present the alert controller
@@ -228,6 +232,92 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         return configuration
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        let item = menuData[indexPath.row]
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [weak self] action in
+                // Handle action 1
+                guard let self else { return }
+                print("Edit context menu action")
+                self.presentEditAlertController(for: item)
+                
+            }
+            /*let action2 = UIAction(title: "Action 2", image: UIImage(systemName: "heart")) { action in
+                // Handle action 2
+                print("Action 2 tapped")
+            }*/
+            return UIMenu(title: "", children: [editAction])
+        }
+    }
+    
+    private func presentEditAlertController(for item: MenuItem) {
+        let alertController = UIAlertController(title: "Edit Item", message: nil, preferredStyle: .alert)
+        
+        alertController.addTextField { textField in
+            textField.placeholder = "Name"
+            textField.text = item.name
+        }
+        
+        alertController.addTextField { textField in
+            textField.placeholder = "Price"
+            textField.keyboardType = .decimalPad
+            textField.text = String(item.price)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            self.dismiss(animated: true)
+        }
+        
+        let doneAction = UIAlertAction(title: "Done", style: .default) { [weak self] _ in
+            guard let self else { return }
+            guard let firstTextField = alertController.textFields?[0],
+                  let secondTextField = alertController.textFields?[1] else { return }
+            
+            guard let name = firstTextField.text,
+                  !name.isEmpty else {
+                self.showToast("Invalid Name")
+                return
+            }
+            
+            guard let priceText = secondTextField.text,
+                  !priceText.isEmpty,
+                  let price = Double(priceText) else {
+                self.showToast("Invalid price")
+                return
+            }
+            
+            
+            // Handle the text input
+            print("Name text field: \(name)")
+            print("Price text field: \(price)")
+            
+            let updatedItem = MenuItem(itemId: item.itemId, name: name, price: price, category: item.category)
+            editItem(updatedItem)
+            let toast = Toast.text("Updated!")
+            toast.show(haptic: .success)
+        }
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(doneAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func editItem(_ item: MenuItem) {
+        do {
+            let menuService = try MenuServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            try menuService.update(item)
+            populateMenuData()
+        } catch {
+            fatalError("Updating menu item failed!") // Will be removed in production!
+        }
+    }
+    
+    private func showToast(_ message: String) {
+        let toast = Toast.text(message)
+        toast.show(haptic: .error)
     }
 }
 

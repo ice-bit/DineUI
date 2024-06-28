@@ -20,6 +20,7 @@
 		551AAE452BFF7EEE00E50FE7 /* MenuData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAE442BFF7EEE00E50FE7 /* MenuData.swift */; };
 		551AAE472BFF84E300E50FE7 /* MenuData.json in Resources */ = {isa = PBXBuildFile; fileRef = 551AAE462BFF84E300E50FE7 /* MenuData.json */; };
 		551AAE492BFF873B00E50FE7 /* MenuListingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 551AAE482BFF873B00E50FE7 /* MenuListingViewController.swift */; };
+		551EA5FC2C2EE16100BCC5E1 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 551EA5FB2C2EE16100BCC5E1 /* Toast */; };
 		5524F54C2BE9E836003F500C /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F54B2BE9E836003F500C /* AppDelegate.swift */; };
 		5524F54E2BE9E836003F500C /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F54D2BE9E836003F500C /* SceneDelegate.swift */; };
 		5524F5502BE9E836003F500C /* TabBarHostingController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F54F2BE9E836003F500C /* TabBarHostingController.swift */; };
@@ -36,6 +37,7 @@
 		5524F62B2BECD422003F500C /* MenuItemDummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F62A2BECD422003F500C /* MenuItemDummy.swift */; };
 		5524F62E2BEDE57C003F500C /* OrderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F62D2BEDE57C003F500C /* OrderCell.swift */; };
 		5524F6372BEE688D003F500C /* MenuDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F6362BEE688D003F500C /* MenuDetailViewController.swift */; };
+		552866BC2C2EE23000258C79 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 552866BB2C2EE23000258C79 /* SQLite */; };
 		552D37A02BF1F00D005B1D19 /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D379F2BF1F00D005B1D19 /* Date+Formatting.swift */; };
 		552D37AC2BF1F09F005B1D19 /* DatabaseError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D37A32BF1F09F005B1D19 /* DatabaseError.swift */; };
 		552D37AD2BF1F09F005B1D19 /* SQLiteError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D37A42BF1F09F005B1D19 /* SQLiteError.swift */; };
@@ -88,13 +90,11 @@
 		5532D2462C26FDF40077656C /* RecoverPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5532D2452C26FDF40077656C /* RecoverPasswordViewController.swift */; };
 		5548B6A42C04BA23000E99C8 /* ConfirmOrderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6A32C04BA23000E99C8 /* ConfirmOrderViewController.swift */; };
 		5548B6A62C04BC96000E99C8 /* MockDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6A52C04BC96000E99C8 /* MockDatabase.swift */; };
-		5548B6A92C059EA8000E99C8 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 5548B6A82C059EA8000E99C8 /* SQLite */; };
 		5548B6AD2C05AAD9000E99C8 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6AC2C05AAD9000E99C8 /* DatabaseManager.swift */; };
 		5548B6AF2C075907000E99C8 /* MenuItemTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6AE2C075907000E99C8 /* MenuItemTableViewCell.swift */; };
 		5548B6B12C09FA91000E99C8 /* MenuCartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6B02C09FA91000E99C8 /* MenuCartView.swift */; };
 		5548B6B42C0A50B5000E99C8 /* ToastView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6B32C0A50B5000E99C8 /* ToastView.swift */; };
 		5548B6B72C0B8DB1000E99C8 /* Notification+Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */; };
-		5548B6BA2C0EE27B000E99C8 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 5548B6B92C0EE27B000E99C8 /* Toast */; };
 		5548B6BC2C0F12DE000E99C8 /* MenuDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6BB2C0F12DE000E99C8 /* MenuDetailView.swift */; };
 		557B5CA42C2057F9004E5C49 /* BillDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CA32C2057F9004E5C49 /* BillDetailViewController.swift */; };
 		557B5CA62C206EA8004E5C49 /* OrderCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CA52C206EA8004E5C49 /* OrderCellView.swift */; };
@@ -298,8 +298,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5548B6BA2C0EE27B000E99C8 /* Toast in Frameworks */,
-				5548B6A92C059EA8000E99C8 /* SQLite in Frameworks */,
+				552866BC2C2EE23000258C79 /* SQLite in Frameworks */,
+				551EA5FC2C2EE16100BCC5E1 /* Toast in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -367,6 +367,7 @@
 			children = (
 				5524F54A2BE9E836003F500C /* Dine */,
 				5524F5492BE9E836003F500C /* Products */,
+				552866BA2C2EE23000258C79 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -460,6 +461,13 @@
 				5524F62D2BEDE57C003F500C /* OrderCell.swift */,
 			);
 			path = Order;
+			sourceTree = "<group>";
+		};
+		552866BA2C2EE23000258C79 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 		552D37A12BF1F01F005B1D19 /* Migration */ = {
@@ -846,8 +854,8 @@
 			);
 			name = Dine;
 			packageProductDependencies = (
-				5548B6A82C059EA8000E99C8 /* SQLite */,
-				5548B6B92C0EE27B000E99C8 /* Toast */,
+				551EA5FB2C2EE16100BCC5E1 /* Toast */,
+				552866BB2C2EE23000258C79 /* SQLite */,
 			);
 			productName = Dine;
 			productReference = 5524F5482BE9E836003F500C /* Dine.app */;
@@ -1290,15 +1298,15 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		5548B6A82C059EA8000E99C8 /* SQLite */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5548B6A72C059EA8000E99C8 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
-			productName = SQLite;
-		};
-		5548B6B92C0EE27B000E99C8 /* Toast */ = {
+		551EA5FB2C2EE16100BCC5E1 /* Toast */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5548B6B82C0EE27B000E99C8 /* XCRemoteSwiftPackageReference "toast-swift" */;
 			productName = Toast;
+		};
+		552866BB2C2EE23000258C79 /* SQLite */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5548B6A72C059EA8000E99C8 /* XCRemoteSwiftPackageReference "SQLite.swift" */;
+			productName = SQLite;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

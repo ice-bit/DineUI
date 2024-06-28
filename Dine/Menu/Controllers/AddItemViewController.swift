@@ -215,7 +215,7 @@ class AddItemViewController: UIViewController {
                 let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
                 impactFeedback.prepare()
                 impactFeedback.impactOccurred()
-                NotificationCenter.default.post(name: .didAddMenuItemNotification, object: nil)
+                NotificationCenter.default.post(name: .menuItemDidChangeNotification, object: nil)
             } catch {
                 print("Unable to add MenuItem - \(error)")
             }

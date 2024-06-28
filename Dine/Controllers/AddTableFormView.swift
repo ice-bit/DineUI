@@ -9,7 +9,7 @@ import SwiftUI
 
 struct AddTableFormView: View {
     @State private var locationID: String = ""
-    @State private var selectedNumber: Int = 0
+    @State private var selectedNumber: Int = 1
     
     // Access the environment variable for presentation mode
     @Environment(\.presentationMode) var presentationMode

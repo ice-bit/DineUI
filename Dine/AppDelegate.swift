@@ -14,6 +14,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
+        
+        // Execute it on other thread
         let databaseService = DatabaseServiceImpl()
         databaseService.createMenuItemTable()
         databaseService.createAccountTable()
@@ -21,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         databaseService.createOrderItemTable()
         databaseService.createOrderTable()
         databaseService.createTableDataTable()
+        databaseService.createCategoryTable()
         return true
     }
     

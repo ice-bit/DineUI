@@ -7,28 +7,138 @@
 
 import SwiftUI
 
+enum MetricCardType {
+    case sales
+    case average
+    case peakHours
+    case popularItem
+}
+
 struct MetricCard: View {
-    var viewModal: MetricCardViewModal
+    var viewModel: MetricCardViewModal
     
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(viewModal.title)
-                    .padding(.trailing)
+        switch viewModel.cardType {
+        case .sales:
+            SalesCardView(viewModel: viewModel)
+        case .average:
+            AverageCardView(viewModel: viewModel)
+        case .peakHours:
+            PeakHoursCardView(viewModel: viewModel)
+        case .popularItem:
+            PopularItemCardView(viewModel: viewModel)
+        }
+    }
+}
+
+struct SalesCardView: View {
+    var viewModel: MetricCardViewModal
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(viewModel.title)
+                .padding(.bottom, 1)
+                .font(.subheadline)
                 
-                Text(viewModal.percentageChange ?? "")
-                    .font(.caption)
-                    .foregroundStyle(.darkGreen)
+                Text(viewModel.data)
+                    .font(.headline)
+                    .bold(true)
+                
+                
+                Text(viewModel.footnote ?? "")
+                    .font(.footnote)
+                
+                Spacer()
             }
-            .padding(.bottom, 1)
             
-            Text(viewModal.data)
-                .font(.title)
-                .bold(true)
+            Spacer()
+        }
+        .padding()
+        .background(.app)
+        .clipShape(.rect(cornerRadius: 12))
+        .foregroundStyle(.black)
+    }
+}
+
+struct AverageCardView: View {
+    var viewModel: MetricCardViewModal
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(viewModel.title)
+                    .padding(.bottom, 4)
+                    .font(.subheadline)
+                
+                Text(viewModel.data)
+                    .font(.headline)
+                    .bold()
+                    .padding(.bottom, 4)
+                
+                Text(viewModel.footnote ?? "")
+                    .font(.footnote)
+                Spacer()
+            }
             
-            Text(viewModal.footnote ?? "")
-                .font(.footnote)
-                .foregroundStyle(.gray)
+            Spacer()
+        }
+        .padding()
+        .background(.app)
+        .clipShape(.rect(cornerRadius: 12))
+        .foregroundStyle(.black)
+    }
+}
+
+struct PeakHoursCardView: View {
+    var viewModel: MetricCardViewModal
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(viewModel.title)
+                    .padding(.bottom, 4)
+                    .font(.subheadline)
+                
+                Text(viewModel.data)
+                    .font(.headline)
+                    .bold()
+                    .padding(.bottom, 4)
+                
+                Text(viewModel.footnote ?? "")
+                    .font(.footnote)
+                
+                Spacer()
+            }
+            
+            Spacer()
+        }
+        .padding()
+        .background(.app)
+        .clipShape(.rect(cornerRadius: 12))
+        .foregroundStyle(.black)
+    }
+}
+
+struct PopularItemCardView: View {
+    var viewModel: MetricCardViewModal
+    
+    var body: some View {
+        HStack {
+            VStack(alignment: .leading) {
+                Text(viewModel.title)
+                    .padding(.bottom, 4)
+                    .font(.subheadline)
+                
+                Text("\(viewModel.data)")
+                    .font(.headline)
+                    .bold()
+                    .padding(.bottom, 4)
+                
+                Spacer()
+            }
+            
+            Spacer()
         }
         .padding()
         .background(.app)
@@ -38,12 +148,22 @@ struct MetricCard: View {
 }
 
 #Preview {
-    let viewModal = MetricCardViewModal(
-        title: "Sales",
-        percentageChange: "+2.5%",
-        data: "$10345",
-        footnote: "$1900"
-    )
+    let viewModel = [
+        MetricCardViewModal(
+            title: "Peak Hours",
+            percentageChange: "+2.5%",
+            data: "12:00",
+            footnote: "Orders peaked at \n12:00 Hour",
+            cardType: .peakHours
+        ),
+        MetricCardViewModal(
+            title: "Popular Item",
+            percentageChange: "+2.5%",
+            data: "Potassium Chloride",
+            footnote: "Orders peaked at \n12:00 Hour",
+            cardType: .popularItem
+        )
+    ]
     
-    return MetricCard(viewModal: viewModal)
+    return MetricCard(viewModel: viewModel[1])
 }

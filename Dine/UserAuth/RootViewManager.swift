@@ -9,7 +9,7 @@ import UIKit
 import Toast
 
 struct RootViewManager {
-    static func didSignInSuccessfully() {
+    static func didSignInSuccessfully(with account: Account) {
         // Create the new root view controller
         let mainAppController = TabBarHostingController()
         
@@ -33,7 +33,8 @@ struct RootViewManager {
         
         
         // Set isUserLoggedIn -> true
-        UserDefaults.standard.set(true, forKey: "isUserLoggedIn")
+        // UserDefaults.standard.set(true, forKey: "isUserLoggedIn")
+        UserSessionManager.shared.saveAccount(account)
         let toast = Toast.default(image: UIImage(systemName: "person.fill.checkmark")!, title: "Logged In")
         toast.show(haptic: .success)
     }

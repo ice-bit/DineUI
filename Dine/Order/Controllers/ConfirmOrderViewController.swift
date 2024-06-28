@@ -41,11 +41,13 @@ class ConfirmOrderViewController: UIViewController {
     }
 }
 
+let menuCat = MenuCategory(id: UUID(), categoryName: "Starter")
+
 fileprivate let menuItems = [
-    MenuItem(name: "Chicken", price: 4.9, menuSection: .beverages),
-    MenuItem(name: "Chicken", price: 4.9, menuSection: .desserts),
-    MenuItem(name: "Chicken", price: 4.9, menuSection: .mainCourse),
-    MenuItem(name: "Chicken", price: 4.9, menuSection: .side)
+    MenuItem(name: "Chicken", price: 4.9, category: menuCat),
+    MenuItem(name: "Chicken", price: 4.9, category: menuCat),
+    MenuItem(name: "Chicken", price: 4.9, category: menuCat),
+    MenuItem(name: "Chicken", price: 4.9, category: menuCat)
 ]
 
 fileprivate let table = RestaurantTable(tableStatus: .free, maxCapacity: 10, locationIdentifier: 120)

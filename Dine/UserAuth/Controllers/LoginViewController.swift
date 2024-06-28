@@ -113,13 +113,17 @@ class LoginViewController: UIViewController {
         guard let username = usernameTextField.text,
               let password = passwordTextField.text,
             !password.isEmpty,
-            !username.isEmpty else { return } // Enable shake if text field is empty
-        
+              !username.isEmpty else {
+            showToast(message: "Missing Credentials")
+            return
+        } // Enable shake if text field is empty
         do {
             let databaseAccess = try SQLiteDataAccess.openDatabase()
             let authController = AuthController(databaseAccess: databaseAccess)
-            try authController.login(username: username, password: password)
-            RootViewManager.didSignInSuccessfully()
+            guard let account = try authController.login(username: username, password: password) else {
+                throw AuthenticationError.noUserFound
+            }
+            RootViewManager.didSignInSuccessfully(with: account)
         }  catch let error as AuthenticationError {
             handleLoginError(error)
         } catch {

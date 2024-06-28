@@ -110,8 +110,10 @@ class SignUpViewController: UIViewController {
             let databaseAccess = try SQLiteDataAccess.openDatabase()
             let authController = AuthController(databaseAccess: databaseAccess)
             try authController.createAccount(username: username, password: confirmPassword, userRole: .manager)
-            try authController.login(username: username, password: confirmPassword)
-            RootViewManager.didSignInSuccessfully()
+            guard let account = try authController.login(username: username, password: confirmPassword) else {
+                throw AuthenticationError.noUserFound
+            }
+            RootViewManager.didSignInSuccessfully(with: account)
         } catch let error as AuthenticationError {
             handleLoginError(error)
         } catch {

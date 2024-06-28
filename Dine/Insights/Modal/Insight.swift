@@ -8,7 +8,7 @@
 import Foundation
 
 struct Insight {
-    private let bills = ModelData().bills
+    private let bills: [Bill] = []
     private var yesterdaysBill: [Bill] {
         filterBills(for: Calendar.current.date(byAdding: .day, value: -1, to: Date())!, in: bills)
     }

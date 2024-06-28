@@ -151,10 +151,12 @@ class SQLiteDatabase {
             query += "WHERE \(condition)"
         }
         query += ";"
+        print(query)
         let deleteStatment = try prepareStatement(sql: query)
         guard sqlite3_step(deleteStatment) == SQLITE_DONE else {
             throw SQLiteError.step(message: errorMessage)
         }
+        print("Data deleted successfully for table: \(tableName)")
     }
     
     func update(tableName: String, columnValuePairs: [String: Any], condition: String? = nil) throws {

@@ -18,7 +18,18 @@ class ModelData {
         } catch {
             print(error)
         }
-        return [Order(tableId: UUID(), orderStatus: .preparing, menuItems: [MenuItem(name: "Bus", price: 3.9, menuSection: .mainCourse)])]
+        return [Order(
+            tableId: UUID(),
+            orderStatus: .preparing,
+            menuItems: [MenuItem(
+                name: "Bus",
+                price: 3.9,
+                category: MenuCategory(
+                    id: UUID(),
+                    categoryName: "Starter"
+                )
+            )]
+        )]
     }
     
     var tables: [RestaurantTable] = [
@@ -28,20 +39,17 @@ class ModelData {
     ]
     
     var sections: [SectionData] = load("SectionData.json")
-    // var bills: [BillData] = load("BillData.json")
-    var bills: [Bill] {
-        do {
-            let billService = try BillServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
-            if let results = try? billService.fetch() {
-                return results
-            }
-        } catch {
-            print(error)
-        }
-        return [Bill(amount: 69.9, tax: 0.76, orderId: UUID(), isPaid: false)]
-    }
     
-    var menuItems: [MenuItem] = load("MenuData.json")
+     var menuItems: [MenuItem] = [
+        MenuItem(
+            name: "Sushi",
+            price: 4.99,
+            category: MenuCategory(
+                id: UUID(),
+                categoryName: "Starter"
+            )
+        )
+     ]
 }
 
 func load<T: Decodable>(_ filename: String) -> T {

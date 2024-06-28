@@ -13,10 +13,10 @@ class MenuController {
         self.menuService = menuService
     }
     
-    func addItemToMenu(name: String, price: Double) throws {
-        let menuItem = MenuItem(name: name, price: price, menuSection: .mainCourse)
-        try menuService.add(menuItem)
-    }
+//    func addItemToMenu(name: String, price: Double) throws {
+//        let menuItem = MenuItem(name: name, price: price, menuSection: .mainCourse)
+//        try menuService.add(menuItem)
+//    }
     
     func removeItemFromMenu(_ menuItem: MenuItem) throws {
         try menuService.delete(menuItem)

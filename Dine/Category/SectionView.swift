@@ -8,11 +8,11 @@
 import SwiftUI
 
 struct SectionView: View {
-    var sectionData: SectionData
+    var catergory: MenuCategory
     
     var body: some View {
         HStack {
-            Label(sectionData.sectionTitle, systemImage: sectionData.systemImage)
+            Label(catergory.categoryName, systemImage: "square.dashed.inset.filled")
                 .font(.subheadline)
                 .foregroundStyle(.primary)
                 .padding()
@@ -30,6 +30,9 @@ struct SectionView: View {
 }
 
 #Preview {
-    let data = SectionData(systemImage: "doc.richtext.ja", sectionTitle: "Starters")
-    return SectionView(sectionData: data)
+    let data = MenuCategory(
+        id: UUID(),
+        categoryName: "Starters"
+    )
+    return SectionView(catergory: data)
 }

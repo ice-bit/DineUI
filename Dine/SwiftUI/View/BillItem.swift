@@ -11,7 +11,7 @@ struct BillItem: View {
     var billData: Bill
     
     var body: some View {
-        HStack {
+        /*HStack {
             VStack {
                 Image(systemName: "square.stack.3d.up.fill")
                     .font(.title3)
@@ -49,6 +49,48 @@ struct BillItem: View {
                     .font(.caption2)
                     .padding(.trailing)
             }
+        }
+        .background(.app)
+        .clipShape(.rect(cornerRadius: 10))
+        .foregroundStyle(.black)*/
+        HStack {
+            VStack {
+                Text("#\(billData.getOrder?.getTable?.locationId ?? 0)")
+                    .font(.subheadline)
+                    .padding(.bottom, 8)
+                
+                Image(systemName: "table.furniture")
+                    .font(.title3)
+                    .padding(.bottom, 5)
+            }
+            .padding()
+            .overlay (
+                Rectangle()
+                    .frame(width: 1, height: 44)
+                    .foregroundStyle(.primary),
+                alignment: .trailing
+            )
+            
+            Label(billData.paymentStatus.rawValue, systemImage: "circle.dashed.inset.fill")
+                /*.font(.subheadline)*/ // While the tableView is in editing mode this label will truncate!
+                .foregroundStyle(.primary)
+            
+            Spacer()
+            
+            VStack(alignment: .trailing) {
+                HStack {
+                    Text(billData.date, style: .date)
+                        .font(.caption2)
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption2)
+                }
+                .padding(.bottom, 8)
+                
+                Text("Items \(billData.getOrderedItems?.count ?? 0)")
+                    .font(.subheadline)
+            }
+            .padding()
         }
         .background(.app)
         .clipShape(.rect(cornerRadius: 10))

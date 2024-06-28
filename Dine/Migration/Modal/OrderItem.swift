@@ -13,7 +13,7 @@ struct OrderItem {
     let menuItemID: UUID
     let menuItemName: String
     let price: Double
-    let section: MenuSectionType
+    let categoryId: UUID
     let quantity: Int
 }
 extension OrderItem: SQLTable {
@@ -22,13 +22,22 @@ extension OrderItem: SQLTable {
     }
     
     static var createStatement: String {
+        /*CREATE TABLE OrderItem (
+         OrderItemID INTEGER PRIMARY KEY,
+         OrderID VARCHAR(32) NOT NULL,
+         MenuItemID VARCHAR(32) NOT NULL,
+         Quantity INT NOT NULL,
+         Category VARCHAR(32) NOT NULL,
+         FOREIGN KEY (OrderID) REFERENCES Order(OrderID),
+         FOREIGN KEY (MenuItemID) REFERENCES MenuItem(MenuItemID)
+     );*/
         """
         CREATE TABLE \(DatabaseTables.orderMenuItemTable.rawValue) (
             OrderItemID INTEGER PRIMARY KEY,
             OrderID VARCHAR(32) NOT NULL,
             MenuItemID VARCHAR(32) NOT NULL,
             Quantity INT NOT NULL,
-            Section TEXT NOT NULL,
+            category_id VARCHAR(32) NOT NULL,
             FOREIGN KEY (OrderID) REFERENCES \(DatabaseTables.orderTable.rawValue)(OrderID),
             FOREIGN KEY (MenuItemID) REFERENCES \(DatabaseTables.menuItem.rawValue)(MenuItemID)
         );
@@ -43,34 +52,52 @@ extension OrderItem: SQLInsertable {
             return ""
         }
         return """
-        INSERT INTO \(DatabaseTables.orderMenuItemTable.rawValue) (OrderID, MenuItemID, Quantity, Section)
-        VALUES ('\(orderID.uuidString)', '\(menuItemID.uuidString)', \(quantity), '\(section.rawValue)');
+        INSERT INTO \(DatabaseTables.orderMenuItemTable.rawValue) (OrderID, MenuItemID, Quantity, category_id)
+        VALUES ('\(orderID.uuidString)', '\(menuItemID.uuidString)', \(quantity), '\(categoryId)');
         """
     }
 }
+
+extension OrderItem: SQLUpdatable, SQLDeletable {
+    var createUpdateStatement: String {
+        guard let orderID else { return String() }
+        return """
+        UPDATE \(DatabaseTables.orderMenuItemTable.rawValue)
+        SET Quantity = \(quantity)
+        WHERE OrderID = '\(orderID)' AND MenuItemID = '\(menuItemID)';
+        """
+    }
+    
+    var createDeleteStatement: String {
+        guard let orderID else { return String() }
+        return """
+        DELETE FROM \(DatabaseTables.orderMenuItemTable.rawValue)
+        WHERE OrderID = '\(orderID)';
+        """
+    }
+}
+
 
 extension OrderItem: DatabaseParsable {
     static func parseRow(statement: OpaquePointer?) throws -> OrderItem? {
         guard let statement = statement else { return nil }
         guard let itemIdCString = sqlite3_column_text(statement, 0),
               let nameCString = sqlite3_column_text(statement, 1),
-              let menuSectionCString = sqlite3_column_text(statement, 4) else {
+              let categoryIdCString = sqlite3_column_text(statement, 4) else {
             throw DatabaseError.missingRequiredValue
         }
         
         let name = String(cString: nameCString)
         let price = sqlite3_column_double(statement, 2)
-        let menuSectionRawValue = String(cString: menuSectionCString)
         
         let quantityPointer = sqlite3_column_int(statement, 3)
         let resultQuantity = Int(quantityPointer)
         guard let itemId = UUID(uuidString: String(cString: itemIdCString)),
-              let menuSection = MenuSectionType(rawValue: menuSectionRawValue)
-        else {
+              let categoryId = UUID(uuidString: String(cString: categoryIdCString))else {
             throw DatabaseError.conversionFailed
         }
         
-        let orderMenuItem = OrderItem(orderID: nil, menuItemID: itemId, menuItemName: name, price: price, section: menuSection, quantity: resultQuantity)
+        let orderMenuItem = OrderItem(orderID: nil, menuItemID: itemId, menuItemName: name, price: price, categoryId: categoryId, quantity: resultQuantity)
         return orderMenuItem
     }
 }

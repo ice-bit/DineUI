@@ -31,8 +31,15 @@ class OrderController: OrderServicable {
             // Append the menu item to the array the specified number of times
             orderMenuItems.append(contentsOf: Array(repeating: menuItem, count: quantity))
             // Add to join table
-            let orderitem = OrderItem(orderID: orderID, menuItemID: menuItem.itemId, menuItemName: menuItem.name, price: menuItem.price, section: .mainCourse, quantity: quantity)
-            try orderService.add(orderitem)
+            let orderItem = OrderItem(
+                orderID: orderID,
+                menuItemID: menuItem.itemId,
+                menuItemName: menuItem.name,
+                price: menuItem.price,
+                categoryId: menuItem.category.id,
+                quantity: quantity
+            )
+            try orderService.add(orderItem)
         }
         let order = Order(orderId: orderID, tableId: table.tableId, isOrderBilled: false, orderDate: Date(), menuItems: orderMenuItems, orderStatus: .received)
         // Change order status
@@ -97,5 +104,9 @@ class OrderController: OrderServicable {
         
         // Delete the order
         try orderService.delete(order)
+        
+        // Remove all reference in the join table OrderItems
+        let databaseAccess = try SQLiteDataAccess.openDatabase()
+        try databaseAccess.delete(from: DatabaseTables.orderMenuItemTable.rawValue, where: "OrderID = '\(order.orderIdValue.uuidString)'")
     }
 }

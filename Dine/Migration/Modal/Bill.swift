@@ -49,6 +49,13 @@ class Bill {
         tax
     }
     
+    var getOrder: Order? {
+        guard let orderService = try? OrderServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase()) else { return nil }
+        guard let results = try? orderService.fetch() else { return nil }
+        guard let index = results.firstIndex(where: { $0.orderIdValue == orderId }) else { return nil }
+        return results[index]
+    }
+    
     init(_billId: UUID, amount: Double, date: Date, tip: Double, tax: Double, orderId: UUID,isPaid: Bool) {
         self._billId = _billId
         self.amount = amount

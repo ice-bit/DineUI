@@ -70,6 +70,14 @@ class DatabaseServiceImpl {
         }
     }
     
+    func createCategoryTable() {
+        do {
+            try databaseAccess?.createTable(for: MenuCategory.self)
+        } catch {
+            print("Failed to create \(DatabaseTables.category.rawValue) table")
+        }
+    }
+    
     deinit {
         print("DatabaseService no longer active...Deinitializing...")
         databaseAccess = nil

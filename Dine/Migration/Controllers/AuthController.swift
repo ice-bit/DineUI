@@ -13,7 +13,7 @@ protocol ApplicationModeDelegate: AnyObject {
 
 protocol Authentication {
     func createAccount(username: String, password: String, userRole: UserRole) throws
-    func login(username: String, password: String) throws
+    func login(username: String, password: String) throws -> Account?
 }
 
 class AuthController: Authentication {
@@ -45,12 +45,12 @@ class AuthController: Authentication {
         return true
     }
     
-    func login(username: String, password: String) throws {
+    func login(username: String, password: String) throws -> Account? {
         let result = isLoginValid(username: username, password: password)
 
         switch result {
         case .success(let account):
-            return
+            return account
         case .failure(let error):
             throw error
         }

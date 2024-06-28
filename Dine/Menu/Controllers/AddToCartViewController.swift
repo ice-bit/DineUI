@@ -54,7 +54,6 @@ class AddToCartViewController: UIViewController {
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
         //setupToast()
         setupTableView()
         view = tableView
@@ -121,7 +120,7 @@ class AddToCartViewController: UIViewController {
     func showToast() {
         let config = ToastConfiguration(
             direction: .bottom,
-            dismissBy: [.time(time: 3.0), .swipe(direction: .natural), .longPress],
+            dismissBy: [.time(time: 2.4)],
             animationTime: 0.2,
             enteringAnimation: .fade(alpha: 1.0),
             exitingAnimation: .fade(alpha: 0.5)
@@ -132,21 +131,6 @@ class AddToCartViewController: UIViewController {
         toast.show()
     }
     
-    // Setup toast
-    /*private func setupToast() {
-        let config = ToastConfiguration(
-            direction: .bottom,
-            dismissBy: [.time(time: 4.0), .swipe(direction: .natural), .longPress],
-            animationTime: 0.2
-        )
-        
-        toast = Toast.default(
-            image: UIImage(systemName: "cart")!,
-            title: "Items 0",
-            config: config
-        )
-    }*/
-    
     private func loadMenu() {
         do {
             let dataAccess = try SQLiteDataAccess.openDatabase()
@@ -154,6 +138,9 @@ class AddToCartViewController: UIViewController {
             let results = try menuService.fetch()
             if let results {
                 menuItems = results
+                if menuItems.isEmpty {
+                    presentEmptyMenuAlert(on: self)
+                }
             }
         } catch {
             print("Unable to fetch menu items - \(error)")
@@ -186,6 +173,37 @@ class AddToCartViewController: UIViewController {
         }
         
         tableView.reloadData()
+    }
+    
+    func presentEmptyMenuAlert(on viewController: UIViewController) {
+        // Create the alert controller
+        let alertController = UIAlertController(title: "No Items Found", message: "Do you want add menu item?", preferredStyle: .alert)
+        
+        // Create the 'cancel' action
+        let cancelAction = UIAlertAction(title: "cancel", style: .destructive) { [weak self] _ in
+            guard let self else { return }
+            // Handle the delete action
+            print("Cancelled ordering")
+            self.dismiss(animated: true)
+        }
+        
+        // Create the 'Add Items' action
+        let addItemsAction = UIAlertAction(title: "Add", style: .default) { [weak self] _ in
+            // Handle the add items action
+            guard let self else { return }
+            print("Add items")
+            self.dismiss(animated: true)
+            if let tabBarController {
+                tabBarController.selectedIndex = 4
+            }
+        }
+        
+        // Add the actions to the alert controller
+        alertController.addAction(cancelAction)
+        alertController.addAction(addItemsAction)
+        
+        // Present the alert controller
+        viewController.present(alertController, animated: true, completion: nil)
     }
 }
 

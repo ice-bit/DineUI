@@ -8,7 +8,7 @@
 import UIKit
 import SwiftUI
 
-class TablesViewController: UIViewController, UICollectionViewDataSource {
+class TablesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     // MARK: - Properties
     
     /// Service to fetch and manage table data.
@@ -128,6 +128,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource {
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
         collectionView.dataSource = self
+        collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(collectionView)
         
@@ -177,5 +178,35 @@ class TablesViewController: UIViewController, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = tables[indexPath.item]
         return collectionView.dequeueConfiguredReusableCell(using: tableItemRegistration, for: indexPath, item: item)
+    }
+    
+    // MARK: - UICollectionViewDelegate methods
+    func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
+        let item = tables[indexPaths[0].item]
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let editAction = UIAction(title: "Edit", image: UIImage(systemName: "encil")) { action in
+                print("Edit context menu action")
+            }
+            
+            let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash")) { action in
+                print("Delete context menu action")
+                self.deleteTable(item)
+            }
+            
+            return UIMenu(children: [deleteAction])
+        }
+    }
+    
+    private func deleteTable(_ table: RestaurantTable) {
+        do {
+            let tableService = try TableServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            try tableService.delete(table)
+            if let index = tables.firstIndex(where: { $0.tableId == table.tableId }) {
+                tables.remove(at: index)
+                collectionView.reloadData()
+            }
+        } catch {
+            fatalError("Error while deleting table! - \(error)")
+        }
     }
 }

@@ -309,7 +309,11 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         do {
             let menuService = try MenuServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
             try menuService.update(item)
-            populateMenuData()
+            if let index = menuData.firstIndex(where: { $0 == item }) {
+                menuData[index].name = item.name
+                menuData[index].price = item.price
+                tableView.reloadData()
+            }
         } catch {
             fatalError("Updating menu item failed!") // Will be removed in production!
         }

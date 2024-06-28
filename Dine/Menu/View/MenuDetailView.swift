@@ -12,13 +12,14 @@ struct MenuDetailView: View {
     
     var isLandscape: Bool { verticalSizeClass == .compact }
     var menuItem: MenuItem
+    @State var description: String = ""
     
     var body: some View {
         ScrollView {
             if isLandscape {
                 MenuDetailCompactView(menuItem: menuItem)
             } else {
-                MenuDetailRegularView(menuItem: menuItem)
+                MenuDetailRegularView(menuItem: menuItem, description: $description)
             }
         }
     }
@@ -26,6 +27,7 @@ struct MenuDetailView: View {
 
 struct MenuDetailRegularView: View {
     var menuItem: MenuItem
+    @Binding var description: String
     
     var body: some View {
         VStack {
@@ -46,6 +48,10 @@ struct MenuDetailRegularView: View {
                 Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
                     .frame(maxWidth: 300)
                     .multilineTextAlignment(.center)
+                
+                TextEditor(text: $description)
+                    .frame(maxWidth: 300)
+                    .multilineTextAlignment(.leading)
             }
             .padding()
         }

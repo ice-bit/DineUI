@@ -179,6 +179,34 @@ class BillViewController: UIViewController {
             }
         }
     }
+    
+    func presentWarning(for item: Bill) {
+        // Create the alert controller
+        let alertController = UIAlertController(title: "Delete", message: "Do you want to delete the order?", preferredStyle: .alert)
+        
+        // Create the 'Delete' action
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            guard let self else { return }
+            // Handle the delete action
+            print("Order deleted")
+            self.deleteBill(item)
+            loadBillData() // Reload is handled inside this method
+        }
+        
+        // Create the 'Add Items' action
+        let addItemsAction = UIAlertAction(title: "Cancel", style: .default) { [weak self] _ in
+            // Handle the add items action
+            guard let self else { return }
+            print("Cancelled")
+        }
+        
+        // Add the actions to the alert controller
+        alertController.addAction(addItemsAction)
+        alertController.addAction(deleteAction)
+        
+        // Present the alert controller
+        self.present(alertController, animated: true, completion: nil)
+    }
 }
 
 // MARK: - TableView DataSource & Delegate methods
@@ -222,15 +250,7 @@ extension BillViewController: UITableViewDataSource, UITableViewDelegate {
             guard let self else { return }
             
             print("Delete")
-            self.deleteBill(selectedBill)
-            // Either reload and remove the bill or call loadBills() (FYI calling loadBills() will be slower)
-            /* tableView.reloadData()
-            if let index = billData.firstIndex(where: { $0.billId == selectedBill.billId }) {
-                billData.remove(at: index)
-            }*/
-            
-            loadBillData() // Reload is handled inside this method
-            
+            presentWarning(for: selectedBill)
             completionHandler(true)
         }
         

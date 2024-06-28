@@ -11,11 +11,16 @@ import SwiftUI
 class MenuListingViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
     
     private var tableView: UITableView!
+    private var placeholderLabel: UILabel!
     private let cellReuseID = "MenuItemRow"
     private let activeSection: MenuSectionType
     private let category: MenuCategory
     
-    private var menuData: [MenuItem] = []
+    private var menuData: [MenuItem] = [] {
+        didSet {
+            updateUIForMenuItemData()
+        }
+    }
     
     // Search essentials
     private var filteredItems: [MenuItem] = []
@@ -41,13 +46,13 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - View LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        populateMenuData()
         setupTableView()
-        view = tableView
-        title = activeSection.rawValue
+        setupPlaceholderLabel()
+        title = category.categoryName
         navigationController?.navigationBar.prefersLargeTitles = true
         setupSearchBar()
         setupNavbar()
+        populateMenuData()
         NotificationCenter.default.addObserver(self, selector: #selector(didAddMenuItem(_:)), name: .didAddMenuItemNotification, object: nil)
     }
     
@@ -70,6 +75,24 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         present(addMenuVC, animated: true)
     }
     
+    private func setupPlaceholderLabel() {
+        placeholderLabel = UILabel()
+        placeholderLabel.text = "Add Menu Items to Continue"
+        placeholderLabel.textColor = .systemGray3
+        placeholderLabel.font = .preferredFont(forTextStyle: .title1)
+        placeholderLabel.textAlignment = .center
+        placeholderLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(placeholderLabel)
+        
+        NSLayoutConstraint.activate([
+            placeholderLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            placeholderLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        // Initially hidden
+        placeholderLabel.isHidden = true
+    }
+    
     // Load methods
     private func populateMenuData() {
         do {
@@ -85,13 +108,28 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         }
     }
     
+    private func updateUIForMenuItemData() {
+        let hasMenuItems = !menuData.isEmpty
+        tableView.isHidden = !hasMenuItems
+        placeholderLabel.isHidden = hasMenuItems
+    }
+    
     // MARK: - Setup
     private func setupTableView() {
-        tableView = UITableView(frame: .zero)
+        tableView = UITableView()
         tableView.separatorStyle = .none
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseID)
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(tableView)
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
     }
     
     private func setupNavbar() {

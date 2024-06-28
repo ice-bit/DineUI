@@ -40,8 +40,8 @@ struct OrderServiceImpl: OrderService {
             let menuItemTable = DatabaseTables.menuItem.rawValue
             let orderItemTable = DatabaseTables.orderMenuItemTable.rawValue
             let menuItemQuery = """
-                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).MenuSection
-                FROM OrderItems
+                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).category_id
+                FROM \(DatabaseTables.orderMenuItemTable.rawValue)
                 JOIN \(menuItemTable) ON \(orderItemTable).MenuItemID = \(menuItemTable).MenuItemID
                 WHERE \(orderItemTable).OrderID = '\(resultOrder.orderIdValue.uuidString)';
                 """
@@ -51,7 +51,15 @@ struct OrderServiceImpl: OrderService {
             }
             for orderMenuItem in resultOrderMenuItems {
                 for _ in 0..<orderMenuItem.quantity {
-                    let menuItem = MenuItem(itemId: orderMenuItem.menuItemID, name: orderMenuItem.menuItemName, price: orderMenuItem.price, menuSection: .mainCourse)
+                    let menuItem = MenuItem(
+                        itemId: orderMenuItem.menuItemID,
+                        name: orderMenuItem.menuItemName,
+                        price: orderMenuItem.price,
+                        category: MenuCategory(
+                            id: UUID(),
+                            categoryName: "Starter"
+                        )
+                    )
                     resultOrder.menuItems.append(menuItem)
                 }
             }
@@ -71,8 +79,8 @@ struct OrderServiceImpl: OrderService {
             let menuItemTable = DatabaseTables.menuItem.rawValue
             let orderItemTable = DatabaseTables.orderMenuItemTable.rawValue
             let menuItemQuery = """
-                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).MenuSection
-                FROM OrderItems
+                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).category_id
+                FROM \(DatabaseTables.orderMenuItemTable.rawValue)
                 JOIN \(menuItemTable) ON \(orderItemTable).MenuItemID = \(menuItemTable).MenuItemID
                 WHERE \(orderItemTable).OrderID = '\(resultOrder.orderIdValue.uuidString)';
                 """
@@ -82,7 +90,15 @@ struct OrderServiceImpl: OrderService {
             }
             for orderMenuItem in resultOrderMenuItems {
                 for _ in 0..<orderMenuItem.quantity {
-                    let menuItem = MenuItem(itemId: orderMenuItem.menuItemID, name: orderMenuItem.menuItemName, price: orderMenuItem.price, menuSection: .mainCourse)
+                    let menuItem = MenuItem(
+                        itemId: orderMenuItem.menuItemID,
+                        name: orderMenuItem.menuItemName,
+                        price: orderMenuItem.price,
+                        category: MenuCategory(
+                            id: UUID(),
+                            categoryName: "Starter"
+                        )
+                    )
                     resultOrder.menuItems.append(menuItem)
                 }
             }

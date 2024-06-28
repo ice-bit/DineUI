@@ -7,50 +7,50 @@
 
 import SwiftUI
 
-struct MenuCellView: View {
+struct OrderCellView: View {
     var order: Order
     
     var body: some View {
         HStack {
             VStack {
-                Image(systemName: "square.stack.3d.up.fill")
+                Text("#\(order.getTable?.locationId ?? 0)")
+                    .font(.subheadline)
+                    .padding(.bottom, 8)
+                
+                Image(systemName: "table.furniture")
                     .font(.title3)
                     .padding(.bottom, 5)
-                
-                Text("Items \(order.menuItems.count)")
-                    .font(.caption)
             }
             .padding()
             .overlay (
                 Rectangle()
-                    .frame(width: 1, height: 50)
+                    .frame(width: 1, height: 44)
                     .foregroundStyle(.primary),
                 alignment: .trailing
             )
             
-            VStack(alignment: .leading) {
+            Label(order.orderStatusValue.rawValue, systemImage: "circle.dashed.inset.fill")
+                /*.font(.subheadline)*/ // While the tableView is in editing mode this label will truncate!
+                .foregroundStyle(.primary)
+            
+            Spacer()
+            
+            VStack(alignment: .trailing) {
                 HStack {
-                    Label(order.orderStatusValue.rawValue, systemImage: "circle.dashed.inset.fill")
-                        /*.font(.subheadline)*/ // While the tableView is in editing mode this label will truncate!
-                        .foregroundStyle(.primary)
-                    
-                    Spacer()
-                    
                     Text(order.getDate, style: .date)
                         .font(.caption2)
                     
                     Image(systemName: "chevron.right")
-                        .padding(.trailing)
                         .font(.caption2)
                 }
                 .padding(.bottom, 8)
                 
-                Text(order.orderIdValue.uuidString)
-                    .font(.caption2)
-                    .padding(.trailing)
+                Text("Items \(order.menuItems.count)")
+                    .font(.subheadline)
             }
+            .padding()
         }
-        .background(.app)
+        .background(Color.app)
         .clipShape(.rect(cornerRadius: 10))
         .foregroundStyle(.black)
     }
@@ -58,5 +58,5 @@ struct MenuCellView: View {
 
 #Preview {
     let order = Order(tableId: UUID(), orderStatus: .received, menuItems: ModelData().menuItems)
-    return MenuCellView(order: order)
+    return OrderCellView(order: order)
 }

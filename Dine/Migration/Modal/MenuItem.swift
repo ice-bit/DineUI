@@ -8,7 +8,7 @@
 import Foundation
 import SQLite3
 
-enum MenuSectionType: String, Codable {
+enum MenuSectionType: String {
     case starter = "Starters"
     case mainCourse = "Main Course"
     case side = "Side"
@@ -16,22 +16,22 @@ enum MenuSectionType: String, Codable {
     case beverages = "Beverages"
 }
 
-class MenuItem: Codable {
+class MenuItem {
     let itemId: UUID
     var name: String
     var price: Double
-    let menuSection: MenuSectionType
     var count: Int = 0
+    let category: MenuCategory
     
-    init(itemId: UUID, name: String, price: Double, menuSection: MenuSectionType) {
+    init(itemId: UUID, name: String, price: Double, category: MenuCategory) {
         self.itemId = itemId
         self.name = name
         self.price = price
-        self.menuSection = menuSection
+        self.category = category
     }
     
-    convenience init(name: String, price: Double, menuSection: MenuSectionType) {
-        self.init(itemId: UUID(), name: name, price: price, menuSection: menuSection)
+    convenience init(name: String, price: Double, category: MenuCategory) {
+        self.init(itemId: UUID(), name: name, price: price, category: category)
     }
 }
 
@@ -58,7 +58,8 @@ extension MenuItem: SQLTable {
             MenuItemID TEXT PRIMARY KEY,
             MenuItemName TEXT NOT NULL,
             Price REAL NOT NULL,
-            MenuSection TEXT NOT NULL
+            category_id VARCHAR(32),
+            FOREIGN KEY (category_id) REFERENCES \(DatabaseTables.category.rawValue)(id)
         );
         """
     }
@@ -68,7 +69,7 @@ extension MenuItem: SQLUpdatable {
     var createUpdateStatement: String {
         """
         UPDATE \(DatabaseTables.menuItem.rawValue)
-        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), MenuSection = '\(menuSection.rawValue)'
+        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), catergory_id = '\(category.id)'
         WHERE MenuItemID = '\(itemId)';
         """
     }
@@ -83,8 +84,8 @@ extension MenuItem: SQLDeletable {
 extension MenuItem: SQLInsertable {
     var createInsertStatement: String {
         """
-        INSERT INTO \(DatabaseTables.menuItem.rawValue) (MenuItemID, MenuItemName, Price, MenuSection)
-        VALUES ('\(itemId)', '\(name)', \(price), '\(menuSection.rawValue)');
+        INSERT INTO \(DatabaseTables.menuItem.rawValue) (MenuItemID, MenuItemName, Price, category_id)
+        VALUES ('\(itemId)', '\(name)', \(price), '\(category.id)');
         """
     }
 }
@@ -94,19 +95,29 @@ extension MenuItem: DatabaseParsable {
         guard let statement = statement else { return nil }
         guard let itemIdCString = sqlite3_column_text(statement, 0),
               let nameCString = sqlite3_column_text(statement, 1),
-              let menuSectionCString = sqlite3_column_text(statement, 3) else {
+              let categoryIdCString = sqlite3_column_text(statement, 3),
+              let categoryNameCString = sqlite3_column_text(statement, 4) else {
             throw DatabaseError.missingRequiredValue
         }
         
         let name = String(cString: nameCString)
         let price = sqlite3_column_double(statement, 2)
+        let categoryName = String(cString: categoryNameCString)
         
         guard let itemId = UUID(uuidString: String(cString: itemIdCString)),
-              let menuSection = MenuSectionType(rawValue: String(cString: menuSectionCString)) else {
+              let categoryId = UUID(uuidString: String(cString: categoryIdCString)) else {
             throw DatabaseError.conversionFailed
         }
         
-        let menuItem = MenuItem(itemId: itemId, name: name, price: price, menuSection: menuSection)
+        let category = MenuCategory(
+            id: categoryId,
+            categoryName: categoryName
+        )
+        
+        let menuItem = MenuItem(itemId: itemId, name: name, price: price, category: category)
         return menuItem
     }
 }
+
+
+

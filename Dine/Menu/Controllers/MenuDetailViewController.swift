@@ -145,5 +145,14 @@ class MenuDetailViewController: UIViewController {
 }
 
 #Preview {
-    MenuDetailViewController(menu: MenuItem(name: "Mac n Cheese", price: 4.3, menuSection: .mainCourse))
+    MenuDetailViewController(
+        menu: MenuItem(
+            name: "Mac n Cheese",
+            price: 4.3,
+            category: MenuCategory(
+                id: UUID(),
+                categoryName: "Starter"
+            )
+        )
+    )
 }

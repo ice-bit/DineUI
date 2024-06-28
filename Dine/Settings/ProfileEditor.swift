@@ -8,28 +8,16 @@
 import SwiftUI
 
 struct ProfileEditor: View {
-    @Binding var profile: Profile
+    @Binding var account: Account
     var body: some View {
         NavigationView {
-            Form {
-                HStack {
-                    Text("Username").bold()
-                    Divider()
-                    TextField("Username", text: $profile.username)
-                }
-                
-                HStack {
-                    Text("Email").bold()
-                    Divider()
-                    TextField("Mail Address", text: $profile.email)
-                        .keyboardType(.emailAddress)
-                }
-            }
+            Text("Experimental")
+                .font(.largeTitle)
             .navigationTitle("Edit Profile")
         }
     }
 }
 
 #Preview {
-    ProfileEditor(profile: .constant(.default))
+    ProfileEditor(account: .constant(.default))
 }

@@ -13,6 +13,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     private var tableView: UITableView!
     private let cellReuseID = "MenuItemRow"
     private let activeSection: MenuSectionType
+    private let category: MenuCategory
     
     private var menuData: [MenuItem] = []
     
@@ -27,8 +28,9 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         searchController.searchBar.text?.isEmpty ?? true
     }
     
-    init(activeSection: MenuSectionType) {
+    init(activeSection: MenuSectionType, category: MenuCategory) {
         self.activeSection = activeSection
+        self.category = category
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -56,7 +58,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     
     @objc private func addMenuItemButtonTapped(_ sender: UIBarButtonItem) {
         print("Add menu button tapped")
-        let addMenuVC = AddItemViewController()
+        let addMenuVC = AddItemViewController(category: category)
         if let sheet = addMenuVC.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
@@ -75,7 +77,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             let menuService = MenuServiceImpl(databaseAccess: dataAccess)
             let results = try menuService.fetch()
             if let results = results {
-                let menuItemForSection = results.filter { $0.menuSection == activeSection }
+                let menuItemForSection = results.filter { $0.category.id == category.id }
                 menuData = menuItemForSection
             }
         } catch {
@@ -115,6 +117,17 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         tableView.reloadData()
     }
     
+    // MARK: - Destructive actions
+    private func deleteMenuItem(_ menuItem: MenuItem) {
+        do {
+            let menuService = try MenuServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            let menuController = MenuController(menuService: menuService)
+            try menuController.removeItemFromMenu(menuItem)
+        } catch {
+            print("Failed to perform \(#function) - \(error)")
+        }
+    }
+    
     // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         isFiltering ? filteredItems.count : menuData.count
@@ -135,6 +148,23 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         let menuDetailViewHostVC = UIHostingController(rootView: MenuDetailView(menuItem: menuItem))
         navigationController?.pushViewController(menuDetailViewHostVC, animated: true)
     }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let item = menuData[indexPath.row]
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completionHandler in
+            guard let self else { return }
+            print("Delete action")
+            
+            self.deleteMenuItem(item) // delete
+            populateMenuData() // fetch
+            tableView.reloadData() // reload to reflect
+            
+            completionHandler(true)
+        }
+        
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
+    }
 }
 
 extension MenuListingViewController: UISearchResultsUpdating {
@@ -145,5 +175,13 @@ extension MenuListingViewController: UISearchResultsUpdating {
 }
 
 #Preview{
-    UINavigationController(rootViewController: MenuListingViewController(activeSection: .mainCourse))
+    UINavigationController(
+        rootViewController: MenuListingViewController(
+            activeSection: .mainCourse,
+            category: MenuCategory(
+                id: UUID(),
+                categoryName: "Starter"
+            )
+        )
+    )
 }

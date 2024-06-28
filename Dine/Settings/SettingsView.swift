@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct SettingsView: View {
-    @State var profile: Profile
+    @State var account: Account
     @State var isDarkModeEnabled: Bool = true
     @State private var selectedLanguage = "English"
     let languages = ["English", "Spanish", "French", "German", "Chinese", "Japanese"]
@@ -16,7 +16,7 @@ struct SettingsView: View {
     var body: some View {
         NavigationView {
             List {
-                Group {
+                Section {
                     HStack {
                         Spacer()
                         
@@ -26,17 +26,17 @@ struct SettingsView: View {
                                 .frame(width: 100, height: 100)
                                 .clipShape(.circle)
                             
-                            Text(profile.username)
+                            Text(account.username)
                                 .font(.title)
                             
-                            Text(profile.email)
-                                .font(.subheadline)
+                            Text(account.userId.uuidString)
+                                .font(.footnote)
                             
-                            NavigationLink(destination: ProfileEditor(profile: $profile)) {
+                            NavigationLink(destination: ProfileEditor(account: $account)) {
                                 Button(action: {
                                     print("Edit profile button tapped")
                                 }, label: {
-                                    Text("Edit Profile")
+                                    Text("Edit Profile*")
                                         .frame(minWidth: 0, maxWidth: .infinity)
                                         .padding()
                                         .background(.app)
@@ -48,9 +48,13 @@ struct SettingsView: View {
                         
                         Spacer()
                     }
+                } footer: {
+                    Text("*Experimental. (Not functional!)")
+                        .font(.footnote)
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
                 
-                Section(header: Text("Configuration"), content: {
+                Section(header: Text("Configuration*"), content: {
                     NavigationLink(destination: Text("Sasuke")) {
                         Label {
                             Text("Restaurant")
@@ -64,9 +68,7 @@ struct SettingsView: View {
                 })
                 
                 
-                
-                
-                Section(header: Text("Preference"), content: {
+                Section(header: Text("Preference*"), content: {
                     Toggle(isOn: $isDarkModeEnabled) {
                         // Label("Dark Mode", systemImage: "moon.fill")
                         Label {
@@ -78,44 +80,6 @@ struct SettingsView: View {
                                 .foregroundStyle(.app)
                         }
                     }
-                    
-                    
-                    /*Picker(selection: $selectedLanguage) {
-                        ForEach(languages, id: \.self) {
-                            Text($0)
-                        }
-                    } label: {
-                        Label {
-                            Text("Dark Mode")
-                                .font(.body)
-                                .foregroundStyle(.primary)
-                        } icon: {
-                            Image(systemName: "moon.fill")
-                                .foregroundStyle(.app)
-                        }
-                    }*/
-        
-                    /*Label {
-                        Text("Language")
-                            .font(.body)
-                            .foregroundStyle(.primary)
-                    } icon: {
-                        Image(systemName: "globe")
-                            .foregroundStyle(.app)
-                    }
-                     
-                    Picker("Language", selection: $selectedLanguage) {
-                        ForEach(languages, id: \.self) {
-                            Text($0)
-                        }
-                    }
-                    .pickerStyle(MenuPickerStyle())
-                    
-                    Picker("Language", systemImage: "globe", selection: $selectedLanguage) {
-                        ForEach(languages, id: \.self) {
-                            Text($0)
-                        }
-                    }*/
                     
                     Picker(selection: $selectedLanguage) {
                         ForEach(languages, id: \.self) {
@@ -134,13 +98,13 @@ struct SettingsView: View {
 
                 })
                 
-                Group {
+                Section {
                     HStack {
                         Spacer()
                         
                         Button(action: {
                             print("Log out action")
-                            UserDefaults.standard.set(false, forKey: "isUserLoggedIn")
+                            UserSessionManager.shared.clearAccount()
                             RootViewManager.didLoggedOutSuccessfully()
                         }, label: {
                             Text("Log out")
@@ -149,6 +113,10 @@ struct SettingsView: View {
                         
                         Spacer()
                     }
+                } footer: {
+                    Text("*Expirimental feature")
+                        .font(.footnote)
+                        .foregroundStyle(Color(.secondaryLabel))
                 }
             }
             .navigationTitle("Settings")
@@ -157,5 +125,5 @@ struct SettingsView: View {
 }
 
 #Preview {
-    SettingsView(profile: .default)
+    SettingsView(account: .default)
 }

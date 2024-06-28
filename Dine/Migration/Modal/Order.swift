@@ -58,6 +58,13 @@ class Order {
         orderDate
     }
     
+    var getTable: RestaurantTable? { // Lazy (Bad) implementation
+        guard let tableService = try? TableServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase()) else { return nil }
+        guard let results = try? tableService.fetch() else { return nil }
+        guard let index = results.firstIndex(where: { $0.tableId == tableId }) else { return nil }
+        return results[index]
+    }
+    
     // Improved displayOrderItems function
     func displayOrderItems() {
         for (index, item) in menuItems.enumerated() {
@@ -84,6 +91,14 @@ extension Order: SQLTable {
     }
     
     static var createStatement: String {
+        /*CREATE TABLE Orders (
+         OrderID VARCHAR(32) PRIMARY KEY,
+         TableID VARCHAR(32) NOT NULL,
+         OrderDateTime TEXT NOT NULL,
+         OrderStatus VARCHAR(255) NOT NULL,
+         OrderIsBilled INT NOT NULL,
+         FOREIGN KEY (TableID) REFERENCES Tables(TableID)
+     );*/
         """
         CREATE TABLE \(DatabaseTables.orderTable.rawValue) (
             OrderID VARCHAR(32) PRIMARY KEY,

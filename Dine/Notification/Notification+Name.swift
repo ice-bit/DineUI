@@ -13,4 +13,9 @@ extension Notification.Name {
     static let didAddTable = Notification.Name("com.euphoria.Dine.didAddTable")
     static let didAddMenuItemNotification = Notification.Name("com.euphoria.Dine.didAddMenuItemNotification")
     static let billDidAddNotification = Notification.Name("com.euphoria.Dine.billDidAddNotification")
+    static let cartDidChangeNotification = Notification.Name("com.euphoria.Dine.cartDidChangeNotification")
+    // Adding order, editing order, billing order
+    static let metricDataDidChangeNotification = Notification.Name("com.euphoria.Dine.metricDataDidChangeNotification")
+    // `AddCategoryViewController`
+    static let categoryDataDidChangeNotification = Notification.Name("com.euphoria.Dine.categoryDataDidChangeNotification")
 }

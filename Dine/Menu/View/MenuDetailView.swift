@@ -102,5 +102,14 @@ extension View {
 
 // Preview
 #Preview {
-    MenuDetailView(menuItem: MenuItem(name: "Mac n Cheese", price: 7.9, menuSection: .mainCourse))
+    MenuDetailView(
+        menuItem: MenuItem(
+            name: "Mac n Cheese",
+            price: 7.9,
+            category: MenuCategory(
+                id: UUID(),
+                categoryName: "Starter"
+            )
+        )
+    )
 }

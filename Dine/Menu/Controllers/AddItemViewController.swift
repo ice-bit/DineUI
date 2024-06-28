@@ -15,9 +15,7 @@ class AddItemViewController: UIViewController {
     weak var menuItemDelegate: MenuItemDelegate?
     
     // MARK: - Properties
-    
-    private let pickerData: [MenuSectionType] = [.starter, .mainCourse, .side, .desserts, .beverages]
-    private var selectedMenuSection: MenuSectionType?
+    private let category: MenuCategory
     
     private var stackView: UIStackView!
     private var itemImageView: UIImageView!
@@ -26,9 +24,19 @@ class AddItemViewController: UIViewController {
     private var descTextField: UITextField!
     private var addButton: UIButton!
     private var addImageButton: UIButton!
-    private var sectionSelectionButton: UIButton!
+    // private var sectionSelectionButton: UIButton!
     
     private var pickerView: UIPickerView!
+    
+    // MARK: - Initializer
+    init(category: MenuCategory) {
+        self.category = category
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - View Lifecycle
     
@@ -39,14 +47,14 @@ class AddItemViewController: UIViewController {
     }
     
     // MARK: - @OBJC Methods
-    @objc private func selectMenuSectionButtonTapped(_ sender: UIButton) {
+    /*@objc private func selectMenuSectionButtonTapped(_ sender: UIButton) {
         print("menu selection button tapped")
         let alert = UIAlertController(title: "Select Section", message: "\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
         
         let pickerViewFrame = CGRect(x: 0, y: 50, width: alert.view.bounds.width - 20, height: 200)
         pickerView = UIPickerView(frame: pickerViewFrame)
-        pickerView.delegate = self
-        pickerView.dataSource = self
+        // pickerView.delegate = self
+        // pickerView.dataSource = self
         
         alert.view.addSubview(pickerView)
         if let popoverController = alert.popoverPresentationController {
@@ -63,7 +71,7 @@ class AddItemViewController: UIViewController {
         }))
         
         present(alert, animated: true, completion: nil)
-    }
+    }*/
     
     // MARK: - View Setup
     private func configureView() {
@@ -75,7 +83,7 @@ class AddItemViewController: UIViewController {
         setupAddImageButton()
         setupNameTextField()
         setupPriceTextField()
-        setupSectionSelectionButton()
+        // setupSectionSelectionButton()
         setupAddButton()
         addSubviews()
         setupConstraints()
@@ -84,11 +92,11 @@ class AddItemViewController: UIViewController {
     
     private func setupPickerView() {
         pickerView = UIPickerView()
-        pickerView.delegate = self
-        pickerView.dataSource = self
+        // pickerView.delegate = self
+        // pickerView.dataSource = self
     }
     
-    private func setupSectionSelectionButton() {
+    /*private func setupSectionSelectionButton() {
         sectionSelectionButton = UIButton()
         sectionSelectionButton.setTitle("Select Section", for: .normal)
         sectionSelectionButton.translatesAutoresizingMaskIntoConstraints = false
@@ -96,7 +104,7 @@ class AddItemViewController: UIViewController {
         sectionSelectionButton.backgroundColor = .systemGray5
         sectionSelectionButton.layer.cornerRadius = 10
         sectionSelectionButton.addTarget(self, action: #selector(selectMenuSectionButtonTapped(_:)), for: .touchUpInside)
-    }
+    }*/
     
     private func setupStackView() {
         stackView = UIStackView()
@@ -158,7 +166,7 @@ class AddItemViewController: UIViewController {
         stackView.addArrangedSubview(addImageButton)
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(priceTextField)
-        stackView.addArrangedSubview(sectionSelectionButton)
+        // stackView.addArrangedSubview(sectionSelectionButton)
         stackView.addArrangedSubview(addButton)
     }
     
@@ -179,8 +187,8 @@ class AddItemViewController: UIViewController {
             addImageButton.heightAnchor.constraint(equalToConstant: 150),
             addImageButton.widthAnchor.constraint(equalToConstant: 150),
             
-            sectionSelectionButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            sectionSelectionButton.heightAnchor.constraint(equalToConstant: 44),
+            /*sectionSelectionButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            sectionSelectionButton.heightAnchor.constraint(equalToConstant: 44),*/
         ])
     }
     
@@ -193,8 +201,12 @@ class AddItemViewController: UIViewController {
             return
         }
         
-        if let name = nameTextField.text, let selectedSection = selectedMenuSection {
-            let menuItem = MenuItem(name: name, price: price, menuSection: selectedSection) 
+        if let name = nameTextField.text {
+            let menuItem = MenuItem(
+                name: name,
+                price: price,
+                category: category
+            )
             do  {
                 let databaseAccess = try SQLiteDataAccess.openDatabase()
                 let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
@@ -214,7 +226,7 @@ class AddItemViewController: UIViewController {
     }
 }
 
-extension AddItemViewController: UIPickerViewDataSource, UIPickerViewDelegate {
+/*extension AddItemViewController: UIPickerViewDataSource, UIPickerViewDelegate {
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         1
     }
@@ -231,9 +243,9 @@ extension AddItemViewController: UIPickerViewDataSource, UIPickerViewDelegate {
         print("Selected Item: \(pickerData[row].rawValue)")
     }
     
-}
+}*/
 
 #Preview {
-    AddItemViewController()
+    AddItemViewController(category: MenuCategory(id: UUID(), categoryName: "Starter"))
 }
 

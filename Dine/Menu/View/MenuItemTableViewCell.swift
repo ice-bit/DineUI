@@ -181,7 +181,7 @@ class MenuItemTableViewCell: UITableViewCell {
             itemCountLabel.heightAnchor.constraint(equalToConstant: 20),
             itemCountLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 20),
             itemCountLabel.centerXAnchor.constraint(equalTo: stepper.centerXAnchor),
-            itemCountLabel.centerYAnchor.constraint(equalTo: stepper.centerYAnchor)
+            itemCountLabel.centerYAnchor.constraint(equalTo: stepper.centerYAnchor),
         ])
     }
     
@@ -205,7 +205,14 @@ class MenuItemTableViewCell: UITableViewCell {
 
 #Preview {
     let menuVC = MenuItemTableViewCell()
-    let menuItem = MenuItem(name: "Zinger Burger", price: 7.97, menuSection: .mainCourse)
+    let menuItem = MenuItem(
+        name: "Zinger Burger Double Cheese",
+        price: 7.97,
+        category: MenuCategory(
+            id: UUID(),
+            categoryName: "Starter"
+        )
+    )
     menuVC.configure(menuItem: menuItem)
     return menuVC
 }

@@ -51,6 +51,15 @@ class SQLiteDataAccess: DatabaseAccess {
         try database.delete(item: item)
     }
     
+    // Deletes rows from the specified table based on the provided condition.
+    ///
+    /// - Parameters:
+    ///   - tableName: The name of the table from which rows should be deleted.
+    ///   - condition: An optional condition to specify which rows to delete. If no condition is provided, all rows in the table will be deleted.
+    /// - Throws: An error of type `SQLiteError` if the delete operation fails.
+    ///
+    /// - Note: This is a very sensitive action. Ensure that the `condition` is provided to specify which row(s) to delete.
+    ///   If no condition is provided, this method will delete all rows in the table, resulting in potential data loss.
     func delete(from tableName: String, where condition: String? = nil) throws {
         try database.delete(from: tableName, where: condition)
     }

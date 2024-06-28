@@ -24,7 +24,7 @@ struct MenuItemRow: View {
                 Text("\(menuItem.name)")
                     .font(.headline)
                 
-                Text(String(menuItem.price))
+                Text("$" + String(format: "%.2f", menuItem.price))
                     .font(.subheadline)
                 
                 Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit.")
@@ -46,6 +46,13 @@ struct MenuItemRow: View {
 }
 
 #Preview {
-    let menuItem = MenuItem(name: "Beef Jerky", price: 4.96, menuSection: .mainCourse)
+    let menuItem = MenuItem(
+        name: "Beef Jerky",
+        price: 4.96,
+        category: MenuCategory(
+            id: UUID(),
+            categoryName: "Starter"
+        )
+    )
     return MenuItemRow(menuItem: menuItem)
 }

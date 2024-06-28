@@ -31,19 +31,6 @@ struct OrderCountCellView: View {
     }
 }
 
-extension OrderData {
-    static func generateRandomData(days: Int) -> [OrderData] {
-        var data = [OrderData]()
-        let today = Date()
-        for index in 0..<days {
-            let date = Calendar.current.date(byAdding: .day, value: -index, to: today)!
-            let stepCount = Int.random(in: 500...25_000)
-            data.append(OrderData(date: date, orderCount: stepCount))
-        }
-        return data
-    }
-}
-
 #Preview {
     List {
         ForEach(OrderData.generateRandomData(days: 7)) { data in

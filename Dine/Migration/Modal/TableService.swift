@@ -20,6 +20,7 @@ protocol TableStatusDelegate {
 
 struct TableServiceImpl: TableService {
     private let databaseAccess: DatabaseAccess
+    
     init(databaseAccess: DatabaseAccess) {
         self.databaseAccess = databaseAccess
     }

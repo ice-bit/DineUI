@@ -64,7 +64,7 @@ class BillViewController: UIViewController {
         setupAppearance()
         setupTableView()
         setupPlaceholderLabel()
-        setupBarButton()
+        // setupBarButton()
         loadBillData()
         
         // Register for notification when a bill is added

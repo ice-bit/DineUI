@@ -8,5 +8,7 @@
 import Foundation
 
 struct Menu {
-    let menuSections: [MenuSection]
+    let menuSections: [Category]
 }
+
+

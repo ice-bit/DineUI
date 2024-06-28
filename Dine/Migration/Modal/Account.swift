@@ -23,6 +23,8 @@ class Account: Codable {
     private var _accountStatus: AccountStatus
     private var _userRole: UserRole
     
+    static let `default` = Account(username: "Itachi Uchiha", password: "securePassword", accountStatus: .active, userRole: .manager)
+    
     var username: String {
         return _username
     }

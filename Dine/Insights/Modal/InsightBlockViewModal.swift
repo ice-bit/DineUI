@@ -12,4 +12,5 @@ struct MetricCardViewModal {
     var percentageChange: String?
     let data: String
     var footnote: String?
+    var cardType: MetricCardType
 }

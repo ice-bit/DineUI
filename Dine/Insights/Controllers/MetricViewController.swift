@@ -21,20 +21,11 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     private var collectionView: UICollectionView!
     
     // Static view modal data for grid items
-    private let staticGridData: [MetricCardViewModal] = [
-        MetricCardViewModal(title: "Sales", percentageChange: "+2.5%", data: "$34643", footnote: "$32323"),
-        MetricCardViewModal(title: "Average", data: "\(Insight().getAverageOrdersCount()) orders"),
-        MetricCardViewModal(title: "Return", percentageChange: "\(Insight().getPercentageDifference())", data: "$\(Insight().getTodaysReturn())", footnote: "Compared to (\(Insight().getYesterdaysReturns())yesterday)"),
-        MetricCardViewModal(title: "Sales", percentageChange: "+2.5%", data: "$34643", footnote: "$32323"),
-    ]
+    private var gridData: [MetricCardViewModal] = []
     
     private let staticOrderCountData: [OrderData] = OrderData.generateRandomData(days: 7)
     
-    private let chartData = [
-        OrderData.generateRandomData(days: 7),
-        OrderData.generateRandomData(days: 7),
-        OrderData.generateRandomData(days: 7)
-    ]
+    private var chartData: [ChartViewModal] = []
     
 //    private let chartData = [Insight().getChartData()]
     
@@ -45,20 +36,56 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         title = "Insights"
         navigationController?.navigationBar.prefersLargeTitles = true
         
+        // Poppulate data
+        populateCollectionViewData()
         setupBarButton()
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(metricDataDidChange(_:)), name: .metricDataDidChangeNotification, object: nil)
+    }
+    
+    @objc private func metricDataDidChange(_ sender: Notification) {
+        print("Reloading metric data...")
+        populateCollectionViewData()
+        collectionView.reloadData()
+    }
+    
+    private func populateCollectionViewData() {
+        populateGridData()
+        populateChartData()
+    }
+    
+    private func populateGridData() {
+         gridData = MetricCollectionViewModel().gridData
+    }
+    
+    private func populateChartData() {
+        // Uncomment for live data
+        // chartData = MetricCollectionViewModel().generateChartData()
+        chartData = [ChartViewModal.generateRandomChartViewModal()]
     }
     
     private func setupBarButton() {
-        let settingsButton = UIBarButtonItem(image: UIImage(systemName: "gear"), style: .done, target: self, action: #selector(settingsButtonAction(_ :)))
+        let settingsButton = UIBarButtonItem(
+            image: UIImage(systemName: "gear"),
+            style: .done,
+            target: self,
+            action: #selector(settingsButtonAction(_ :))
+        )
         navigationItem.rightBarButtonItem = settingsButton
     }
     
     @objc private func settingsButtonAction(_ sender: UIBarButtonItem) {
         print(#function)
-        let settingsHostingController = UIHostingController(rootView: SettingsView(profile: .init(username: "Sassuke Uchicha", email: "killitachi@leafvillage.com", password: "fygweihfbwef")))
+        guard let account = UserSessionManager.shared.loadAccount() else {
+            fatalError("Invalid User session")
+        }
+        let settingsHostingController = UIHostingController(
+            rootView: SettingsView(account: account)
+        )
         self.present(settingsHostingController, animated: true)
     }
     
@@ -88,10 +115,10 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     
     // Returns a compositional layout section for cells in a grid.
     private func createGridSection() -> NSCollectionLayoutSection {
-        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .absolute(120))
+        let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.5), heightDimension: .fractionalHeight(0.5))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
 
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .absolute(120))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(300))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, repeatingSubitem: item, count: 2)
         group.interItemSpacing = .fixed(8)
         
@@ -104,18 +131,18 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         return section
     }
     
-    // Returns a compositional layout section for cells that will scroll orthogonally.
+    // Returns a compositional layout section for cells that will scroll orthogonally. (Chart)
     private func createOrthogonalScrollingSection() -> NSCollectionLayoutSection {
         let itemSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .fractionalHeight(1.0))
         let item = NSCollectionLayoutItem(layoutSize: itemSize)
         
-        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(0.8), heightDimension: .estimated(200))
+        let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(200))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
         group.contentInsets = .zero
         group.contentInsets.leading = LayoutMetrics.horizontalMargin
         
         let section = NSCollectionLayoutSection(group: group)
-        section.orthogonalScrollingBehavior = .groupPaging
+        // section.orthogonalScrollingBehavior = .groupPaging 
         section.contentInsets = .zero
         section.contentInsets.trailing = LayoutMetrics.horizontalMargin
         section.contentInsets.bottom = LayoutMetrics.sectionSpacing
@@ -141,7 +168,7 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         switch InsightSection(rawValue: section)! {
         case .quickInsights:
-            return staticGridData.count
+            return gridData.count
         case .salesChart:
             return chartData.count
         case .salesList:
@@ -152,7 +179,7 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         switch InsightSection(rawValue: indexPath.section)! {
         case .quickInsights:
-            let item = staticGridData[indexPath.item]
+            let item = gridData[indexPath.item]
             return collectionView.dequeueConfiguredReusableCell(using: metricCellRegistration, for: indexPath, item: item)
         case .salesChart:
             let item = chartData[indexPath.item]
@@ -167,7 +194,7 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     private var metricCellRegistration: UICollectionView.CellRegistration<UICollectionViewCell, MetricCardViewModal> = {
         .init { cell, indexPath, itemIdentifier in
             cell.contentConfiguration = UIHostingConfiguration {
-                MetricCard(viewModal: itemIdentifier)
+                MetricCard(viewModel: itemIdentifier)
             }
             /*.margins(.horizontal, LayoutMetrics.horizontalMargin)
             .background {
@@ -178,10 +205,10 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     }()
     
     // A cell registration that configures a custom cell with a SwiftUI chart view.
-    private var metricChartCellRegistration: UICollectionView.CellRegistration<UICollectionViewCell, [OrderData]> = {
+    private var metricChartCellRegistration: UICollectionView.CellRegistration<UICollectionViewCell, ChartViewModal> = {
         .init { cell, indexPath, itemIdentifier in
             cell.contentConfiguration = UIHostingConfiguration {
-                MetricChart(orderData: itemIdentifier)
+                MetricChart(chartData: itemIdentifier)
             }
             .margins(.horizontal, LayoutMetrics.horizontalMargin)
             .background {

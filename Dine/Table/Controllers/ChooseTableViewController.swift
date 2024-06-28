@@ -148,7 +148,11 @@ class ChooseTableViewController: UIViewController {
             let tableService = TableServiceImpl(databaseAccess: dataAccess)
             let orderController = OrderController(orderService: orderService, tableService: tableService)
             try orderController.createOrder(for: selectedTable, menuItems: selectedMenuItems)
+            
+            // Notify to reflect changes across the app
             NotificationCenter.default.post(name: .orderDidChangeNotification, object: nil)
+            NotificationCenter.default.post(name: .metricDataDidChangeNotification, object: nil)
+            
             self.dismiss(animated: true) {
                 // Show toast after completion
                 let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Order Added")

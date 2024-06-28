@@ -104,9 +104,9 @@ class BillDetailViewController: UIViewController {
         let orderIdInfoView = TitleAndDescriptionView()
         let paymentStatusInfoView = TitleAndDescriptionView()
         
-        amountInfoView.configureView(title: "Amount", description: String(bill.getTotalAmount))
-        tipInfoView.configureView(title: "Tip", description: String(bill.getTip))
-        taxInfoView.configureView(title: "Tax", description: String(bill.getTax))
+        amountInfoView.configureView(title: "Amount", description: "$\(bill.getTotalAmount.rounded())")
+        tipInfoView.configureView(title: "Tip", description: "$\(bill.getTip.rounded())")
+        taxInfoView.configureView(title: "Tax", description: "$\(bill.getTax.rounded())")
         dateInfoView.configureView(title: "Date", description: bill.date.formattedDateString())
         billIdInfoView.configureView(title: "Bill ID", description: bill.billId.uuidString)
         orderIdInfoView.configureView(title: "Order ID", description: bill.getOrderId.uuidString)

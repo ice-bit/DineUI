@@ -97,21 +97,23 @@
 		5548B6BA2C0EE27B000E99C8 /* Toast in Frameworks */ = {isa = PBXBuildFile; productRef = 5548B6B92C0EE27B000E99C8 /* Toast */; };
 		5548B6BC2C0F12DE000E99C8 /* MenuDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6BB2C0F12DE000E99C8 /* MenuDetailView.swift */; };
 		557B5CA42C2057F9004E5C49 /* BillDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CA32C2057F9004E5C49 /* BillDetailViewController.swift */; };
-		557B5CA62C206EA8004E5C49 /* MenuCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CA52C206EA8004E5C49 /* MenuCellView.swift */; };
+		557B5CA62C206EA8004E5C49 /* OrderCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CA52C206EA8004E5C49 /* OrderCellView.swift */; };
 		557B5CA92C215219004E5C49 /* SignUpViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CA82C215219004E5C49 /* SignUpViewController.swift */; };
 		557B5CAC2C21522F004E5C49 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CAB2C21522F004E5C49 /* LoginViewController.swift */; };
 		557B5CAE2C2191CC004E5C49 /* UIWindow+setRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CAD2C2191CC004E5C49 /* UIWindow+setRootViewController.swift */; };
 		557B5CB02C21B633004E5C49 /* RootViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CAF2C21B633004E5C49 /* RootViewManager.swift */; };
+		558350B72C2D908400DDA458 /* MenuCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350B62C2D908400DDA458 /* MenuCategory.swift */; };
+		558350B92C2DAA2F00DDA458 /* CategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350B82C2DAA2F00DDA458 /* CategoryService.swift */; };
+		558350BC2C2DB3C100DDA458 /* AddSectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */; };
+		558350BE2C2E81B500DDA458 /* Date+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BD2C2E81B500DDA458 /* Date+Random.swift */; };
 		5590DEEF2C1ABF6A007E1F75 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEEE2C1ABF6A007E1F75 /* SettingsView.swift */; };
 		5590DEF22C1B1170007E1F75 /* ProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF12C1B1170007E1F75 /* ProfileEditor.swift */; };
 		5590DEF42C1B11D6007E1F75 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF32C1B11D6007E1F75 /* Profile.swift */; };
 		5590DEF82C1B2134007E1F75 /* CustomBillDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF72C1B2134007E1F75 /* CustomBillDetailViewController.swift */; };
 		5590DEFA2C1C131A007E1F75 /* OrderDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF92C1C131A007E1F75 /* OrderDetailViewController.swift */; };
 		5590DEFC2C1C5434007E1F75 /* PlainMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */; };
-		55C132042C23F51100351F96 /* MenuSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C132032C23F51100351F96 /* MenuSection.swift */; };
 		55C132062C23F81600351F96 /* Menu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C132052C23F81600351F96 /* Menu.swift */; };
 		55C1320B2C23FCB100351F96 /* Insight.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C1320A2C23FCB100351F96 /* Insight.swift */; };
-		55C1320D2C23FD0400351F96 /* InsightView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C1320C2C23FD0400351F96 /* InsightView.swift */; };
 		55C1320F2C23FD2A00351F96 /* MetricCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C1320E2C23FD2A00351F96 /* MetricCard.swift */; };
 		55C132112C24031100351F96 /* InsightBlockViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C132102C24031100351F96 /* InsightBlockViewModal.swift */; };
 		55C132132C2411C100351F96 /* MetricViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C132122C2411C100351F96 /* MetricViewController.swift */; };
@@ -121,6 +123,12 @@
 		55C1321D2C256ECC00351F96 /* OrderCountCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C1321C2C256ECC00351F96 /* OrderCountCellView.swift */; };
 		55C1321F2C2579C700351F96 /* Date+Weekday.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C1321E2C2579C700351F96 /* Date+Weekday.swift */; };
 		55C132212C26C44400351F96 /* TitleAndDescriptionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C132202C26C44400351F96 /* TitleAndDescriptionView.swift */; };
+		55D46FB82C2ACAC300F06657 /* EditCartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D46FB72C2ACAC300F06657 /* EditCartViewController.swift */; };
+		55D46FBA2C2C0BB900F06657 /* MetricRecord.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D46FB92C2C0BB900F06657 /* MetricRecord.swift */; };
+		55D46FBC2C2C1EBC00F06657 /* MetricCollectionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D46FBB2C2C1EBC00F06657 /* MetricCollectionViewModel.swift */; };
+		55D46FBE2C2D409300F06657 /* SalesReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D46FBD2C2D409300F06657 /* SalesReport.swift */; };
+		55D46FC02C2D51FE00F06657 /* ChartViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D46FBF2C2D51FE00F06657 /* ChartViewModal.swift */; };
+		55D46FC32C2D72F400F06657 /* UserSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D46FC22C2D72F400F06657 /* UserSessionManager.swift */; };
 		55F966692BF214C400557C92 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966682BF214C400557C92 /* DatabaseService.swift */; };
 		55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666A2BF3344B00557C92 /* QuantityButton.swift */; };
 		55F9666D2BF364D000557C92 /* MenuItemOrderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */; };
@@ -228,21 +236,23 @@
 		5548B6B62C0B8DB1000E99C8 /* Notification+Name.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Name.swift"; sourceTree = "<group>"; };
 		5548B6BB2C0F12DE000E99C8 /* MenuDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDetailView.swift; sourceTree = "<group>"; };
 		557B5CA32C2057F9004E5C49 /* BillDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BillDetailViewController.swift; sourceTree = "<group>"; };
-		557B5CA52C206EA8004E5C49 /* MenuCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCellView.swift; sourceTree = "<group>"; };
+		557B5CA52C206EA8004E5C49 /* OrderCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderCellView.swift; sourceTree = "<group>"; };
 		557B5CA82C215219004E5C49 /* SignUpViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpViewController.swift; sourceTree = "<group>"; };
 		557B5CAB2C21522F004E5C49 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		557B5CAD2C2191CC004E5C49 /* UIWindow+setRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+setRootViewController.swift"; sourceTree = "<group>"; };
 		557B5CAF2C21B633004E5C49 /* RootViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewManager.swift; sourceTree = "<group>"; };
+		558350B62C2D908400DDA458 /* MenuCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCategory.swift; sourceTree = "<group>"; };
+		558350B82C2DAA2F00DDA458 /* CategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryService.swift; sourceTree = "<group>"; };
+		558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSectionViewController.swift; sourceTree = "<group>"; };
+		558350BD2C2E81B500DDA458 /* Date+Random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Random.swift"; sourceTree = "<group>"; };
 		5590DEEE2C1ABF6A007E1F75 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5590DEF12C1B1170007E1F75 /* ProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileEditor.swift; sourceTree = "<group>"; };
 		5590DEF32C1B11D6007E1F75 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		5590DEF72C1B2134007E1F75 /* CustomBillDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBillDetailViewController.swift; sourceTree = "<group>"; };
 		5590DEF92C1C131A007E1F75 /* OrderDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailViewController.swift; sourceTree = "<group>"; };
 		5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainMenuItemView.swift; sourceTree = "<group>"; };
-		55C132032C23F51100351F96 /* MenuSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSection.swift; sourceTree = "<group>"; };
 		55C132052C23F81600351F96 /* Menu.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menu.swift; sourceTree = "<group>"; };
 		55C1320A2C23FCB100351F96 /* Insight.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Insight.swift; sourceTree = "<group>"; };
-		55C1320C2C23FD0400351F96 /* InsightView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightView.swift; sourceTree = "<group>"; };
 		55C1320E2C23FD2A00351F96 /* MetricCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricCard.swift; sourceTree = "<group>"; };
 		55C132102C24031100351F96 /* InsightBlockViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightBlockViewModal.swift; sourceTree = "<group>"; };
 		55C132122C2411C100351F96 /* MetricViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricViewController.swift; sourceTree = "<group>"; };
@@ -253,6 +263,12 @@
 		55C1321C2C256ECC00351F96 /* OrderCountCellView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderCountCellView.swift; sourceTree = "<group>"; };
 		55C1321E2C2579C700351F96 /* Date+Weekday.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Weekday.swift"; sourceTree = "<group>"; };
 		55C132202C26C44400351F96 /* TitleAndDescriptionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TitleAndDescriptionView.swift; sourceTree = "<group>"; };
+		55D46FB72C2ACAC300F06657 /* EditCartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCartViewController.swift; sourceTree = "<group>"; };
+		55D46FB92C2C0BB900F06657 /* MetricRecord.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricRecord.swift; sourceTree = "<group>"; };
+		55D46FBB2C2C1EBC00F06657 /* MetricCollectionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetricCollectionViewModel.swift; sourceTree = "<group>"; };
+		55D46FBD2C2D409300F06657 /* SalesReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesReport.swift; sourceTree = "<group>"; };
+		55D46FBF2C2D51FE00F06657 /* ChartViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewModal.swift; sourceTree = "<group>"; };
+		55D46FC22C2D72F400F06657 /* UserSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSessionManager.swift; sourceTree = "<group>"; };
 		55F966682BF214C400557C92 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		55F9666A2BF3344B00557C92 /* QuantityButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityButton.swift; sourceTree = "<group>"; };
 		55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemOrderTableViewCell.swift; sourceTree = "<group>"; };
@@ -296,6 +312,7 @@
 				551AAE432BFF7EE500E50FE7 /* Modal */,
 				551AAE402BFF7C5700E50FE7 /* View */,
 				551AAE3F2BFF7C4A00E50FE7 /* Controllers */,
+				558350B82C2DAA2F00DDA458 /* CategoryService.swift */,
 			);
 			path = Menu;
 			sourceTree = "<group>";
@@ -307,8 +324,8 @@
 				5524F5662BEA1F61003F500C /* MenuViewController.swift */,
 				5524F6362BEE688D003F500C /* MenuDetailViewController.swift */,
 				5524F5722BEB418D003F500C /* AddToCartViewController.swift */,
-				551AAE2B2BFDEF7700E50FE7 /* MenuSectionViewController.swift */,
 				551AAE482BFF873B00E50FE7 /* MenuListingViewController.swift */,
+				55D46FB72C2ACAC300F06657 /* EditCartViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -328,7 +345,6 @@
 		551AAE432BFF7EE500E50FE7 /* Modal */ = {
 			isa = PBXGroup;
 			children = (
-				55C132032C23F51100351F96 /* MenuSection.swift */,
 				551AAE442BFF7EEE00E50FE7 /* MenuData.swift */,
 				55C132052C23F81600351F96 /* Menu.swift */,
 			);
@@ -354,6 +370,7 @@
 		5524F54A2BE9E836003F500C /* Dine */ = {
 			isa = PBXGroup;
 			children = (
+				558350BA2C2DACC600DDA458 /* Category */,
 				55C132072C23FB7100351F96 /* Insights */,
 				557B5CA72C2151FB004E5C49 /* UserAuth */,
 				5590DEEB2C1ABF51007E1F75 /* Settings */,
@@ -381,6 +398,7 @@
 				5548B6A52C04BC96000E99C8 /* MockDatabase.swift */,
 				557B5CAD2C2191CC004E5C49 /* UIWindow+setRootViewController.swift */,
 				55C1321E2C2579C700351F96 /* Date+Weekday.swift */,
+				558350BD2C2E81B500DDA458 /* Date+Random.swift */,
 			);
 			path = Dine;
 			sourceTree = "<group>";
@@ -646,7 +664,7 @@
 			isa = PBXGroup;
 			children = (
 				5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */,
-				557B5CA52C206EA8004E5C49 /* MenuCellView.swift */,
+				557B5CA52C206EA8004E5C49 /* OrderCellView.swift */,
 				55C132202C26C44400351F96 /* TitleAndDescriptionView.swift */,
 			);
 			path = View;
@@ -655,6 +673,7 @@
 		557B5CA72C2151FB004E5C49 /* UserAuth */ = {
 			isa = PBXGroup;
 			children = (
+				55D46FC12C2D72D300F06657 /* Service */,
 				557B5CAA2C21521F004E5C49 /* Controllers */,
 				557B5CAF2C21B633004E5C49 /* RootViewManager.swift */,
 			);
@@ -669,6 +688,17 @@
 				5532D2452C26FDF40077656C /* RecoverPasswordViewController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		558350BA2C2DACC600DDA458 /* Category */ = {
+			isa = PBXGroup;
+			children = (
+				558350B62C2D908400DDA458 /* MenuCategory.swift */,
+				551AAE292BFDEDD900E50FE7 /* SectionView.swift */,
+				551AAE2B2BFDEF7700E50FE7 /* MenuSectionViewController.swift */,
+				558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */,
+			);
+			path = Category;
 			sourceTree = "<group>";
 		};
 		5590DEEB2C1ABF51007E1F75 /* Settings */ = {
@@ -687,6 +717,7 @@
 				55C132192C245A4700351F96 /* Controllers */,
 				55C132092C23FB8C00351F96 /* Modal */,
 				55C132082C23FB7E00351F96 /* View */,
+				55D46FB92C2C0BB900F06657 /* MetricRecord.swift */,
 			);
 			path = Insights;
 			sourceTree = "<group>";
@@ -694,7 +725,6 @@
 		55C132082C23FB7E00351F96 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				55C1320C2C23FD0400351F96 /* InsightView.swift */,
 				55C1320E2C23FD2A00351F96 /* MetricCard.swift */,
 				55C132142C242B7400351F96 /* MetricChart.swift */,
 				55C1321C2C256ECC00351F96 /* OrderCountCellView.swift */,
@@ -709,6 +739,9 @@
 				55C132102C24031100351F96 /* InsightBlockViewModal.swift */,
 				55C132172C243A2500351F96 /* OrderChartData.swift */,
 				55C1321A2C256E7E00351F96 /* OrderData.swift */,
+				55D46FBB2C2C1EBC00F06657 /* MetricCollectionViewModel.swift */,
+				55D46FBD2C2D409300F06657 /* SalesReport.swift */,
+				55D46FBF2C2D51FE00F06657 /* ChartViewModal.swift */,
 			);
 			path = Modal;
 			sourceTree = "<group>";
@@ -719,6 +752,14 @@
 				55C132122C2411C100351F96 /* MetricViewController.swift */,
 			);
 			path = Controllers;
+			sourceTree = "<group>";
+		};
+		55D46FC12C2D72D300F06657 /* Service */ = {
+			isa = PBXGroup;
+			children = (
+				55D46FC22C2D72F400F06657 /* UserSessionManager.swift */,
+			);
+			path = Service;
 			sourceTree = "<group>";
 		};
 		55F9667E2BF7680400557C92 /* SwiftUI */ = {
@@ -733,7 +774,6 @@
 		55F966BF2BFB647200557C92 /* View */ = {
 			isa = PBXGroup;
 			children = (
-				551AAE292BFDEDD900E50FE7 /* SectionView.swift */,
 				551AAE352BFE0A1400E50FE7 /* BillItem.swift */,
 			);
 			path = View;
@@ -846,6 +886,7 @@
 				552D37DC2BF1F4F0005B1D19 /* BillService.swift in Sources */,
 				552D37E12BF1F4F0005B1D19 /* OrderService.swift in Sources */,
 				5524F6372BEE688D003F500C /* MenuDetailViewController.swift in Sources */,
+				558350B92C2DAA2F00DDA458 /* CategoryService.swift in Sources */,
 				55F966792BF6059C00557C92 /* AddTablesViewController.swift in Sources */,
 				55F9667D2BF725ED00557C92 /* CustomSectionCell.swift in Sources */,
 				552D37EA2BF1F4F0005B1D19 /* MealItem.swift in Sources */,
@@ -855,7 +896,6 @@
 				55C1320F2C23FD2A00351F96 /* MetricCard.swift in Sources */,
 				55C1320B2C23FCB100351F96 /* Insight.swift in Sources */,
 				552D38012BF1F5A0005B1D19 /* MenuController.swift in Sources */,
-				55C1320D2C23FD0400351F96 /* InsightView.swift in Sources */,
 				552D37E92BF1F4F0005B1D19 /* Restaurant.swift in Sources */,
 				552D37DD2BF1F4F0005B1D19 /* RestaurantTable.swift in Sources */,
 				552D37DF2BF1F4F0005B1D19 /* Meal.swift in Sources */,
@@ -892,6 +932,7 @@
 				552D37A02BF1F00D005B1D19 /* Date+Formatting.swift in Sources */,
 				5524F62B2BECD422003F500C /* MenuItemDummy.swift in Sources */,
 				552D37E72BF1F4F0005B1D19 /* UserStatus.swift in Sources */,
+				558350BC2C2DB3C100DDA458 /* AddSectionViewController.swift in Sources */,
 				551AAE342BFDFDCB00E50FE7 /* OGModelData.swift in Sources */,
 				552D380D2BF1F5C0005B1D19 /* UserStore.swift in Sources */,
 				552D380E2BF1F5C0005B1D19 /* AssociationManager.swift in Sources */,
@@ -917,9 +958,11 @@
 				55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */,
 				552D37B22BF1F09F005B1D19 /* Query.swift in Sources */,
 				55F966722BF378E400557C92 /* DTextField.swift in Sources */,
+				55D46FBA2C2C0BB900F06657 /* MetricRecord.swift in Sources */,
 				557B5CA42C2057F9004E5C49 /* BillDetailViewController.swift in Sources */,
 				551AAE392BFE2C9700E50FE7 /* BillData.swift in Sources */,
-				557B5CA62C206EA8004E5C49 /* MenuCellView.swift in Sources */,
+				557B5CA62C206EA8004E5C49 /* OrderCellView.swift in Sources */,
+				55D46FC02C2D51FE00F06657 /* ChartViewModal.swift in Sources */,
 				55C132132C2411C100351F96 /* MetricViewController.swift in Sources */,
 				5532D2462C26FDF40077656C /* RecoverPasswordViewController.swift in Sources */,
 				552D37AC2BF1F09F005B1D19 /* DatabaseError.swift in Sources */,
@@ -929,11 +972,13 @@
 				55C1321B2C256E7E00351F96 /* OrderData.swift in Sources */,
 				552D38142BF1F856005B1D19 /* CustomNotifications.swift in Sources */,
 				5524F5732BEB418D003F500C /* AddToCartViewController.swift in Sources */,
+				55D46FBC2C2C1EBC00F06657 /* MetricCollectionViewModel.swift in Sources */,
 				55C132112C24031100351F96 /* InsightBlockViewModal.swift in Sources */,
 				551AAE362BFE0A1400E50FE7 /* BillItem.swift in Sources */,
 				552D37EE2BF1F4F0005B1D19 /* DataService.swift in Sources */,
 				557B5CAC2C21522F004E5C49 /* LoginViewController.swift in Sources */,
 				552D37E32BF1F4F0005B1D19 /* Filename.swift in Sources */,
+				55D46FBE2C2D409300F06657 /* SalesReport.swift in Sources */,
 				552D38032BF1F5A0005B1D19 /* AuthorizationController.swift in Sources */,
 				552D38102BF1F5C0005B1D19 /* AuthenticationValidator.swift in Sources */,
 				552D37E82BF1F4F0005B1D19 /* OrderItemDSO.swift in Sources */,
@@ -943,10 +988,10 @@
 				551AAE202BFCAA0200E50FE7 /* TableItem.swift in Sources */,
 				5590DEFA2C1C131A007E1F75 /* OrderDetailViewController.swift in Sources */,
 				552D37E42BF1F4F0005B1D19 /* MenuService.swift in Sources */,
+				55D46FC32C2D72F400F06657 /* UserSessionManager.swift in Sources */,
 				55C132212C26C44400351F96 /* TitleAndDescriptionView.swift in Sources */,
 				552D37F02BF1F4F0005B1D19 /* FoodItem.swift in Sources */,
 				552D38072BF1F5A0005B1D19 /* UpdateStatusController.swift in Sources */,
-				55C132042C23F51100351F96 /* MenuSection.swift in Sources */,
 				552D37BD2BF1F13A005B1D19 /* FileIOError.swift in Sources */,
 				551AAE492BFF873B00E50FE7 /* MenuListingViewController.swift in Sources */,
 				552D37FE2BF1F5A0005B1D19 /* BillingController.swift in Sources */,
@@ -956,8 +1001,11 @@
 				552D37BB2BF1F13A005B1D19 /* AuthenticationError.swift in Sources */,
 				55F966702BF3708100557C92 /* UIAlertController+DefaultStyle.swift in Sources */,
 				5524F5772BEB4BE4003F500C /* AddItemViewController.swift in Sources */,
+				558350BE2C2E81B500DDA458 /* Date+Random.swift in Sources */,
+				55D46FB82C2ACAC300F06657 /* EditCartViewController.swift in Sources */,
 				552D38002BF1F5A0005B1D19 /* AdminController.swift in Sources */,
 				557B5CA92C215219004E5C49 /* SignUpViewController.swift in Sources */,
+				558350B72C2D908400DDA458 /* MenuCategory.swift in Sources */,
 				552D37FF2BF1F5A0005B1D19 /* TableController.swift in Sources */,
 				552D38042BF1F5A0005B1D19 /* OrderController.swift in Sources */,
 				552D37EB2BF1F4F0005B1D19 /* RestaurantMenu.swift in Sources */,

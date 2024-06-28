@@ -42,7 +42,7 @@ class OrderDetailViewController: UIViewController {
         return stackView
     }()
     
-    private var menuModelData: [MenuItem] = ModelData().menuItems
+    private var unorderedItems: [MenuItem] = []
     private var orderedItems: [MenuItem: Int] = [:]
     private var menuItems: [MenuItem] = []
     
@@ -67,10 +67,28 @@ class OrderDetailViewController: UIViewController {
         setupTableView()
         setupVerticalStackView()
         setupButtonStackView()
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(cartDidChange(_:)),
+            name: .cartDidChangeNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func cartDidChange(_ sender: Notification) {
+        if let userInfo = sender.userInfo,
+           let updatedCart = userInfo["MenuItems"] as? [MenuItem: Int] {
+            orderedItems.removeAll()
+            menuItems.removeAll()
+            orderedItems = updatedCart
+            populateMenuItems()
+            tableView.reloadData()
+        }
     }
     
     private func populateOrderedItems() {
-        for item in menuModelData {
+        for item in unorderedItems {
             if let count = orderedItems[item] {
                 orderedItems[item] = count + 1
             } else {
@@ -81,14 +99,16 @@ class OrderDetailViewController: UIViewController {
     
     private func populateMenuItems() {
         for (item, count) in orderedItems {
-            let menuitem = item
-            menuitem.count = count
-            menuItems.append(menuitem)
+            if count > 0 {
+                let menuitem = item
+                menuitem.count = count
+                menuItems.append(menuitem)
+            }
         }
     }
     
     private func populateMenuModelData() {
-        menuModelData = order.menuItems
+        unorderedItems = order.menuItems
     }
     
     private func setupNavbar() {
@@ -112,8 +132,6 @@ class OrderDetailViewController: UIViewController {
             billButton.heightAnchor.constraint(equalToConstant: 55)
         ])
     }
-    
-    
     
     private func setupScrollView() {
         scrollView = UIScrollView()
@@ -180,7 +198,7 @@ class OrderDetailViewController: UIViewController {
         let statusView = TitleAndDescriptionView()
         let dateView = TitleAndDescriptionView()
         dateView.configureView(title: "Date", description: order.getDate.formatted())
-        statusView.configureView(title: "Status", description: order.orderStatusValue.rawValue)
+        statusView.configureView(title: "Status", description: order.orderStatusValue.rawValue.uppercased())
         tableIDView.configureView(title: "Table", description: order.tableIDValue.uuidString)
         orderIDView.configureView(title: "Order", description: order.orderIdValue.uuidString)
         //view.addSubview(cardStackView)
@@ -230,6 +248,14 @@ class OrderDetailViewController: UIViewController {
     
     @objc private func billButtonAction(_ sender: UIButton) {
         print(#function)
+        guard !menuItems.isEmpty else {
+            presentEmptyCartAlert(on: self)
+            return
+        }
+        billOrder()
+    }
+    
+    private func billOrder() {
         do {
             let databaseAccess = try SQLiteDataAccess.openDatabase()
             let orderService = OrderServiceImpl(databaseAccess: databaseAccess)
@@ -238,8 +264,10 @@ class OrderDetailViewController: UIViewController {
             
             try billingController.createBill(for: order, tip: 0.0)
             
+            // Notify the observers
             NotificationCenter.default.post(name: .billDidAddNotification, object: nil)
             NotificationCenter.default.post(name: .orderDidChangeNotification, object: nil)
+            NotificationCenter.default.post(name: .metricDataDidChangeNotification, object: nil)
             
             // Disable bill button
             // billButton.isEnabled = false
@@ -247,17 +275,92 @@ class OrderDetailViewController: UIViewController {
             // Hidden the `horizontalStackView`
             horizontalButtonStackView.isHidden = true
             
+            // Pop the detail view
+            navigationController?.popViewController(animated: true)
+            
             let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Bill Added")
             toast.show(haptic: .success)
         } catch {
             print("Unable to bill the order - \(error)")
         }
-        
     }
     
     @objc private func editButtonAction(_ sender: UIButton) {
         print(#function)
         
+        for item in order.menuItems {
+            item.count = orderedItems[item] ?? 0
+        }
+        
+        let editCartViewController = EditCartViewController(cart: orderedItems, order: order)
+        self.present(UINavigationController(rootViewController: editCartViewController), animated: true)
+    }
+    
+    func countDuplicates(items: [MenuItem]) -> [MenuItem: Int] {
+        var itemCounts: [MenuItem: Int] = [:]
+        
+        for item in menuItems {
+            itemCounts[item, default: 0] += 1
+        }
+        
+        return itemCounts
+    }
+
+    // Function to present the alert controller
+    // Usage: Assuming 'self' is a UIViewController instance
+    // presentEmptyCartAlert(on: self)
+    func presentEmptyCartAlert(on viewController: UIViewController) {
+        // Create the alert controller
+        let alertController = UIAlertController(title: "Empty Cart", message: "Do you want to delete the order?", preferredStyle: .alert)
+        
+        // Create the 'Delete' action
+        let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
+            guard let self else { return }
+            // Handle the delete action
+            print("Order deleted")
+            self.deleteOrder()
+        }
+        
+        // Create the 'Add Items' action
+        let addItemsAction = UIAlertAction(title: "Add Items", style: .default) { [weak self] _ in
+            // Handle the add items action
+            guard let self else { return }
+            print("Adding items to cart")
+            for item in order.menuItems {
+                item.count = orderedItems[item] ?? 0
+            }
+            
+            let editCartViewController = EditCartViewController(cart: orderedItems, order: order)
+            self.present(UINavigationController(rootViewController: editCartViewController), animated: true)
+        }
+        
+        // Add the actions to the alert controller
+        alertController.addAction(deleteAction)
+        alertController.addAction(addItemsAction)
+        
+        // Present the alert controller
+        viewController.present(alertController, animated: true, completion: nil)
+    }
+    
+    // MARK: - Destructive
+    private func deleteOrder() {
+        do {
+            let orderService = try OrderServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            let tableService = try TableServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            let orderController = OrderController(orderService: orderService, tableService: tableService)
+            try orderController.deleteOrder(order)
+            
+            navigationController?.popViewController(animated: true)
+            
+            // Notify the changes
+            NotificationCenter.default.post(Notification(name: .cartDidChangeNotification))
+            
+            let toast = Toast.default(image: UIImage(systemName: "checkmark")!, title: "Order Deleted")
+            toast.show(haptic: .success)
+        } catch {
+            fatalError("Failed to perform \(#function) - \(error)!") // Caution
+            // print("Failed to perform \(#function) - \(error)!")
+        }
     }
 }
 

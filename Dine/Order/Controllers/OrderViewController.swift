@@ -63,7 +63,18 @@ class OrderViewController: UIViewController {
         loadOrderData()
         setupToolbar()
         
-        NotificationCenter.default.addObserver(self, selector: #selector(didAddOrder(_:)), name: .orderDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didAddOrder(_:)),
+            name: .orderDidChangeNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(cartDidChange(_:)),
+            name: .cartDidChangeNotification,
+            object: nil
+        )
     }
     
     // MARK: - UI Setup Methods
@@ -118,8 +129,7 @@ class OrderViewController: UIViewController {
         billButton.isEnabled = false
         deleteButton.isEnabled = false
 
-        toolbarItems = [
-            billButton,
+        toolbarItems = [ // Removed bill button
             UIBarButtonItem(systemItem: .flexibleSpace),
             deleteButton
         ]
@@ -198,6 +208,10 @@ class OrderViewController: UIViewController {
     }
     
     // MARK: - Action Methods
+    @objc private func cartDidChange(_ sender: Notification) {
+        loadOrderData()
+    }
+    
     @objc private func addOrder() {
         let menuListVC = AddToCartViewController()
         let navController = UINavigationController(rootViewController: menuListVC)
@@ -322,7 +336,7 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
         //cell.configureCell(with: order)
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
         cell.contentConfiguration = UIHostingConfiguration {
-            MenuCellView(order: order)
+            OrderCellView(order: order)
         }
         //cell.backgroundColor = .systemBackground
         return cell
@@ -386,7 +400,6 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
         
         let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
         return configuration
-    }
-    
+    }    
 }
 

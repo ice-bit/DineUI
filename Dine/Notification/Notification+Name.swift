@@ -12,7 +12,7 @@ extension Notification.Name {
     static let tableSelectionNotification = Notification.Name("com.euphoria.Dine.tableSelectionNotification")
     static let didAddTable = Notification.Name("com.euphoria.Dine.didAddTable")
     static let menuItemDidChangeNotification = Notification.Name("com.euphoria.Dine.menuItemDidChangeNotification")
-    static let billDidAddNotification = Notification.Name("com.euphoria.Dine.billDidAddNotification")
+    static let billDidChangeNotification = Notification.Name("com.euphoria.Dine.billDidAddNotification")
     static let cartDidChangeNotification = Notification.Name("com.euphoria.Dine.cartDidChangeNotification")
     // Adding order, editing order, billing order
     static let metricDataDidChangeNotification = Notification.Name("com.euphoria.Dine.metricDataDidChangeNotification")

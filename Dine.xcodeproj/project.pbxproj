@@ -112,6 +112,7 @@
 		5590DEF82C1B2134007E1F75 /* CustomBillDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF72C1B2134007E1F75 /* CustomBillDetailViewController.swift */; };
 		5590DEFA2C1C131A007E1F75 /* OrderDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF92C1C131A007E1F75 /* OrderDetailViewController.swift */; };
 		5590DEFC2C1C5434007E1F75 /* PlainMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */; };
+		55A4E1282C32C940001C4562 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A4E1272C32C940001C4562 /* OnboardingViewController.swift */; };
 		55C05A502C2EC71D00FE3AB1 /* AddMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C05A4F2C2EC71D00FE3AB1 /* AddMenuView.swift */; };
 		55C05A522C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C05A512C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift */; };
 		55C05A542C2ECCD700FE3AB1 /* ItemImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C05A532C2ECCD700FE3AB1 /* ItemImage.swift */; };
@@ -255,6 +256,7 @@
 		5590DEF72C1B2134007E1F75 /* CustomBillDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBillDetailViewController.swift; sourceTree = "<group>"; };
 		5590DEF92C1C131A007E1F75 /* OrderDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailViewController.swift; sourceTree = "<group>"; };
 		5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainMenuItemView.swift; sourceTree = "<group>"; };
+		55A4E1272C32C940001C4562 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		55C05A4F2C2EC71D00FE3AB1 /* AddMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMenuView.swift; sourceTree = "<group>"; };
 		55C05A512C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemPhotoModal.swift; sourceTree = "<group>"; };
 		55C05A532C2ECCD700FE3AB1 /* ItemImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemImage.swift; sourceTree = "<group>"; };
@@ -382,6 +384,7 @@
 		5524F54A2BE9E836003F500C /* Dine */ = {
 			isa = PBXGroup;
 			children = (
+				55A4E1262C32C91C001C4562 /* Onboarding */,
 				558350BA2C2DACC600DDA458 /* Category */,
 				55C132072C23FB7100351F96 /* Insights */,
 				557B5CA72C2151FB004E5C49 /* UserAuth */,
@@ -730,6 +733,14 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		55A4E1262C32C91C001C4562 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				55A4E1272C32C940001C4562 /* OnboardingViewController.swift */,
+			);
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
 		55C05A552C2ED1D800FE3AB1 /* PhotoPicker */ = {
 			isa = PBXGroup;
 			children = (
@@ -923,6 +934,7 @@
 				552D37E12BF1F4F0005B1D19 /* OrderService.swift in Sources */,
 				5524F6372BEE688D003F500C /* MenuDetailViewController.swift in Sources */,
 				558350B92C2DAA2F00DDA458 /* CategoryService.swift in Sources */,
+				55A4E1282C32C940001C4562 /* OnboardingViewController.swift in Sources */,
 				55F966792BF6059C00557C92 /* AddTablesViewController.swift in Sources */,
 				55F9667D2BF725ED00557C92 /* CustomSectionCell.swift in Sources */,
 				552D37EA2BF1F4F0005B1D19 /* MealItem.swift in Sources */,

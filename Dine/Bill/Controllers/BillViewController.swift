@@ -72,7 +72,7 @@ class BillViewController: UIViewController {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(billDidAdd(_:)),
-            name: .billDidAddNotification,
+            name: .billDidChangeNotification,
             object: nil
         )
     }
@@ -162,15 +162,10 @@ class BillViewController: UIViewController {
         do {
             let databaseAccess  = try SQLiteDataAccess.openDatabase()
             let billService = BillServiceImpl(databaseAccess: databaseAccess)
-            let orderService = OrderServiceImpl(databaseAccess: databaseAccess)
-            let tableService = TableServiceImpl(databaseAccess: databaseAccess)
-            let orderController = OrderController(orderService: orderService, tableService: tableService)
             try billService.delete(bill)
-            orderController.updateStatus(for: bill.getOrderId, to: .preparing)
-            
-            let toast = Toast.text("Order Restored")
+            let toast = Toast.text("Bill Deleted!")
             toast.show(haptic: .success)
-            NotificationCenter.default.post(name: .orderDidChangeNotification, object: nil)
+            NotificationCenter.default.post(name: .billDidChangeNotification, object: nil)
         } catch {
             print("Failed to perform \(#function) - \(error)")
             fatalError("Failed to perform \(#function) - \(error)")

@@ -13,7 +13,7 @@ struct OrderCellView: View {
     var body: some View {
         HStack {
             VStack {
-                Text("#\(order.getTable?.locationId ?? 0)")
+                Text("#\(order.getTable?.locationIdentifier ?? 0)")
                     .font(.subheadline)
                     .padding(.bottom, 8)
                 

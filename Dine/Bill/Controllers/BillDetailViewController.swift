@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Toast
 
 class BillDetailViewController: UIViewController {
     
@@ -148,7 +149,7 @@ class BillDetailViewController: UIViewController {
         horizontalStackView.addArrangedSubview(paymentButton)
         
         deleteButton = UIButton()
-        deleteButton.setTitle("Edit", for: .normal)
+        deleteButton.setTitle("Delete", for: .normal)
         deleteButton.setTitleColor(.systemBackground, for: .normal)
         deleteButton.backgroundColor = .label
         deleteButton.layer.cornerRadius = 14
@@ -170,5 +171,18 @@ class BillDetailViewController: UIViewController {
     
     @objc private func deleteAction(_ sender: UIButton) {
         print(#function)
+        do {
+            let databaseAccess  = try SQLiteDataAccess.openDatabase()
+            let billService = BillServiceImpl(databaseAccess: databaseAccess)
+            try billService.delete(bill)
+            let toast = Toast.text("Bill Deleted!")
+            toast.show(haptic: .success)
+            NotificationCenter.default.post(name: .billDidChangeNotification, object: nil)
+            // Pop the current view controller
+            navigationController?.popViewController(animated: true)
+        } catch {
+            print("Failed to perform \(#function) - \(error)")
+            fatalError("Failed to perform \(#function) - \(error)")
+        }
     }
 }

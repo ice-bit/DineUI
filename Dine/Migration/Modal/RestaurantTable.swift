@@ -11,27 +11,19 @@ import SQLite3
 class RestaurantTable: ObservableObject {
     private let _tableId: UUID
     var tableStatus: TableStatus
-    private let maxCapacity: Int
-    private let _locationIdentifier: Int
-    @Published var isSelected: Bool = false // For Dynamically changing SwiftUIView 
+    var capacity: Int
+    var locationIdentifier: Int
+    @Published var isSelected: Bool = false // For Dynamically changing SwiftUIView
     
     var tableId: UUID {
         return _tableId
     }
     
-    var locationId: Int {
-        return _locationIdentifier
-    }
-    
-    var capacity: Int {
-        maxCapacity
-    }
-    
     init(tableId: UUID, tableStatus: TableStatus, maxCapacity: Int, locationIdentifier: Int) {
         self._tableId = tableId
         self.tableStatus = tableStatus
-        self.maxCapacity = maxCapacity
-        self._locationIdentifier = locationIdentifier
+        self.capacity = maxCapacity
+        self.locationIdentifier = locationIdentifier
     }
     
     convenience init(tableStatus: TableStatus, maxCapacity: Int, locationIdentifier: Int) {
@@ -43,7 +35,7 @@ class RestaurantTable: ObservableObject {
     }
     
     func getCSVString() -> String {
-        return "\(_tableId),\(tableStatus.rawValue),\(maxCapacity),\(_locationIdentifier)"
+        return "\(_tableId),\(tableStatus.rawValue),\(capacity),\(locationIdentifier)"
     }
     
 }
@@ -71,7 +63,7 @@ extension RestaurantTable: SQLUpdatable {
     var createUpdateStatement: String {
         """
         UPDATE \(DatabaseTables.restaurantTable.rawValue)
-        SET TableID = '\(tableId)', TableStatus = '\(tableStatus.rawValue)', MaxCapacity = \(maxCapacity), LocationIdentifier = \(locationId)
+        SET TableID = '\(tableId)', TableStatus = '\(tableStatus.rawValue)', MaxCapacity = \(capacity), LocationIdentifier = \(locationIdentifier)
         WHERE TableID = '\(tableId)'
         """
     }
@@ -81,7 +73,7 @@ extension RestaurantTable: SQLInsertable {
     var createInsertStatement: String {
         """
         INSERT INTO \(DatabaseTables.restaurantTable.rawValue) (TableID, TableStatus, MaxCapacity, LocationIdentifier)
-        VALUES ('\(tableId.uuidString)', '\(tableStatus.rawValue)', \(maxCapacity), \(_locationIdentifier));
+        VALUES ('\(tableId.uuidString)', '\(tableStatus.rawValue)', \(capacity), \(locationIdentifier));
         """
     }
 }

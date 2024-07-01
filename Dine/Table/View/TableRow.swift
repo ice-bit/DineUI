@@ -13,7 +13,7 @@ struct TableRow: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading, spacing: 5) {
-                Text("Location ID: \(table.locationId)")
+                Text("Location ID: \(table.locationIdentifier)")
                     .font(.headline)
                     
                 Text("Capacity: \(table.capacity)")

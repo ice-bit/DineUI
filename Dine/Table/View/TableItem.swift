@@ -22,7 +22,7 @@ struct TableItem: View {
             
             HStack {
                 Text("Location ID -")
-                Text("\(table.locationId)")
+                Text("\(table.locationIdentifier)")
                     .lineLimit(1)
             }
             .font(.subheadline)

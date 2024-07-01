@@ -231,7 +231,7 @@ class OrderViewController: UIViewController {
                 try billingController.createBill(for: order, tip: nil)
             }
             
-            NotificationCenter.default.post(name: .billDidAddNotification, object: nil)
+            NotificationCenter.default.post(name: .billDidChangeNotification, object: nil)
             loadOrderData()
             tableView.reloadData()
             setSelection(false, animated: true)
@@ -252,7 +252,7 @@ class OrderViewController: UIViewController {
             
             try billingController.createBill(for: order, tip: nil)
             
-            NotificationCenter.default.post(name: .billDidAddNotification, object: nil)
+            NotificationCenter.default.post(name: .billDidChangeNotification, object: nil)
         } catch {
             print("Failed to perform \(#function) - \(error)")
         }

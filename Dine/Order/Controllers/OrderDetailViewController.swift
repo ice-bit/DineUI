@@ -265,7 +265,7 @@ class OrderDetailViewController: UIViewController {
             try billingController.createBill(for: order, tip: 0.0)
             
             // Notify the observers
-            NotificationCenter.default.post(name: .billDidAddNotification, object: nil)
+            NotificationCenter.default.post(name: .billDidChangeNotification, object: nil)
             NotificationCenter.default.post(name: .orderDidChangeNotification, object: nil)
             NotificationCenter.default.post(name: .metricDataDidChangeNotification, object: nil)
             

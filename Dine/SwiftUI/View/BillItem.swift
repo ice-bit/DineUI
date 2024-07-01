@@ -55,7 +55,7 @@ struct BillItem: View {
         .foregroundStyle(.black)*/
         HStack {
             VStack {
-                Text("#\(billData.getOrder?.getTable?.locationId ?? 0)")
+                Text("#\(billData.getOrder?.getTable?.locationIdentifier ?? 0)")
                     .font(.subheadline)
                     .padding(.bottom, 8)
                 

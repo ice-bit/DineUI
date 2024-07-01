@@ -126,7 +126,7 @@ class TableCollectionViewCell: UICollectionViewCell {
     
     func configureCell(table: RestaurantTable) {
         statusValueLabel.text = table.tableStatus.rawValue
-        locationValueLabel.text = String(table.locationId)
+        locationValueLabel.text = String(table.locationIdentifier)
         capacityValueLabel.text = String(table.capacity)
     }
 }

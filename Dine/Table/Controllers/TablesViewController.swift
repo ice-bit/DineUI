@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import Toast
 
 class TablesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     // MARK: - Properties
@@ -184,8 +185,10 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         let item = tables[indexPaths[0].item]
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-            let editAction = UIAction(title: "Edit", image: UIImage(systemName: "encil")) { action in
+            let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [weak self] action in
+                guard let self else { return }
                 print("Edit context menu action")
+                self.presentEditAlertController(for: item)
             }
             
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash")) { action in
@@ -193,9 +196,12 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
                 self.deleteTable(item)
             }
             
+            deleteAction.image?.withTintColor(.red)
             return UIMenu(children: [editAction, deleteAction])
         }
     }
+    
+    
     
     private func deleteTable(_ table: RestaurantTable) {
         do {
@@ -208,5 +214,83 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
         } catch {
             fatalError("Error while deleting table! - \(error)")
         }
+    }
+    
+    private func presentEditAlertController(for table: RestaurantTable) {
+        let alertController = UIAlertController(title: "Edit Table", message: nil, preferredStyle: .alert)
+        
+        alertController.addTextField { textField in
+            textField.placeholder = "Location Identifier"
+            textField.text = String(table.locationIdentifier)
+            textField.keyboardType = .numberPad
+        }
+        
+        alertController.addTextField { textField in
+            textField.placeholder = "Capacity"
+            textField.keyboardType = .numberPad
+            textField.text = String(table.capacity)
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            self.dismiss(animated: true)
+        }
+        
+        let doneAction = UIAlertAction(title: "Done", style: .default) { [weak self] _ in
+            guard let self else { return }
+            guard let firstTextField = alertController.textFields?[0],
+                  let secondTextField = alertController.textFields?[1] else { return }
+            
+            guard let locationIdString = firstTextField.text,
+                  let locationId = Int(locationIdString),
+                  !locationIdString.isEmpty else {
+                self.showToast("Invalid Location ID")
+                return
+            }
+            
+            guard let capacityText = secondTextField.text,
+                  !capacityText.isEmpty,
+                  let capacity = Int(capacityText) else {
+                self.showToast("Invalid capacity")
+                return
+            }
+            
+            
+            // Handle the text input
+            print("Location ID text field: \(locationIdString)")
+            print("Capacity text field: \(capacity)")
+            
+            table.locationIdentifier = locationId
+            table.capacity = capacity
+            
+            editTable(table)
+            
+            let toast = Toast.text("Updated!")
+            toast.show(haptic: .success)
+        }
+        
+        alertController.addAction(cancelAction)
+        alertController.addAction(doneAction)
+        
+        present(alertController, animated: true, completion: nil)
+    }
+    
+    private func editTable(_ table: RestaurantTable) {
+        do {
+            let tableService = try TableServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            try tableService.update(table)
+            
+            guard let currentTable = tables.first(where: { $0.tableId == table.tableId }) else { return }
+            currentTable.locationIdentifier = table.locationIdentifier
+            currentTable.capacity = table.capacity
+            
+            collectionView.reloadData()
+        } catch {
+            fatalError("\(#function) failed with \(error)!") // Will be removed in production!
+        }
+    }
+    
+    private func showToast(_ message: String) {
+        let toast = Toast.text(message)
+        toast.show(haptic: .error)
     }
 }

@@ -7,6 +7,7 @@
 
 import UIKit
 import SwiftUI
+import Toast
 
 class BillViewController: UIViewController {
     // MARK: - Properties
@@ -159,10 +160,20 @@ class BillViewController: UIViewController {
     
     private func deleteBill(_ bill: Bill) {
         do {
-            let billService = try BillServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            let databaseAccess  = try SQLiteDataAccess.openDatabase()
+            let billService = BillServiceImpl(databaseAccess: databaseAccess)
+            let orderService = OrderServiceImpl(databaseAccess: databaseAccess)
+            let tableService = TableServiceImpl(databaseAccess: databaseAccess)
+            let orderController = OrderController(orderService: orderService, tableService: tableService)
             try billService.delete(bill)
+            orderController.updateStatus(for: bill.getOrderId, to: .preparing)
+            
+            let toast = Toast.text("Order Restored")
+            toast.show(haptic: .success)
+            NotificationCenter.default.post(name: .orderDidChangeNotification, object: nil)
         } catch {
             print("Failed to perform \(#function) - \(error)")
+            fatalError("Failed to perform \(#function) - \(error)")
         }
     }
     

@@ -15,6 +15,13 @@ protocol BillService {
 }
 
 struct BillServiceImpl: BillService {
+    
+    private let databaseAccess: DatabaseAccess
+    
+    init(databaseAccess: DatabaseAccess) {
+        self.databaseAccess = databaseAccess
+    }
+    
     func add(_ bill: Bill) throws {
         try databaseAccess.insert(bill)
     }
@@ -33,11 +40,6 @@ struct BillServiceImpl: BillService {
     
     func delete(_ bill: Bill) throws {
         try databaseAccess.delete(item: bill)
-    }
-    
-    private let databaseAccess: DatabaseAccess
-    init(databaseAccess: DatabaseAccess) {
-        self.databaseAccess = databaseAccess
     }
     
 }

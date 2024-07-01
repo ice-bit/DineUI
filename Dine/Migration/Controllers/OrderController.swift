@@ -109,4 +109,24 @@ class OrderController: OrderServicable {
         let databaseAccess = try SQLiteDataAccess.openDatabase()
         try databaseAccess.delete(from: DatabaseTables.orderMenuItemTable.rawValue, where: "OrderID = '\(order.orderIdValue.uuidString)'")
     }
+    
+    func updateStatus(for orderId: UUID, to status: OrderStatus) {
+        do {
+            let resultOrders = try orderService.fetch()
+            let resultTables = try tableService.fetch()
+            guard let orders = resultOrders,
+                  let tables = resultTables else { return }
+            guard let order = orders.first(where: { $0.orderIdValue == orderId }) else { return }
+            guard let table = tables.first(where: { $0.tableId == order.tableIDValue }) else { return }
+            
+            // Update the order and related tables status
+            order.orderStatusValue = .received
+            table.changeTableStatus(to: .occupied)
+            
+            try orderService.update(order)
+            try tableService.update(table)
+        } catch {
+            fatalError("Error updating order status - \(error)")
+        }
+    }
 }

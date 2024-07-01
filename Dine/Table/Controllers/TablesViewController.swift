@@ -193,7 +193,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
                 self.deleteTable(item)
             }
             
-            return UIMenu(children: [deleteAction])
+            return UIMenu(children: [editAction, deleteAction])
         }
     }
     

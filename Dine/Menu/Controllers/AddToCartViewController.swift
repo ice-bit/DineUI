@@ -192,9 +192,8 @@ class AddToCartViewController: UIViewController {
             // Handle the add items action
             guard let self else { return }
             print("Add items")
-            self.dismiss(animated: true)
-            if let tabBarController {
-                tabBarController.selectedIndex = 4
+            self.dismiss(animated: true) {
+                // Select the menu screen
             }
         }
         

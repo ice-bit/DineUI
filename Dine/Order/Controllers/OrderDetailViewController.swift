@@ -252,7 +252,8 @@ class OrderDetailViewController: UIViewController {
             presentEmptyCartAlert(on: self)
             return
         }
-        billOrder()
+        
+        presentBillingAlert(on: self)
     }
     
     private func billOrder() {
@@ -339,6 +340,30 @@ class OrderDetailViewController: UIViewController {
         alertController.addAction(addItemsAction)
         
         // Present the alert controller
+        viewController.present(alertController, animated: true, completion: nil)
+    }
+    
+    func presentBillingAlert(on viewController: UIViewController) {
+        let alertController = UIAlertController(
+            title: "Confirmation",
+            message: "Are you sure that you want to bill the order?",
+            preferredStyle: .alert
+        )
+        
+        // Add actions to the alert
+        let confirmAction = UIAlertAction(title: "Confirm", style: .default) { [weak self] _ in
+            guard let self else { return }
+            // Handle the confirm action here
+            print("Order billed.")
+            billOrder()
+        }
+        
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+        
+        alertController.addAction(confirmAction)
+        alertController.addAction(cancelAction)
+        
+        // Present the alert
         viewController.present(alertController, animated: true, completion: nil)
     }
     

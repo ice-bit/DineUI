@@ -17,11 +17,7 @@ struct TableRow: View {
                     .font(.headline)
                     
                 Text("Capacity: \(table.capacity)")
-                    .font(.caption)
-                
-                Text(table.tableId.uuidString)
-                    .font(.caption2)
-                    
+                    .font(.subheadline)
             }
             .padding()
             

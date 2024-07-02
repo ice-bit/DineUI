@@ -361,9 +361,8 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let order = orderData[indexPath.row]
-        //guard let cell = tableView.dequeueReusableCell(withIdentifier: OrderCell.reuseIdentifier, for: indexPath) as? OrderCell else { return UITableViewCell() }
-        //cell.configureCell(with: order)
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
+        cell.selectedBackgroundView = UIView() // From giving transparent selected color
         cell.contentConfiguration = UIHostingConfiguration {
             OrderCellView(order: order)
         }

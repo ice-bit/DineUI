@@ -18,4 +18,6 @@ extension Notification.Name {
     static let metricDataDidChangeNotification = Notification.Name("com.euphoria.Dine.metricDataDidChangeNotification")
     // `AddCategoryViewController`
     static let categoryDataDidChangeNotification = Notification.Name("com.euphoria.Dine.categoryDataDidChangeNotification")
+    /// Broadcaster name for changes in table data.
+    static let tablesDidChangeNotification = Notification.Name("com.euphoria.Dine.tablesDidChangeNotification")
 }

@@ -8,7 +8,7 @@
 import Foundation
 
 protocol TableServicable {
-    func addTable(maxCapacity: Int, locationIdentifier: Int) -> Bool
+    func addTable(maxCapacity: Int, locationIdentifier: Int) throws
     func removeTable(_ table: RestaurantTable) -> Bool
     func fetchAvailableTables() -> [RestaurantTable]?
     func fetchTables() -> [RestaurantTable]?
@@ -20,16 +20,18 @@ class TableController: TableServicable {
         self.tableService = tableService
     }
     
-    func addTable(maxCapacity: Int, locationIdentifier: Int) -> Bool {
+    func addTable(maxCapacity: Int, locationIdentifier: Int) throws  {
         let table = RestaurantTable(tableStatus: .free, maxCapacity: maxCapacity, locationIdentifier: locationIdentifier)
-        do {
-            try tableService.add(table)
-            print("Table added successfully to DB")
-            return true
-        } catch {
-            print("Error adding table: \(error.localizedDescription)")
-            return false
+        
+        let resultTables = try tableService.fetch()
+        guard let resultTables else { throw TableError.parsingFailed }
+            
+        if let _ = resultTables.first(where: { $0.locationIdentifier == locationIdentifier }) {
+            throw TableError.locationIdAlreadyTaken
         }
+            
+        try tableService.add(table)
+        print("Table added successfully to DB")
     }
     
     func removeTable(_ table: RestaurantTable) -> Bool {
@@ -59,4 +61,13 @@ class TableController: TableServicable {
         }
         return resultTables
     }
+}
+
+enum TableError: Error {
+    case locationIdAlreadyTaken
+    case parsingFailed
+    case invalidLocationId
+    case invalidCapacity
+    case noDataFound
+    case unknownError(Error)
 }

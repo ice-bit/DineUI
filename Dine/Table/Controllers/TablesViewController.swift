@@ -63,9 +63,8 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
     /// Action method for the add table button.
     @objc private func addTableButtonTapped(sender: UIBarButtonItem) {
         print("Add table button tapped")
-        let addFormVC = AddTableFormView()
-        let hostingVC = UIHostingController(rootView: addFormVC)
-        if let sheet = hostingVC.sheetPresentationController {
+        let addTableController = AddTablesViewController()
+        if let sheet = addTableController.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
             sheet.prefersGrabberVisible = true
             sheet.prefersScrollingExpandsWhenScrolledToEdge = true
@@ -73,7 +72,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
             sheet.prefersEdgeAttachedInCompactHeight = true
             sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
         }
-        self.present(hostingVC, animated: true)
+        self.present(addTableController, animated: true)
     }
     
     // MARK: - Methods
@@ -201,8 +200,6 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
     }
     
-    
-    
     private func deleteTable(_ table: RestaurantTable) {
         do {
             let tableService = try TableServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
@@ -263,9 +260,6 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
             table.capacity = capacity
             
             editTable(table)
-            
-            let toast = Toast.text("Updated!")
-            toast.show(haptic: .success)
         }
         
         alertController.addAction(cancelAction)
@@ -277,13 +271,29 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
     private func editTable(_ table: RestaurantTable) {
         do {
             let tableService = try TableServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            
+            guard let resultTables = try tableService.fetch() else { throw TableError.parsingFailed }
+            if let _ = resultTables.first(where: { $0.locationIdentifier == table.locationIdentifier }) {
+                throw TableError.locationIdAlreadyTaken
+            }
+            
+            // Update
             try tableService.update(table)
+            // Show toast
+            let toast = Toast.text("Updated!")
+            toast.show(haptic: .success)
+            
+            // Notify
+            NotificationCenter.default.post(name: .tablesDidChangeNotification, object: nil)
             
             guard let currentTable = tables.first(where: { $0.tableId == table.tableId }) else { return }
             currentTable.locationIdentifier = table.locationIdentifier
             currentTable.capacity = table.capacity
             
-            collectionView.reloadData()
+            collectionView.reloadData() 
+        } catch let error as TableError {
+            let toast = Toast.text("Location Identifier Already Exists")
+            toast.show(haptic: .warning)
         } catch {
             fatalError("\(#function) failed with \(error)!") // Will be removed in production!
         }

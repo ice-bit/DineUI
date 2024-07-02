@@ -52,7 +52,12 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         setupSearchBar()
         setupBarButton()
         populateCategoryData()
-        NotificationCenter.default.addObserver(self, selector: #selector(categoryDataDidChange(_:)), name: .categoryDataDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(categoryDataDidChange(_:)),
+            name: .categoryDataDidChangeNotification,
+            object: nil
+        )
     }
     
     @objc private func categoryDataDidChange(_ notification: Notification) {
@@ -107,7 +112,12 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     }
     
     private func setupBarButton() {
-        addButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .plain, target: self, action: #selector(addButtonAction(_:)))
+        addButton = UIBarButtonItem(
+            image: UIImage(systemName: "plus"),
+            style: .plain,
+            target: self,
+            action: #selector(addButtonAction(_:))
+        )
         navigationItem.rightBarButtonItem = addButton
     }
     
@@ -187,11 +197,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         }
         
         // Create the 'Add Items' action
-        let addItemsAction = UIAlertAction(title: "Cancel", style: .default) { [weak self] _ in
-            // Handle the add items action
-            guard let self else { return }
-            print("Cancelled")
-        }
+        let addItemsAction = UIAlertAction(title: "Cancel", style: .cancel)
         
         // Add the actions to the alert controller
         alertController.addAction(addItemsAction)

@@ -75,9 +75,21 @@ class BillViewController: UIViewController {
             name: .billDidChangeNotification,
             object: nil
         )
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(listDidChange(_:)),
+            name: .tablesDidChangeNotification,
+            object: nil
+        )
     }
     
     @objc private func billDidAdd(_ sender: Notification) {
+        loadBillData()
+    }
+    
+    @objc private func listDidChange(_ sender: Notification) {
+        print(#function)
         loadBillData()
     }
     
@@ -188,7 +200,7 @@ class BillViewController: UIViewController {
     
     func presentWarning(for item: Bill) {
         // Create the alert controller
-        let alertController = UIAlertController(title: "Delete", message: "Do you want to delete the order?", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Delete", message: "Do you want to delete the bill?", preferredStyle: .alert)
         
         // Create the 'Delete' action
         let deleteAction = UIAlertAction(title: "Delete", style: .destructive) { [weak self] _ in
@@ -200,11 +212,7 @@ class BillViewController: UIViewController {
         }
         
         // Create the 'Add Items' action
-        let addItemsAction = UIAlertAction(title: "Cancel", style: .default) { [weak self] _ in
-            // Handle the add items action
-            guard let self else { return }
-            print("Cancelled")
-        }
+        let addItemsAction = UIAlertAction(title: "Cancel", style: .cancel)
         
         // Add the actions to the alert controller
         alertController.addAction(addItemsAction)

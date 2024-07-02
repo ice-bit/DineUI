@@ -75,6 +75,12 @@ class OrderViewController: UIViewController {
             name: .cartDidChangeNotification,
             object: nil
         )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(orderDataDidChange(_:)),
+            name: .tablesDidChangeNotification,
+            object: nil
+        )
     }
     
     // MARK: - UI Setup Methods
@@ -212,6 +218,10 @@ class OrderViewController: UIViewController {
         loadOrderData()
     }
     
+    @objc private func orderDataDidChange(_ sender: Notification) {
+        loadOrderData()
+    }
+    
     @objc private func addOrder() {
         let menuListVC = AddToCartViewController()
         let navController = UINavigationController(rootViewController: menuListVC)
@@ -338,11 +348,7 @@ class OrderViewController: UIViewController {
         }
         
         // Create the 'Add Items' action
-        let addItemsAction = UIAlertAction(title: "Cancel", style: .default) { [weak self] _ in
-            // Handle the add items action
-            guard let self else { return }
-            print("Cancelled")
-        }
+        let addItemsAction = UIAlertAction(title: "Cancel", style: .cancel)
         
         // Add the actions to the alert controller
         alertController.addAction(addItemsAction)

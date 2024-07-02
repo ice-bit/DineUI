@@ -8,12 +8,16 @@
 import UIKit
 import Toast
 
-class SignUpViewController: UIViewController {
+class SignUpViewController: UIViewController {    
+    var isInitialScreen: Bool = false
+    
+    private var toggleButton: UIButton!
+    private var confirmPasswordToggleButton: UIButton!
     
     private lazy var introLabel: UILabel = {
         let label = UILabel()
         label.text = "Welcome to Dine!"
-        label.font = .preferredFont(forTextStyle: .largeTitle)
+        label.font = .preferredFont(forTextStyle: .extraLargeTitle)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -78,13 +82,66 @@ class SignUpViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
+        if isInitialScreen {
+            loginLabel.isHidden = true
+        }
+        setupPasswordVisibiltyToggle()
+        setupConfirmPasswordVisibiltyToggle()
+        setupLoginLabelGesture()
         setupSubviews()
         view.backgroundColor = .systemBackground
+        navigationController?.navigationBar.prefersLargeTitles = true
+        title = "Sign Up"
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
         // tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+    }
+    
+    private func setupPasswordVisibiltyToggle() {
+        toggleButton = UIButton(type: .custom)
+        // Configure the toggle button
+        toggleButton.setImage(UIImage(systemName: "eye"), for: .normal)
+        toggleButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        toggleButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
+        // Add the button to the right view of the text field
+        passwordTextField.rightView = toggleButton
+        passwordTextField.rightViewMode = .always
+    }
+    
+    @objc func togglePasswordVisibility() {
+        passwordTextField.isSecureTextEntry.toggle()
+        let buttonImageName = passwordTextField.isSecureTextEntry ? "eye" : "eye.slash"
+        toggleButton.setImage(UIImage(systemName: buttonImageName), for: .normal)
+    }
+    
+    private func setupConfirmPasswordVisibiltyToggle() {
+        confirmPasswordToggleButton = UIButton(type: .custom)
+        // Configure the toggle button
+        confirmPasswordToggleButton.setImage(UIImage(systemName: "eye"), for: .normal)
+        confirmPasswordToggleButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        confirmPasswordToggleButton.addTarget(self, action: #selector(toggleConfirmPasswordVisibility), for: .touchUpInside)
+        // Add the button to the right view of the text field
+        confirmPasswordTextField.rightView = confirmPasswordToggleButton
+        confirmPasswordTextField.rightViewMode = .always
+    }
+    
+    @objc func toggleConfirmPasswordVisibility() {
+        confirmPasswordTextField.isSecureTextEntry.toggle()
+        let buttonImageName = confirmPasswordTextField.isSecureTextEntry ? "eye" : "eye.slash"
+        confirmPasswordToggleButton.setImage(UIImage(systemName: buttonImageName), for: .normal)
+    }
+    
+    private func setupLoginLabelGesture() {
+        loginLabel.isUserInteractionEnabled = true
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(loginLabelAction(_:)))
+        loginLabel.addGestureRecognizer(tapGesture)
+    }
+    
+    @objc private func loginLabelAction(_ sender: UILabel) {
+        print(#function)
+        navigationController?.popViewController(animated: true)
     }
     
     @objc private func dismissKeyboard() {

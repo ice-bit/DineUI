@@ -9,10 +9,13 @@ import UIKit
 import Toast
 
 class LoginViewController: UIViewController {
+    private var toggleButton: UIButton!
+    
     private lazy var introLabel: UILabel = {
         let label = UILabel()
         label.text = "Welcome Back!"
-        label.font = .preferredFont(forTextStyle: .largeTitle)
+        label.font = .preferredFont(forTextStyle: .extraLargeTitle)
+        label.numberOfLines = 0
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -79,16 +82,34 @@ class LoginViewController: UIViewController {
         setupSubviews()
         //createTrackingConstraints()
         setupSignUpLabelGesture()
+        setupPasswordVisibiltyToggle()
         setupForgetLabelGesture()
         view.backgroundColor = .systemBackground
         title = "Login"
-        
+        navigationController?.navigationBar.prefersLargeTitles = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
         // tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
         
         fetchAccounts()
+    }
+    
+    private func setupPasswordVisibiltyToggle() {
+        toggleButton = UIButton(type: .custom)
+        // Configure the toggle button
+        toggleButton.setImage(UIImage(systemName: "eye"), for: .normal)
+        toggleButton.frame = CGRect(x: 0, y: 0, width: 24, height: 24)
+        toggleButton.addTarget(self, action: #selector(togglePasswordVisibility), for: .touchUpInside)
+        // Add the button to the right view of the text field
+        passwordTextField.rightView = toggleButton
+        passwordTextField.rightViewMode = .always
+    }
+    
+    @objc func togglePasswordVisibility() {
+        passwordTextField.isSecureTextEntry.toggle()
+        let buttonImageName = passwordTextField.isSecureTextEntry ? "eye" : "eye.slash"
+        toggleButton.setImage(UIImage(systemName: buttonImageName), for: .normal)
     }
     
     // This method is meant to be removed

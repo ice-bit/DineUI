@@ -15,7 +15,7 @@ struct RootViewManager {
         
         // Optionally add a transition animation
         let window = UIApplication.shared.windows.first
-        let options: UIView.AnimationOptions = .curveEaseIn
+        let options: UIView.AnimationOptions = .transitionFlipFromRight
         let duration: TimeInterval = 0.5
         
         

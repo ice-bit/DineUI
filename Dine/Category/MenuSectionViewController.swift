@@ -13,6 +13,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     // MARK: - Properties
     private var collectionView: UICollectionView!
     private var placeholderLabel: UILabel!
+    private var noResultsLabel: UILabel! // Added noResultsLabel
     private var addButton: UIBarButtonItem!
     private var categories: [MenuCategory] = [] {
         didSet {
@@ -49,6 +50,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         navigationController?.navigationBar.prefersLargeTitles = true
         setupCollectionView()
         setupPlaceholderLabel()
+        setupNoResultsLabel() // Setup noResultsLabel
         setupSearchBar()
         setupBarButton()
         populateCategoryData()
@@ -80,8 +82,10 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     
     private func updateUIForData() {
         let hasCategories = !categories.isEmpty
-        collectionView.isHidden = !hasCategories
-        placeholderLabel.isHidden = hasCategories
+        let hasFilteredItems = !filteredCategories.isEmpty
+        collectionView.isHidden = !(hasCategories || isFiltering)
+        placeholderLabel.isHidden = hasCategories || isFiltering
+        noResultsLabel.isHidden = hasFilteredItems || !isFiltering
     }
     
     private func setupPlaceholderLabel() {
@@ -100,6 +104,24 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         
         // Initially hidden
         placeholderLabel.isHidden = true
+    }
+    
+    private func setupNoResultsLabel() {
+        noResultsLabel = UILabel()
+        noResultsLabel.text = "No Results Found"
+        noResultsLabel.textColor = .systemGray3
+        noResultsLabel.font = .preferredFont(forTextStyle: .title1)
+        noResultsLabel.textAlignment = .center
+        noResultsLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(noResultsLabel)
+        
+        NSLayoutConstraint.activate([
+            noResultsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noResultsLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        // Initially hidden
+        noResultsLabel.isHidden = true
     }
     
     private func setupSearchBar() {
@@ -172,6 +194,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
             category.categoryName.lowercased().contains(searchText.lowercased())
         }
         
+        updateUIForData()
         collectionView.reloadData()
     }
     

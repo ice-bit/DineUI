@@ -12,7 +12,7 @@ struct SectionView: View {
     
     var body: some View {
         HStack {
-            Label(catergory.categoryName, systemImage: "square.dashed.inset.filled")
+            Label(catergory.categoryName, systemImage: "square.3.layers.3d.top.filled")
                 .font(.subheadline)
                 .foregroundStyle(.primary)
                 .padding()

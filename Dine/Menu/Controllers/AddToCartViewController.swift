@@ -13,6 +13,7 @@ class AddToCartViewController: UIViewController {
     private var tableView: UITableView!
     
     private var addItemsButton: UIButton!
+    private var noResultsLabel: UILabel! // Added noResultsLabel
     private var menuCartView: MenuCartView!
     let searchController = UISearchController()
     
@@ -61,10 +62,29 @@ class AddToCartViewController: UIViewController {
         setupNavBar()
         configureView()
         setupSearchBar()
-        // setupCartView()
+        setupNoResultsLabel() // Setup noResultsLabel
     }
     
     // MARK: - CUSTOM Methods
+    
+    private func setupNoResultsLabel() {
+        noResultsLabel = UILabel()
+        noResultsLabel.text = "No Results Found"
+        noResultsLabel.textColor = .systemGray3
+        noResultsLabel.font = .preferredFont(forTextStyle: .title1)
+        noResultsLabel.textAlignment = .center
+        noResultsLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(noResultsLabel)
+        
+        NSLayoutConstraint.activate([
+            noResultsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noResultsLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        // Initially hidden
+        noResultsLabel.isHidden = true
+    }
+    
     private func setupNavBar() {
         title = "Menu"
         navigationController?.navigationBar.prefersLargeTitles = true
@@ -98,6 +118,13 @@ class AddToCartViewController: UIViewController {
             toast.show(haptic: .error)
             proceedbutton.isEnabled = false
         }
+    }
+    
+    private func updateUIForNoData() {
+        let hasMenuItems = !menuItems.isEmpty
+        let hasFilteredItems = !filteredItems.isEmpty
+        tableView.isHidden = !(hasMenuItems || isFiltering)
+        noResultsLabel.isHidden = hasFilteredItems || !isFiltering
     }
     
     private func setupCartView() {
@@ -172,6 +199,7 @@ class AddToCartViewController: UIViewController {
             return menuItem.name.lowercased().contains(searchText.lowercased())
         }
         
+        updateUIForNoData()
         tableView.reloadData()
     }
     

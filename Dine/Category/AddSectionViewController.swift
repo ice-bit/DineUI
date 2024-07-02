@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Toast
 
 class AddSectionViewController: UIViewController {
     
@@ -61,7 +62,12 @@ class AddSectionViewController: UIViewController {
     @objc private func addButtonAction(_ sender: UIButton) {
         print(#function)
         guard let categoryName = categoryNameTextField.text,
-              !categoryName.isEmpty else { return }
+              !categoryName.isEmpty else { 
+            let toast = Toast.text("Invalid Category Name!")
+            toast.show(haptic: .success)
+            return
+        }
+        
         do {
             let categoryService = try CategoryServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
             let category = MenuCategory(id: UUID(), categoryName: categoryName)
@@ -70,9 +76,11 @@ class AddSectionViewController: UIViewController {
             NotificationCenter.default.post(name: .categoryDataDidChangeNotification, object: nil)
             self.dismiss(animated: true)
         } catch {
-            print("Failed to load categories: \(error)")
+            print("Failed to perform \(#function): \(error)")
         }
     }
+    
+    
     
     @objc private func dismissKeyboard() {
         view.endEditing(true)

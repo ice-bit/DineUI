@@ -13,6 +13,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     
     private var tableView: UITableView!
     private var placeholderLabel: UILabel!
+    private var noResultsLabel: UILabel! // Added noResultsLabel
     private let cellReuseID = "MenuItemRow"
     private let activeSection: MenuSectionType
     private let category: MenuCategory
@@ -47,14 +48,20 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - View LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupTableView()
-        setupPlaceholderLabel()
         title = category.categoryName
         navigationController?.navigationBar.prefersLargeTitles = true
-        setupSearchBar()
+        setupTableView()
+        setupNoResultsLabel() // Setup noResultsLabel
         setupNavbar()
+        setupPlaceholderLabel()
         populateMenuData()
-        NotificationCenter.default.addObserver(self, selector: #selector(menuItemDidChange(_:)), name: .menuItemDidChangeNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(menuItemDidChange(_:)),
+            name: .menuItemDidChangeNotification,
+            object: nil
+        )
+        setupSearchBar()
     }
     
     @objc private func menuItemDidChange(_ sender: NotificationCenter) {
@@ -94,6 +101,24 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         placeholderLabel.isHidden = true
     }
     
+    private func setupNoResultsLabel() {
+        noResultsLabel = UILabel()
+        noResultsLabel.text = "No Results Found"
+        noResultsLabel.textColor = .systemGray3
+        noResultsLabel.font = .preferredFont(forTextStyle: .title1)
+        noResultsLabel.textAlignment = .center
+        noResultsLabel.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(noResultsLabel)
+        
+        NSLayoutConstraint.activate([
+            noResultsLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            noResultsLabel.centerYAnchor.constraint(equalTo: view.centerYAnchor)
+        ])
+        
+        // Initially hidden
+        noResultsLabel.isHidden = true
+    }
+    
     // Load methods
     private func populateMenuData() {
         do {
@@ -114,8 +139,10 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     
     private func updateUIForMenuItemData() {
         let hasMenuItems = !menuData.isEmpty
-        tableView.isHidden = !hasMenuItems
-        placeholderLabel.isHidden = hasMenuItems
+        let hasFilteredItems = !filteredItems.isEmpty
+        tableView.isHidden = !(hasMenuItems || isFiltering)
+        placeholderLabel.isHidden = hasMenuItems || isFiltering
+        noResultsLabel.isHidden = hasFilteredItems || !isFiltering
     }
     
     // MARK: - Setup
@@ -151,11 +178,12 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         definesPresentationContext = true
     }
     
-    private func filterContentForSearch(_ searchText: String)  {
+    private func filterContentForSearch(_ searchText: String) {
         filteredItems = menuData.filter { (menuData: MenuItem) -> Bool in
             menuData.name.lowercased().contains(searchText.lowercased())
         }
         
+        updateUIForMenuItemData()
         tableView.reloadData()
     }
     
@@ -295,8 +323,6 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             
             let updatedItem = MenuItem(itemId: item.itemId, name: name, price: price, category: item.category)
             editItem(updatedItem)
-            let toast = Toast.text("Updated!")
-            toast.show(haptic: .success)
         }
         
         alertController.addAction(cancelAction)
@@ -309,11 +335,14 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         do {
             let menuService = try MenuServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
             try menuService.update(item)
-            if let index = menuData.firstIndex(where: { $0 == item }) {
-                menuData[index].name = item.name
-                menuData[index].price = item.price
-                tableView.reloadData()
-            }
+            let toast = Toast.text("Updated!")
+            toast.show(haptic: .success)
+            
+            guard let selectedMenuItem = menuData.first(where: { $0 == item }) else { return }
+            selectedMenuItem.name = item.name
+            selectedMenuItem.price = item.price
+            
+            tableView.reloadData()
         } catch {
             fatalError("Updating menu item failed!") // Will be removed in production!
         }

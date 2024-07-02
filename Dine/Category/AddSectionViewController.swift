@@ -88,7 +88,7 @@ class AddSectionViewController: UIViewController {
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             verticalStackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
-            verticalStackView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            verticalStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
 
             categoryNameTextField.heightAnchor.constraint(equalToConstant: 44),
             addButton.heightAnchor.constraint(equalToConstant: 55),

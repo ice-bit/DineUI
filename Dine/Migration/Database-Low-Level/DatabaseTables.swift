@@ -11,9 +11,9 @@ enum DatabaseTables: String, CaseIterable {
     case restaurantDBTable = "Restaurants"
     case accountTable = "Accounts"
     case billTable = "Bills"
-    case restaurantTable = "TablesTest"
+    case restaurantTable = "TableData"
     case orderMenuItemTable = "OrderItems"
-    case menuItem = "MenuItemsTest"
+    case menuItem = "MenuItems"
     case orderTable = "OrderData"
     case category = "Category"
 }

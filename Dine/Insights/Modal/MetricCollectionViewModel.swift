@@ -43,7 +43,7 @@ struct MetricCollectionViewModel {
             category: MenuCategory(
                 id: UUID(),
                 categoryName: "Starter"
-            )
+            ), description: String()
         )
         let popularItemReport = MetricCardViewModal(title: "Popular Item", data: "\(popularItem.name)", cardType: .popularItem)
         

@@ -36,8 +36,9 @@ class OrderController: OrderServicable {
                 menuItemID: menuItem.itemId,
                 menuItemName: menuItem.name,
                 price: menuItem.price,
+                quantity: quantity,
                 categoryId: menuItem.category.id,
-                quantity: quantity
+                description: menuItem.description
             )
             try orderService.add(orderItem)
         }

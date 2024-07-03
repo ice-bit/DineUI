@@ -87,8 +87,9 @@ class EditCartViewController: UIViewController {
                     menuItemID: item.itemId,
                     menuItemName: item.name,
                     price: item.price,
+                    quantity: quantity,
                     categoryId: item.category.id,
-                    quantity: quantity
+                    description: item.description
                 )
                 // Insert into DB join table
                 try orderService.add(orderItem)

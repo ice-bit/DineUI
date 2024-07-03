@@ -19,7 +19,7 @@ struct MenuDetailView: View {
             if isLandscape {
                 MenuDetailCompactView(menuItem: menuItem)
             } else {
-                MenuDetailRegularView(menuItem: menuItem, description: $description)
+                MenuDetailRegularView(menuItem: menuItem)
             }
         }
     }
@@ -27,7 +27,6 @@ struct MenuDetailView: View {
 
 struct MenuDetailRegularView: View {
     var menuItem: MenuItem
-    @Binding var description: String
     
     var body: some View {
         VStack {
@@ -45,13 +44,9 @@ struct MenuDetailRegularView: View {
                 Text("About")
                     .font(.headline)
                 
-                Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
+                Text(menuItem.description)
                     .frame(maxWidth: 300)
                     .multilineTextAlignment(.center)
-                
-                TextEditor(text: $description)
-                    .frame(maxWidth: 300)
-                    .multilineTextAlignment(.leading)
             }
             .padding()
         }
@@ -77,7 +72,7 @@ struct MenuDetailCompactView: View {
                 Text("About")
                     .font(.headline)
                 
-                Text("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.")
+                Text(menuItem.description)
                     .frame(maxWidth: 300)
                     .multilineTextAlignment(.leading)
             }
@@ -107,15 +102,3 @@ extension View {
 }*/
 
 // Preview
-#Preview {
-    MenuDetailView(
-        menuItem: MenuItem(
-            name: "Mac n Cheese",
-            price: 7.9,
-            category: MenuCategory(
-                id: UUID(),
-                categoryName: "Starter"
-            )
-        )
-    )
-}

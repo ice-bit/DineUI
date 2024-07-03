@@ -33,6 +33,7 @@ struct MenuServiceImpl: MenuService {
                         \(tableName).MenuItemID,
                         \(tableName).MenuItemName,
                         \(tableName).Price,
+                        \(tableName).description,
                         \(tableName).category_id,
                         Category.name AS category_name
                     FROM

@@ -192,7 +192,7 @@ class MenuItemTableViewCell: UITableViewCell {
         itemNameLabel.text = menuItem.name
         let priceString = String(format: "%.2f", menuItem.price)
         priceLabel.text = "$ \(priceString)"
-        secTitleLabel.text = "lorem ipsum save time"
+        secTitleLabel.text = menuItem.description
         itemCount = menuItem.count
     }
     
@@ -201,18 +201,4 @@ class MenuItemTableViewCell: UITableViewCell {
         itemCount = menuItem.count
     }
 
-}
-
-#Preview {
-    let menuVC = MenuItemTableViewCell()
-    let menuItem = MenuItem(
-        name: "Zinger Burger Double Cheese",
-        price: 7.97,
-        category: MenuCategory(
-            id: UUID(),
-            categoryName: "Starter"
-        )
-    )
-    menuVC.configure(menuItem: menuItem)
-    return menuVC
 }

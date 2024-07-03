@@ -17,7 +17,7 @@ class OrderDetailViewController: UIViewController {
     private var tableView: UITableView!
     private var scrollView: UIScrollView!
     /// View to hold the scrollable content
-     private var scrollContentView: UIView!
+    private var scrollContentView: UIView!
     
     private var billButton: UIButton!
     private var editButton: UIButton!
@@ -140,9 +140,9 @@ class OrderDetailViewController: UIViewController {
         
         // Set up constraints for the UIScrollView to match the view's size
         NSLayoutConstraint.activate([
+            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
         ])
         
@@ -151,13 +151,24 @@ class OrderDetailViewController: UIViewController {
         scrollContentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.addSubview(scrollContentView)
         
-        let sa = scrollView.contentLayoutGuide
+        // Due to referring to tableView and stackView before initializing, the app crashes!
+        /*let totalSubviewHeight: CGFloat = tableView.frame.height + cardStackView.frame.height
+         var contentViewHeight: CGFloat = view.frame.height
+         
+         if totalSubviewHeight > contentViewHeight {
+         contentViewHeight = view.frame.height + totalSubviewHeight + 100 // 100 is the extra offset ignoring the spacing between the subviews.
+         }*/
+        
         NSLayoutConstraint.activate([
-            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             scrollContentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
             scrollContentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            
+            // Set the width and height constraints for the content view
+            // These constraints define the scrollable area
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            scrollContentView.heightAnchor.constraint(equalToConstant: 1000) // Set a height to make the content scrollable
         ])
     }
     
@@ -222,7 +233,7 @@ class OrderDetailViewController: UIViewController {
         editButton.layer.cornerRadius = 12
         editButton.translatesAutoresizingMaskIntoConstraints = false
         editButton.addTarget(self, action: #selector(editButtonAction(_ :)), for: .touchUpInside)
-
+        
         scrollContentView.addSubview(horizontalButtonStackView)
         horizontalButtonStackView.addArrangedSubview(editButton)
         horizontalButtonStackView.addArrangedSubview(billButton)
@@ -295,7 +306,7 @@ class OrderDetailViewController: UIViewController {
         
         return itemCounts
     }
-
+    
     // Function to present the alert controller
     // Usage: Assuming 'self' is a UIViewController instance
     // presentEmptyCartAlert(on: self)

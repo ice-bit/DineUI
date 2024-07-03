@@ -19,9 +19,6 @@ struct PlainMenuItemView: View {
             Text("x\(menuItem.count)")
         }
         .foregroundStyle(.black)
-        // .padding()
-        // .background(.app)
-        // .clipShape(.rect(cornerRadius: 8))
     }
 }
 

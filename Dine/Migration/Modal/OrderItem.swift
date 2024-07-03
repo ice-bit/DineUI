@@ -13,8 +13,9 @@ struct OrderItem {
     let menuItemID: UUID
     let menuItemName: String
     let price: Double
-    let categoryId: UUID
     let quantity: Int
+    let categoryId: UUID
+    let description: String
 }
 extension OrderItem: SQLTable {
     static var tableName: String {
@@ -38,6 +39,7 @@ extension OrderItem: SQLTable {
             MenuItemID VARCHAR(32) NOT NULL,
             Quantity INT NOT NULL,
             category_id VARCHAR(32) NOT NULL,
+            description VARCHAR(255) NOT NULL,
             FOREIGN KEY (OrderID) REFERENCES \(DatabaseTables.orderTable.rawValue)(OrderID),
             FOREIGN KEY (MenuItemID) REFERENCES \(DatabaseTables.menuItem.rawValue)(MenuItemID)
         );
@@ -52,8 +54,8 @@ extension OrderItem: SQLInsertable {
             return ""
         }
         return """
-        INSERT INTO \(DatabaseTables.orderMenuItemTable.rawValue) (OrderID, MenuItemID, Quantity, category_id)
-        VALUES ('\(orderID.uuidString)', '\(menuItemID.uuidString)', \(quantity), '\(categoryId)');
+        INSERT INTO \(DatabaseTables.orderMenuItemTable.rawValue) (OrderID, MenuItemID, Quantity, category_id, description)
+        VALUES ('\(orderID.uuidString)', '\(menuItemID.uuidString)', \(quantity), '\(categoryId)', '\(description)');
         """
     }
 }
@@ -83,12 +85,14 @@ extension OrderItem: DatabaseParsable {
         guard let statement = statement else { return nil }
         guard let itemIdCString = sqlite3_column_text(statement, 0),
               let nameCString = sqlite3_column_text(statement, 1),
-              let categoryIdCString = sqlite3_column_text(statement, 4) else {
+              let categoryIdCString = sqlite3_column_text(statement, 4),
+              let descriptionCString = sqlite3_column_text(statement, 5) else {
             throw DatabaseError.missingRequiredValue
         }
         
         let name = String(cString: nameCString)
         let price = sqlite3_column_double(statement, 2)
+        let description = String(cString: descriptionCString)
         
         let quantityPointer = sqlite3_column_int(statement, 3)
         let resultQuantity = Int(quantityPointer)
@@ -97,7 +101,7 @@ extension OrderItem: DatabaseParsable {
             throw DatabaseError.conversionFailed
         }
         
-        let orderMenuItem = OrderItem(orderID: nil, menuItemID: itemId, menuItemName: name, price: price, categoryId: categoryId, quantity: resultQuantity)
+        let orderMenuItem = OrderItem(orderID: nil, menuItemID: itemId, menuItemName: name, price: price, quantity: resultQuantity, categoryId: categoryId, description: description)
         return orderMenuItem
     }
 }

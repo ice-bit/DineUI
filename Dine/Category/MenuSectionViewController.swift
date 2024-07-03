@@ -253,7 +253,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     // MARK: - UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         let item = isFiltering ? filteredCategories[indexPath.item] : categories[indexPath.item]
-        let sectionDetailVC = MenuListingViewController(activeSection: .mainCourse, category: item)
+        let sectionDetailVC = MenuListingViewController(category: item)
         navigationController?.pushViewController(sectionDetailVC, animated: true)
     }
 }

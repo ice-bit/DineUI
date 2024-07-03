@@ -15,7 +15,6 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     private var placeholderLabel: UILabel!
     private var noResultsLabel: UILabel! // Added noResultsLabel
     private let cellReuseID = "MenuItemRow"
-    private let activeSection: MenuSectionType
     private let category: MenuCategory
     
     private var menuData: [MenuItem] = [] {
@@ -35,8 +34,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         searchController.searchBar.text?.isEmpty ?? true
     }
     
-    init(activeSection: MenuSectionType, category: MenuCategory) {
-        self.activeSection = activeSection
+    init(category: MenuCategory) {
         self.category = category
         super.init(nibName: nil, bundle: nil)
     }
@@ -133,7 +131,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
                 }
             }
         } catch {
-            print("Unable to fetch menu items - \(error)")
+            fatalError("Unable to fetch menu items - \(error)")
         }
     }
     
@@ -294,6 +292,12 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             textField.text = String(item.price)
         }
         
+        alertController.addTextField { textField in
+            textField.placeholder = "Description"
+            textField.keyboardType = .decimalPad
+            textField.text = String(item.price)
+        }
+        
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
             self.dismiss(animated: true)
         }
@@ -301,7 +305,8 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         let doneAction = UIAlertAction(title: "Done", style: .default) { [weak self] _ in
             guard let self else { return }
             guard let firstTextField = alertController.textFields?[0],
-                  let secondTextField = alertController.textFields?[1] else { return }
+                  let secondTextField = alertController.textFields?[1],
+                  let descriptionTextField = alertController.textFields?[2] else { return }
             
             guard let name = firstTextField.text,
                   !name.isEmpty else {
@@ -316,12 +321,18 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
                 return
             }
             
+            guard let descriptionText = descriptionTextField.text,
+                  !descriptionText.isEmpty else {
+                self.showToast("Invalid Description")
+                return
+            }
             
             // Handle the text input
             print("Name text field: \(name)")
             print("Price text field: \(price)")
+            print("Description text field: \(descriptionText)")
             
-            let updatedItem = MenuItem(itemId: item.itemId, name: name, price: price, category: item.category)
+            let updatedItem = MenuItem(itemId: item.itemId, name: name, price: price, category: item.category, description: descriptionText)
             editItem(updatedItem)
         }
         
@@ -364,7 +375,6 @@ extension MenuListingViewController: UISearchResultsUpdating {
 #Preview{
     UINavigationController(
         rootViewController: MenuListingViewController(
-            activeSection: .mainCourse,
             category: MenuCategory(
                 id: UUID(),
                 categoryName: "Starter"

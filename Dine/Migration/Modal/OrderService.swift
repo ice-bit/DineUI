@@ -40,7 +40,7 @@ struct OrderServiceImpl: OrderService {
             let menuItemTable = DatabaseTables.menuItem.rawValue
             let orderItemTable = DatabaseTables.orderMenuItemTable.rawValue
             let menuItemQuery = """
-                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).category_id
+                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).category_id, \(menuItemTable).description
                 FROM \(DatabaseTables.orderMenuItemTable.rawValue)
                 JOIN \(menuItemTable) ON \(orderItemTable).MenuItemID = \(menuItemTable).MenuItemID
                 WHERE \(orderItemTable).OrderID = '\(resultOrder.orderIdValue.uuidString)';
@@ -58,7 +58,8 @@ struct OrderServiceImpl: OrderService {
                         category: MenuCategory(
                             id: UUID(),
                             categoryName: "Starter"
-                        )
+                        ),
+                        description: String()
                     )
                     resultOrder.menuItems.append(menuItem)
                 }
@@ -96,8 +97,9 @@ struct OrderServiceImpl: OrderService {
                         price: orderMenuItem.price,
                         category: MenuCategory(
                             id: UUID(),
-                            categoryName: "Starter"
-                        )
+                            categoryName: "Starters"
+                        ),
+                        description: orderMenuItem.description
                     )
                     resultOrder.menuItems.append(menuItem)
                 }

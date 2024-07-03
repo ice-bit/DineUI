@@ -170,7 +170,7 @@ class AddToCartViewController: UIViewController {
                 }
             }
         } catch {
-            print("Unable to fetch menu items - \(error)")
+            fatalError("Unable to fetch menu items - \(error)")
         }
     }
     

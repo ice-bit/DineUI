@@ -27,7 +27,8 @@ class ModelData {
                 category: MenuCategory(
                     id: UUID(),
                     categoryName: "Starter"
-                )
+                ),
+                description: String()
             )]
         )]
     }
@@ -47,7 +48,8 @@ class ModelData {
             category: MenuCategory(
                 id: UUID(),
                 categoryName: "Starter"
-            )
+            ),
+            description: "lorem ispsum is not what you think"
         )
      ]
 }

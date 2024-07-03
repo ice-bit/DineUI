@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Toast
 
 protocol MenuItemDelegate: AnyObject {
     func menuItemDidAdd(_ item: MenuItem)
@@ -83,7 +84,7 @@ class AddItemViewController: UIViewController {
         setupAddImageButton()
         setupNameTextField()
         setupPriceTextField()
-        // setupSectionSelectionButton()
+        setupDescTextField()
         setupAddButton()
         addSubviews()
         setupConstraints()
@@ -151,6 +152,14 @@ class AddItemViewController: UIViewController {
         priceTextField.layer.cornerRadius = 12
     }
     
+    private func setupDescTextField() {
+        descTextField = DTextField()
+        descTextField.translatesAutoresizingMaskIntoConstraints = false
+        descTextField.placeholder = "Description"
+        descTextField.backgroundColor = .systemGray5
+        descTextField.layer.cornerRadius = 12
+    }
+    
     private func setupAddButton() {
         addButton = UIButton()
         addButton.setTitle("Add Item", for: .normal)
@@ -166,6 +175,7 @@ class AddItemViewController: UIViewController {
         stackView.addArrangedSubview(addImageButton)
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(priceTextField)
+        stackView.addArrangedSubview(descTextField)
         // stackView.addArrangedSubview(sectionSelectionButton)
         stackView.addArrangedSubview(addButton)
     }
@@ -184,6 +194,9 @@ class AddItemViewController: UIViewController {
             priceTextField.heightAnchor.constraint(equalToConstant: 44),
             priceTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             
+            descTextField.heightAnchor.constraint(equalToConstant: 44),
+            descTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            
             addImageButton.heightAnchor.constraint(equalToConstant: 150),
             addImageButton.widthAnchor.constraint(equalToConstant: 150),
             
@@ -201,11 +214,19 @@ class AddItemViewController: UIViewController {
             return
         }
         
+        guard let description = descTextField.text,
+              !description.isEmpty else {
+            let toast = Toast.text("Invalid Description!")
+            toast.show(haptic: .error)
+            return
+        }
+        
         if let name = nameTextField.text {
             let menuItem = MenuItem(
                 name: name,
                 price: price,
-                category: category
+                category: category,
+                description: description
             )
             do  {
                 let databaseAccess = try SQLiteDataAccess.openDatabase()

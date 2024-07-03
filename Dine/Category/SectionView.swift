@@ -13,8 +13,8 @@ struct SectionView: View {
     var body: some View {
         HStack {
             Label(catergory.categoryName, systemImage: "square.3.layers.3d.top.filled")
+                .foregroundStyle(Color(.label))
                 .font(.subheadline)
-                .foregroundStyle(.primary)
                 .padding()
             
             Spacer()
@@ -23,9 +23,8 @@ struct SectionView: View {
                 .font(.caption)
                 .padding()
         }
-        .background(Color.app)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 10))
-        .foregroundStyle(.black)
     }
 }
 

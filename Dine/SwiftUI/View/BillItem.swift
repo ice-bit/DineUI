@@ -11,48 +11,6 @@ struct BillItem: View {
     var billData: Bill
     
     var body: some View {
-        /*HStack {
-            VStack {
-                Image(systemName: "square.stack.3d.up.fill")
-                    .font(.title3)
-                    .padding(.bottom, 5)
-                
-                Text("Items \(billData.getOrderedItems?.count ?? 0)")
-                    .font(.caption)
-            }
-            .padding()
-            .overlay (
-                Rectangle()
-                    .frame(width: 1, height: 50)
-                    .foregroundStyle(.primary),
-                alignment: .trailing
-            )
-            
-            VStack(alignment: .leading) {
-                HStack {
-                    Label(billData.paymentStatus.rawValue, systemImage: billData.isPaid ? "checkmark.circle.fill" : "multiply.circle.fill")
-                        .font(.subheadline)
-                        .foregroundStyle(.primary)
-                    
-                    Spacer()
-                    
-                    Text(billData.date, style: .date)
-                        .font(.caption2)
-                    
-                    Image(systemName: "chevron.right")
-                        .padding(.trailing)
-                        .font(.caption2)
-                }
-                .padding(.bottom, 8)
-                
-                Text(billData.billId.uuidString)
-                    .font(.caption2)
-                    .padding(.trailing)
-            }
-        }
-        .background(.app)
-        .clipShape(.rect(cornerRadius: 10))
-        .foregroundStyle(.black)*/
         HStack {
             VStack {
                 Text("#\(billData.getOrder?.getTable?.locationIdentifier ?? 0)")
@@ -66,14 +24,12 @@ struct BillItem: View {
             .padding()
             .overlay (
                 Rectangle()
-                    .frame(width: 1, height: 44)
-                    .foregroundStyle(.primary),
+                    .frame(width: 1, height: 44),
                 alignment: .trailing
             )
             
-            Label(billData.paymentStatus.rawValue, systemImage: "circle.dashed.inset.fill")
-                /*.font(.subheadline)*/ // While the tableView is in editing mode this label will truncate!
-                .foregroundStyle(.primary)
+            Label(billData.paymentStatus.rawValue, systemImage: billData.isPaid ? "checkmark.circle.fill" : "multiply.circle.fill")
+                .foregroundStyle(Color(.label))
             
             Spacer()
             
@@ -92,9 +48,8 @@ struct BillItem: View {
             }
             .padding()
         }
-        .background(.app)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 10))
-        .foregroundStyle(.black)
     }
 }
 

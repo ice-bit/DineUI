@@ -20,7 +20,6 @@ class TitleAndDescriptionView: UIView {
     
     private lazy var titleLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .black
         label.font = .preferredFont(forTextStyle: .title2)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
@@ -29,7 +28,6 @@ class TitleAndDescriptionView: UIView {
     // Mostly representing UUID
     private lazy var descriptionLabel: UILabel = {
         let label = UILabel()
-        label.textColor = .black
         label.font = .preferredFont(forTextStyle: .caption1)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label

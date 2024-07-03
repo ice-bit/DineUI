@@ -99,6 +99,7 @@ class BillViewController: UIViewController {
     private func setupTableView() {
         tableView = UITableView()
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .systemGroupedBackground
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseIdentifier)
         tableView.dataSource = self
         tableView.delegate = self
@@ -137,6 +138,7 @@ class BillViewController: UIViewController {
     // Setup navigation bar appearance
     private func setupAppearance() {
         self.title = "Bills"
+        view.backgroundColor = .systemGroupedBackground
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
@@ -243,6 +245,7 @@ extension BillViewController: UITableViewDataSource, UITableViewDelegate {
         cell.contentConfiguration = UIHostingConfiguration {
             BillItem(billData: bill)
         }
+        .background(Color(.systemGroupedBackground))
         return cell
     }
     

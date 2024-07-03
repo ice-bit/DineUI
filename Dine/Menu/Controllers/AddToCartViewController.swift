@@ -55,7 +55,7 @@ class AddToCartViewController: UIViewController {
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        //setupToast()
+         view.backgroundColor = .systemGroupedBackground
         setupTableView()
         view = tableView
         loadMenu()
@@ -181,6 +181,7 @@ class AddToCartViewController: UIViewController {
     private func setupTableView() {
         tableView = UITableView(frame: .zero)
         tableView.separatorStyle = .none
+        tableView.backgroundColor = .systemGroupedBackground
         tableView.dataSource = self
         tableView.register(MenuItemTableViewCell.self, forCellReuseIdentifier: MenuItemTableViewCell.reuseIdentifier)
     }
@@ -245,6 +246,7 @@ extension AddToCartViewController: UITableViewDelegate, UITableViewDataSource {
             return UITableViewCell()
         }
         cell.selectionStyle = .none
+        cell.backgroundColor = .systemGroupedBackground
         
         let menuItem = isFiltering ? filteredItems[indexPath.row] : menuItems[indexPath.row]
         cell.configure(menuItem: menuItem)

@@ -24,14 +24,12 @@ struct OrderCellView: View {
             .padding()
             .overlay (
                 Rectangle()
-                    .frame(width: 1, height: 26)
-                    .foregroundStyle(.primary),
+                    .frame(width: 1, height: 26),
                 alignment: .trailing
             )
             
             Text(order.orderStatusValue.rawValue.uppercased())
                 /*.font(.subheadline)*/ // While the tableView is in editing mode this label will truncate!
-                .foregroundStyle(.primary)
             
             Spacer()
             
@@ -50,9 +48,8 @@ struct OrderCellView: View {
             }
             .padding()
         }
-        .background(Color.app)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 10))
-        .foregroundStyle(.black)
     }
 }
 

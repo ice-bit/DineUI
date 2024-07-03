@@ -82,7 +82,7 @@ class AddItemViewController: UIViewController {
     
     // MARK: - View Setup
     private func configureView() {
-        view.backgroundColor = /*UIColor(named: "primaryBgColor")*/.systemBackground
+        view.backgroundColor = .systemGroupedBackground
     }
     
     private func setupSubviews() {
@@ -124,7 +124,7 @@ class AddItemViewController: UIViewController {
         nameTextField = DTextField()
         nameTextField.translatesAutoresizingMaskIntoConstraints = false
         nameTextField.placeholder = "Name"
-        nameTextField.backgroundColor = .systemGray5
+        nameTextField.backgroundColor = .secondarySystemGroupedBackground
         nameTextField.layer.cornerRadius = 12
     }
     
@@ -133,7 +133,7 @@ class AddItemViewController: UIViewController {
         priceTextField.keyboardType = .decimalPad
         priceTextField.translatesAutoresizingMaskIntoConstraints = false
         priceTextField.placeholder = "Price Tag"
-        priceTextField.backgroundColor = .systemGray5
+        priceTextField.backgroundColor = .secondarySystemGroupedBackground
         priceTextField.layer.cornerRadius = 12
     }
     
@@ -141,18 +141,18 @@ class AddItemViewController: UIViewController {
         descTextField = DTextField()
         descTextField.translatesAutoresizingMaskIntoConstraints = false
         descTextField.placeholder = "Description"
-        descTextField.backgroundColor = .systemGray5
+        descTextField.backgroundColor = .secondarySystemGroupedBackground
         descTextField.layer.cornerRadius = 12
     }
     
     private func setupAddButton() {
         addButton = UIButton()
         addButton.setTitle("Add Item", for: .normal)
+        addButton.setTitleColor(.black, for: .normal)
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.backgroundColor = .app
         addButton.layer.cornerRadius = 10
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
-        addButton.setTitleColor(.label, for: .normal)
     }
     
     private func addSubviews() {

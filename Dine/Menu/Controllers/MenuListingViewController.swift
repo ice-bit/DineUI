@@ -48,6 +48,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         super.viewDidLoad()
         title = category.categoryName
         navigationController?.navigationBar.prefersLargeTitles = true
+        view.backgroundColor = .systemGroupedBackground
         setupTableView()
         setupNoResultsLabel() // Setup noResultsLabel
         setupNavbar()
@@ -146,6 +147,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - Setup
     private func setupTableView() {
         tableView = UITableView()
+        tableView.backgroundColor = .systemGroupedBackground
         tableView.separatorStyle = .none
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseID)
         tableView.dataSource = self
@@ -237,6 +239,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         cell.contentConfiguration = UIHostingConfiguration {
             MenuItemRow(menuItem: menuItem)
         }
+        .background(Color(.systemGroupedBackground))
         return cell
     }
     

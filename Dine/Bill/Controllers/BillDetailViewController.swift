@@ -36,7 +36,7 @@ class BillDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         title = "Bill"
         navigationController?.navigationBar.prefersLargeTitles = true
         
@@ -92,7 +92,7 @@ class BillDetailViewController: UIViewController {
         verticalStackView = UIStackView()
         verticalStackView.layer.cornerRadius = 16
         verticalStackView.layer.masksToBounds = true
-        verticalStackView.backgroundColor = .app
+        verticalStackView.backgroundColor = .secondarySystemGroupedBackground
         verticalStackView.axis = .vertical
         verticalStackView.distribution = .fillEqually
         verticalStackView.translatesAutoresizingMaskIntoConstraints = false
@@ -139,24 +139,24 @@ class BillDetailViewController: UIViewController {
         contentView.addSubview(horizontalStackView)
         
         paymentButton = UIButton()
-        paymentButton.setTitle("Pay", for: .normal)
-        paymentButton.setTitleColor(.systemBackground, for: .normal)
-        // billButton.setTitleColor(.lightGray, for: .disabled)
-        paymentButton.backgroundColor = .label
+        paymentButton.setTitle("Pay*", for: .normal)
+        paymentButton.setTitleColor(.label, for: .normal)
+        paymentButton.backgroundColor = .secondarySystemGroupedBackground
         paymentButton.layer.cornerRadius = 12
         paymentButton.translatesAutoresizingMaskIntoConstraints = false
         paymentButton.addTarget(self, action: #selector(paymentButtonAction(_:)), for: .touchUpInside)
-        horizontalStackView.addArrangedSubview(paymentButton)
         
         deleteButton = UIButton()
         deleteButton.setTitle("Delete", for: .normal)
-        deleteButton.setTitleColor(.systemBackground, for: .normal)
-        deleteButton.backgroundColor = .label
+        deleteButton.setTitleColor(.red, for: .normal)
+        deleteButton.backgroundColor = .secondarySystemGroupedBackground
         deleteButton.layer.cornerRadius = 14
         deleteButton.translatesAutoresizingMaskIntoConstraints = false
         deleteButton.addTarget(self, action: #selector(deleteAction(_:)), for: .touchUpInside)
+        
         horizontalStackView.addArrangedSubview(deleteButton)
- 
+        horizontalStackView.addArrangedSubview(paymentButton)
+        
         NSLayoutConstraint.activate([
             horizontalStackView.centerXAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.centerXAnchor),
             horizontalStackView.widthAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.widthAnchor, multiplier: 0.88),
@@ -167,6 +167,8 @@ class BillDetailViewController: UIViewController {
     
     @objc private func paymentButtonAction(_ sender: UIButton) {
         print(#function)
+        let toast = Toast.text("Not functional!")
+        toast.show(haptic: .warning)
     }
     
     @objc private func deleteAction(_ sender: UIButton) {

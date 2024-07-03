@@ -46,7 +46,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Categories"
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         navigationController?.navigationBar.prefersLargeTitles = true
         setupCollectionView()
         setupPlaceholderLabel()
@@ -160,7 +160,6 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     private func setupCollectionView() {
         var listConfig = UICollectionLayoutListConfiguration(appearance: .grouped)
         listConfig.showsSeparators = false
-        
         listConfig.trailingSwipeActionsConfigurationProvider = { [unowned self] indexPath in
             let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { action, view, completion in
                 let item = self.categories[indexPath.item]
@@ -172,6 +171,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         let layout = UICollectionViewCompositionalLayout.list(using: listConfig)
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .systemGroupedBackground
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false

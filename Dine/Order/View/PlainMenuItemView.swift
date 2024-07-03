@@ -18,7 +18,6 @@ struct PlainMenuItemView: View {
             
             Text("x\(menuItem.count)")
         }
-        .foregroundStyle(.black)
     }
 }
 

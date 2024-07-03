@@ -26,7 +26,7 @@ class OrderDetailViewController: UIViewController {
         let stackView = UIStackView()
         stackView.layer.cornerRadius = 12
         stackView.layer.masksToBounds = true
-        stackView.backgroundColor = .app
+        stackView.backgroundColor = .secondarySystemGroupedBackground
         stackView.axis = .vertical
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.distribution = .fillEqually
@@ -57,7 +57,7 @@ class OrderDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .secondarySystemBackground
+        view.backgroundColor = .systemGroupedBackground
         title = "Order"
         navigationController?.navigationBar.prefersLargeTitles = true
         setupScrollView()
@@ -119,8 +119,7 @@ class OrderDetailViewController: UIViewController {
         billButton = UIButton()
         scrollContentView.addSubview(billButton)
         billButton.setTitle("Bill", for: .normal)
-        billButton.setTitleColor(.black, for: .normal)
-        billButton.backgroundColor = .app
+        billButton.backgroundColor = .secondarySystemGroupedBackground
         billButton.layer.cornerRadius = 12
         billButton.translatesAutoresizingMaskIntoConstraints = false
         billButton.addTarget(self, action: #selector(billButtonAction(_ :)), for: .touchUpInside)
@@ -219,17 +218,16 @@ class OrderDetailViewController: UIViewController {
     private func setupButtonStackView() {
         billButton = UIButton()
         billButton.setTitle("Bill", for: .normal)
-        billButton.setTitleColor(.systemBackground, for: .normal)
-        // billButton.setTitleColor(.lightGray, for: .disabled)
-        billButton.backgroundColor = .label
+        billButton.setTitleColor(.label, for: .normal)
+        billButton.backgroundColor = .secondarySystemGroupedBackground
         billButton.layer.cornerRadius = 12
         billButton.translatesAutoresizingMaskIntoConstraints = false
         billButton.addTarget(self, action: #selector(billButtonAction(_ :)), for: .touchUpInside)
         
         editButton = UIButton()
         editButton.setTitle("Edit", for: .normal)
-        editButton.setTitleColor(.systemBackground, for: .normal)
-        editButton.backgroundColor = .label
+        editButton.setTitleColor(.label, for: .normal)
+        editButton.backgroundColor = .secondarySystemGroupedBackground
         editButton.layer.cornerRadius = 12
         editButton.translatesAutoresizingMaskIntoConstraints = false
         editButton.addTarget(self, action: #selector(editButtonAction(_ :)), for: .touchUpInside)
@@ -398,11 +396,11 @@ extension OrderDetailViewController: UITableViewDelegate, UITableViewDataSource 
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
         let menuItem = menuItems[indexPath.row]
         cell.selectionStyle = .none
-        cell.backgroundColor = .app
         
         cell.contentConfiguration = UIHostingConfiguration {
             PlainMenuItemView(menuItem: menuItem)
         }
+        .background(Color(.secondarySystemGroupedBackground))
         
         return cell
     }

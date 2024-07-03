@@ -94,10 +94,10 @@ class OrderViewController: UIViewController {
     private func setupTableView() {
         tableView = UITableView()
         tableView.allowsMultipleSelectionDuringEditing = true
+        tableView.backgroundColor = .systemGroupedBackground
         tableView.separatorStyle = .none
         tableView.delegate = self
         tableView.dataSource = self
-        // tableView.register(OrderCell.self, forCellReuseIdentifier: OrderCell.reuseIdentifier)
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseIdentifier)
         tableView.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(tableView)
@@ -143,7 +143,7 @@ class OrderViewController: UIViewController {
     
     private func setupAppearance() {
         self.title = "Orders"
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
@@ -372,7 +372,7 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
         cell.contentConfiguration = UIHostingConfiguration {
             OrderCellView(order: order)
         }
-        //cell.backgroundColor = .systemBackground
+        cell.backgroundColor = .systemGroupedBackground
         return cell
     }
     

@@ -55,9 +55,8 @@ struct SalesCardView: View {
             Spacer()
         }
         .padding()
-        .background(.app)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 12))
-        .foregroundStyle(.black)
     }
 }
 
@@ -84,9 +83,8 @@ struct AverageCardView: View {
             Spacer()
         }
         .padding()
-        .background(.app)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 12))
-        .foregroundStyle(.black)
     }
 }
 
@@ -114,9 +112,8 @@ struct PeakHoursCardView: View {
             Spacer()
         }
         .padding()
-        .background(.app)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 12))
-        .foregroundStyle(.black)
     }
 }
 
@@ -141,9 +138,8 @@ struct PopularItemCardView: View {
             Spacer()
         }
         .padding()
-        .background(.app)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 12))
-        .foregroundStyle(.black)
     }
 }
 

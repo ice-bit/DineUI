@@ -38,9 +38,8 @@ struct MenuItemRow: View {
                 .font(.subheadline)
         }
         .padding()
-        .background(.app)
+        .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 10))
-        .foregroundStyle(.black)
     }
     
     

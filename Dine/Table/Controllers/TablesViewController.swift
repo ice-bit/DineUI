@@ -109,7 +109,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
     /// Sets up the appearance of the view.
     private func setupAppearance() {
         self.title = "Tables"
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         setupNavBar()
     }
     
@@ -127,6 +127,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
         }
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
+        collectionView.backgroundColor = .systemGroupedBackground
         collectionView.dataSource = self
         collectionView.delegate = self
         collectionView.translatesAutoresizingMaskIntoConstraints = false
@@ -292,8 +293,21 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
             
             collectionView.reloadData() 
         } catch let error as TableError {
-            let toast = Toast.text("Location Identifier Already Exists")
-            toast.show(haptic: .warning)
+            switch error {
+            case .locationIdAlreadyTaken:
+                let toast = Toast.text("Location Identifier Already Exists")
+                toast.show(haptic: .warning)
+            case .parsingFailed:
+                print("Parsing tables failed")
+            case .invalidLocationId:
+                print("Invalid table id format")
+            case .invalidCapacity:
+                print("Invalid capacity format")
+            case .noDataFound:
+                print("No table data found")
+            case .unknownError(let error):
+                print("Unknown error: \(error)")
+            }
         } catch {
             fatalError("\(#function) failed with \(error)!") // Will be removed in production!
         }

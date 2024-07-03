@@ -53,7 +53,7 @@ class LoginViewController: UIViewController {
         button.setTitle("Continue", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.layer.cornerRadius = 10
-        button.backgroundColor = .app
+        button.backgroundColor = .systemGroupedBackground
         button.addTarget(self, action: #selector(loginButtonAction(_:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button

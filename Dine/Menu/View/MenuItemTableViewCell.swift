@@ -16,11 +16,7 @@ class MenuItemTableViewCell: UITableViewCell {
     
     static let reuseIdentifier = "MenuItemTableViewCell"
     weak var delegate: MenuItemTableViewCellDelegate?
-    var menuItem: MenuItem? {
-        didSet {
-            
-        }
-    }
+    var menuItem: MenuItem?
     // For tracking the count
     private var itemCount: Int = 0 {
         didSet {
@@ -33,7 +29,7 @@ class MenuItemTableViewCell: UITableViewCell {
     private lazy var itemImage: UIImageView = {
         let imageView = UIImageView()
         imageView.contentMode = .scaleToFill
-        imageView.layer.cornerRadius = 8
+        imageView.layer.cornerRadius = 12
         imageView.layer.masksToBounds = true
         imageView.translatesAutoresizingMaskIntoConstraints = false
         return imageView
@@ -90,7 +86,7 @@ class MenuItemTableViewCell: UITableViewCell {
     
     private lazy var wrapperView: UIView = {
         let view = UIView()
-        view.backgroundColor = .app
+        view.backgroundColor = .secondarySystemGroupedBackground
         view.translatesAutoresizingMaskIntoConstraints = false
         view.layer.cornerRadius = 20
         return view
@@ -170,8 +166,8 @@ class MenuItemTableViewCell: UITableViewCell {
             wrapperView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             wrapperView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             
-            itemImage.heightAnchor.constraint(equalToConstant: 100),
-            itemImage.widthAnchor.constraint(equalToConstant: 100),
+            itemImage.heightAnchor.constraint(equalToConstant: 90),
+            itemImage.widthAnchor.constraint(equalToConstant: 90),
             
             hStackView.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor, constant: 12),
             hStackView.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor, constant: -12),

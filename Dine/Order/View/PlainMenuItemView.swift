@@ -12,7 +12,7 @@ struct PlainMenuItemView: View {
     
     var body: some View {
         HStack {
-            Label(menuItem.name, systemImage: "app.dashed")
+            Label(menuItem.name, systemImage: "carrot")
             
             Spacer()
             

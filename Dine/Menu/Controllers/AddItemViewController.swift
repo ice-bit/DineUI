@@ -19,15 +19,21 @@ class AddItemViewController: UIViewController {
     private let category: MenuCategory
     
     private var stackView: UIStackView!
-    private var itemImageView: UIImageView!
     private var nameTextField: UITextField!
     private var priceTextField: UITextField!
     private var descTextField: UITextField!
     private var addButton: UIButton!
-    private var addImageButton: UIButton!
     // private var sectionSelectionButton: UIButton!
     
     private var pickerView: UIPickerView!
+    
+    private lazy var titleLabel: UILabel = {
+        let label = UILabel()
+        label.text = "Add Menu Item"
+        label.font = .preferredFont(forTextStyle: .largeTitle)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     
     // MARK: - Initializer
     init(category: MenuCategory) {
@@ -81,7 +87,6 @@ class AddItemViewController: UIViewController {
     
     private func setupSubviews() {
         setupStackView()
-        setupAddImageButton()
         setupNameTextField()
         setupPriceTextField()
         setupDescTextField()
@@ -113,26 +118,6 @@ class AddItemViewController: UIViewController {
         stackView.axis = .vertical
         stackView.spacing = 10
         stackView.alignment = .center
-    }
-    
-    private func setupItemImageView() {
-        itemImageView = UIImageView()
-        itemImageView.backgroundColor = .systemBlue
-        itemImageView.translatesAutoresizingMaskIntoConstraints = false
-        itemImageView.contentMode = .scaleAspectFill
-        itemImageView.layer.cornerRadius = 10
-    }
-    
-    private func setupAddImageButton() {
-        addImageButton = UIButton()
-        let symbolConfig = UIImage.SymbolConfiguration(font: .systemFont(ofSize: 40, weight: .medium))
-        addImageButton.setImage(UIImage(systemName: "plus", withConfiguration: symbolConfig), for: .normal)
-        addImageButton.backgroundColor = .systemGray5
-        addImageButton.tintColor = .label
-        addImageButton.translatesAutoresizingMaskIntoConstraints = false
-        addImageButton.layer.borderWidth = 1
-        addImageButton.layer.borderColor = CGColor.init(red: 0, green: 0, blue: 0, alpha: 1)
-        addImageButton.layer.cornerRadius = 12
     }
     
     private func setupNameTextField() {
@@ -172,7 +157,7 @@ class AddItemViewController: UIViewController {
     
     private func addSubviews() {
         view.addSubview(stackView)
-        stackView.addArrangedSubview(addImageButton)
+        stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(priceTextField)
         stackView.addArrangedSubview(descTextField)
@@ -196,9 +181,6 @@ class AddItemViewController: UIViewController {
             
             descTextField.heightAnchor.constraint(equalToConstant: 44),
             descTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            
-            addImageButton.heightAnchor.constraint(equalToConstant: 150),
-            addImageButton.widthAnchor.constraint(equalToConstant: 150),
             
             /*sectionSelectionButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             sectionSelectionButton.heightAnchor.constraint(equalToConstant: 44),*/

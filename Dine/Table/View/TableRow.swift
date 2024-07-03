@@ -30,9 +30,8 @@ struct TableRow: View {
                 .clipShape(Circle())
                 .padding(.trailing)
         }
-        .background(Color("AppColor"))
+        .background(Color(.secondarySystemGroupedBackground))
         .cornerRadius(20)
-        .foregroundStyle(.black)
     }
 }
 

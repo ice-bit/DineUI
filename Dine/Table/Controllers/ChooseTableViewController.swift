@@ -31,6 +31,7 @@ class ChooseTableViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.backgroundColor = .systemGroupedBackground
         loadTables()
         setupCollectionView()
         view = collectionView
@@ -124,7 +125,7 @@ class ChooseTableViewController: UIViewController {
         let layout = UICollectionViewCompositionalLayout.list(using: listConfig)
         
         collectionView = UICollectionView(frame: .zero, collectionViewLayout: layout)
-        collectionView.backgroundColor = .systemBackground
+        collectionView.backgroundColor = .systemGroupedBackground
         collectionView.dataSource = self
         collectionView.delegate = self
     }

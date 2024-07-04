@@ -144,4 +144,101 @@ struct MetricRecord {
         
         return report
     }
+    
+    func salesSummaryForMonth(bills: [Bill]) -> [SalesSummary] {
+        var salesPerMonth: [SalesSummary] = []
+        let calendar = Calendar.current
+
+        // Group bills by month
+        let groupedBills = Dictionary(grouping: bills) { (bill) -> Date in
+            let components = calendar.dateComponents([.year, .month], from: bill.date)
+            return calendar.date(from: components)!
+        }
+
+        for (monthStart, billsInMonth) in groupedBills {
+            let totalSales = billsInMonth.reduce(0.0) { $0 + $1.getTotalAmount }
+            salesPerMonth.append(SalesSummary(weekday: monthStart, sales: Int(totalSales)))
+        }
+
+        return salesPerMonth
+    }
+    
+    
+    func salesSummaryForWeek(bills: [Bill]) -> [SalesSummary] {
+        var salesPerWeek: [SalesSummary] = []
+        let calendar = Calendar.current
+
+        // Group bills by week
+        let groupedBills = Dictionary(grouping: bills) { (bill) -> Date in
+            let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: bill.date)
+            return calendar.date(from: components)!
+        }
+
+        for (weekStart, billsInWeek) in groupedBills {
+            let totalSales = billsInWeek.reduce(0.0) { $0 + $1.getTotalAmount }
+            salesPerWeek.append(SalesSummary(weekday: weekStart, sales: Int(totalSales)))
+        }
+
+        return salesPerWeek
+    }
+    
+    func generateChartData() -> SalesChartViewModal {
+        /*let salesPerWeek = salesSummaryForWeek(bills: bills)
+        let salesPerMonth = salesSummaryForMonth(bills: bills)*/
+        
+        let salesData: [TimePeriod: [SalesSummary]] = [.week: salesPerWeek, .month: salesPerMonth]
+        let chartViewModalData = SalesChartViewModal(salesByDateInterval: salesData)
+        return chartViewModalData
+    }
 }
+
+
+// Helper function to create a date from a string
+func dateFromString(_ dateString: String) -> Date {
+    let dateFormatter = DateFormatter()
+    dateFormatter.dateFormat = "yyyy-MM-dd"
+    return dateFormatter.date(from: dateString) ?? Date()
+}
+
+let salesPerWeek: [SalesSummary] = [
+    SalesSummary(weekday: dateFromString("2024-06-24"), sales: 120),
+    SalesSummary(weekday: dateFromString("2024-06-25"), sales: 150),
+    SalesSummary(weekday: dateFromString("2024-06-26"), sales: 100),
+    SalesSummary(weekday: dateFromString("2024-06-27"), sales: 180),
+    SalesSummary(weekday: dateFromString("2024-06-28"), sales: 130),
+    SalesSummary(weekday: dateFromString("2024-06-29"), sales: 90),
+    SalesSummary(weekday: dateFromString("2024-06-30"), sales: 160)
+]
+
+let salesPerMonth: [SalesSummary] = [
+    SalesSummary(weekday: dateFromString("2024-06-01"), sales: 1000),
+    SalesSummary(weekday: dateFromString("2024-06-02"), sales: 950),
+    SalesSummary(weekday: dateFromString("2024-06-03"), sales: 1100),
+    SalesSummary(weekday: dateFromString("2024-06-04"), sales: 1050),
+    SalesSummary(weekday: dateFromString("2024-06-05"), sales: 1200),
+    SalesSummary(weekday: dateFromString("2024-06-06"), sales: 1150),
+    SalesSummary(weekday: dateFromString("2024-06-07"), sales: 980),
+    SalesSummary(weekday: dateFromString("2024-06-08"), sales: 1250),
+    SalesSummary(weekday: dateFromString("2024-06-09"), sales: 1020),
+    SalesSummary(weekday: dateFromString("2024-06-10"), sales: 1300),
+    SalesSummary(weekday: dateFromString("2024-06-11"), sales: 1280),
+    SalesSummary(weekday: dateFromString("2024-06-12"), sales: 1100),
+    SalesSummary(weekday: dateFromString("2024-06-13"), sales: 1200),
+    SalesSummary(weekday: dateFromString("2024-06-14"), sales: 1400),
+    SalesSummary(weekday: dateFromString("2024-06-15"), sales: 1350),
+    SalesSummary(weekday: dateFromString("2024-06-16"), sales: 1150),
+    SalesSummary(weekday: dateFromString("2024-06-17"), sales: 1230),
+    SalesSummary(weekday: dateFromString("2024-06-18"), sales: 1280),
+    SalesSummary(weekday: dateFromString("2024-06-19"), sales: 1220),
+    SalesSummary(weekday: dateFromString("2024-06-20"), sales: 1300),
+    SalesSummary(weekday: dateFromString("2024-06-21"), sales: 1500),
+    SalesSummary(weekday: dateFromString("2024-06-22"), sales: 1400),
+    SalesSummary(weekday: dateFromString("2024-06-23"), sales: 1350),
+    SalesSummary(weekday: dateFromString("2024-06-24"), sales: 1200),
+    SalesSummary(weekday: dateFromString("2024-06-25"), sales: 1250),
+    SalesSummary(weekday: dateFromString("2024-06-26"), sales: 1000),
+    SalesSummary(weekday: dateFromString("2024-06-27"), sales: 1150),
+    SalesSummary(weekday: dateFromString("2024-06-28"), sales: 1300),
+    SalesSummary(weekday: dateFromString("2024-06-29"), sales: 1400),
+    SalesSummary(weekday: dateFromString("2024-06-30"), sales: 1500)
+]

@@ -36,9 +36,7 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     
     private let staticOrderCountData: [OrderData] = OrderData.generateRandomData(days: 7)
     
-    private var chartData: [ChartViewModal] = []
-    
-//    private let chartData = [Insight().getChartData()]
+    private var salesData: SalesChartViewModal!
     
     override func loadView() {
         setUpCollectionView()
@@ -76,7 +74,8 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     private func populateChartData() {
         // Uncomment for live data
         // chartData = MetricCollectionViewModel().generateChartData()
-        chartData = [ChartViewModal.generateRandomChartViewModal()]
+        // chartData = [ChartViewModal.generateRandomChartViewModal()]
+        salesData = MetricRecord().generateChartData()
     }
     
     private func setupBarButton() {
@@ -199,7 +198,7 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         case .quickInsights:
             return gridData.count
         case .salesChart:
-            return chartData.count
+            return 1
         case .salesList:
             return staticOrderCountData.count
         }
@@ -211,7 +210,7 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
             let item = gridData[indexPath.item]
             return collectionView.dequeueConfiguredReusableCell(using: metricCellRegistration, for: indexPath, item: item)
         case .salesChart:
-            let item = chartData[indexPath.item]
+            let item = salesData
             return collectionView.dequeueConfiguredReusableCell(using: metricChartCellRegistration, for: indexPath, item: item)
         case .salesList:
             let item = staticOrderCountData[indexPath.item]
@@ -249,10 +248,11 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     }()
     
     // A cell registration that configures a custom cell with a SwiftUI chart view.
-    private var metricChartCellRegistration: UICollectionView.CellRegistration<UICollectionViewCell, ChartViewModal> = {
+    private var metricChartCellRegistration: UICollectionView.CellRegistration<UICollectionViewCell, SalesChartViewModal> = {
         .init { cell, indexPath, itemIdentifier in
             cell.contentConfiguration = UIHostingConfiguration {
-                MetricChart(chartData: itemIdentifier)
+                // MetricChart(chartData: itemIdentifier)
+                SalesChart(salesData: itemIdentifier)
             }
             .margins(.horizontal, LayoutMetrics.horizontalMargin)
             .background {

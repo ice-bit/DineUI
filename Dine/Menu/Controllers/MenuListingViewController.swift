@@ -297,7 +297,6 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         
         alertController.addTextField { textField in
             textField.placeholder = "Description"
-            textField.keyboardType = .decimalPad
             textField.text = String(item.price)
         }
         

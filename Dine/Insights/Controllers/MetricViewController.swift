@@ -13,13 +13,24 @@ private enum InsightSection: Int, CaseIterable {
     case quickInsights
     case salesChart
     case salesList
+    
+    var title: String {
+        switch self {
+        case .quickInsights:
+            "Quick Insights"
+        case .salesChart:
+            "Sales Summary"
+        case .salesList:
+            "Sales List"
+        }
+    }
 }
 
 class MetricViewController: UIViewController, UICollectionViewDataSource {
     
     // The collection view which will display the custom cells.
     private var collectionView: UICollectionView!
-    
+    static let titleElementKind = "title-element-kind"
     // Static view modal data for grid items
     private var gridData: [MetricCardViewModal] = []
     
@@ -105,6 +116,8 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         collectionView.backgroundColor = .systemGroupedBackground
         collectionView.allowsSelection = false
         collectionView.dataSource = self
+        // Register the supplementary view
+        collectionView.register(TitleSupplementaryView.self, forSupplementaryViewOfKind: MetricViewController.titleElementKind, withReuseIdentifier: TitleSupplementaryView.reuseIdentifier)
     }
     
     private struct LayoutMetrics {
@@ -128,6 +141,14 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         section.contentInsets.leading = LayoutMetrics.horizontalMargin
         section.contentInsets.trailing = LayoutMetrics.horizontalMargin
         section.contentInsets.bottom = LayoutMetrics.sectionSpacing
+        // Create title
+        let titleSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
+        let titleSupplementary = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: titleSize,
+            elementKind: MetricViewController.titleElementKind,
+            alignment: .top
+        )
+        section.boundarySupplementaryItems = [titleSupplementary]
         return section
     }
     
@@ -157,6 +178,14 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         section.contentInsets.leading = LayoutMetrics.horizontalMargin
         section.contentInsets.trailing = LayoutMetrics.horizontalMargin
         section.contentInsets.bottom = LayoutMetrics.sectionSpacing
+        // Create title
+        let titleSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(44))
+        let titleSupplementary = NSCollectionLayoutBoundarySupplementaryItem(
+            layoutSize: titleSize,
+            elementKind: MetricViewController.titleElementKind,
+            alignment: .top
+        )
+        section.boundarySupplementaryItems = [titleSupplementary]
         return section
     }
     
@@ -190,6 +219,21 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         }
     }
     
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        if kind == MetricViewController.titleElementKind {
+            return collectionView.dequeueConfiguredReusableSupplementary(using: supplementaryRegistration, for: indexPath)
+        }
+        return UICollectionReusableView()
+    }
+    
+    private var supplementaryRegistration: UICollectionView.SupplementaryRegistration = {
+        UICollectionView.SupplementaryRegistration
+        <TitleSupplementaryView>(elementKind: MetricViewController.titleElementKind) { supplementaryView, elementKind, indexPath in
+            let section = InsightSection(rawValue: indexPath.section)
+            supplementaryView.label.text = section?.title
+        }
+    }()
+    
     // A cell registration that configures a custom cell with a SwiftUI metric view.
     private var metricCellRegistration: UICollectionView.CellRegistration<UICollectionViewCell, MetricCardViewModal> = {
         .init { cell, indexPath, itemIdentifier in
@@ -218,6 +262,8 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         }
     }()
     
+    
+    
     // A cell registration that configures a custom cell with SwiftUI order count view.
     private var orderCountCellRegistration: UICollectionView.CellRegistration<UICollectionViewCell, OrderData> = {
         .init { cell, indexPath, itemIdentifier in
@@ -234,3 +280,31 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     UINavigationController(rootViewController: MetricViewController())
 }
 
+class TitleSupplementaryView: UICollectionReusableView {
+    let label = UILabel()
+    static let reuseIdentifier = "title-supplementary-reuse-identifier"
+
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+        configure()
+    }
+    required init?(coder: NSCoder) {
+        fatalError()
+    }
+}
+
+extension TitleSupplementaryView {
+    func configure() {
+        addSubview(label)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.adjustsFontForContentSizeCategory = true
+        let inset = CGFloat(10)
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: leadingAnchor, constant: inset),
+            label.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -inset),
+            label.topAnchor.constraint(equalTo: topAnchor, constant: inset),
+            label.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -inset)
+        ])
+        label.font = UIFont.preferredFont(forTextStyle: .title1)
+    }
+}

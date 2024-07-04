@@ -9,7 +9,6 @@ import UIKit
 import Toast
 
 class SignUpViewController: UIViewController {
-    
     private var toast: Toast!
     var isInitialScreen: Bool = false
     
@@ -35,13 +34,13 @@ class SignUpViewController: UIViewController {
     
     private lazy var usernameTextField: UITextField = {
         let textField = DTextField()
+        
         textField.placeholder = "Username"
         textField.backgroundColor = .secondarySystemGroupedBackground
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
-    
     private lazy var passwordTextField: UITextField = {
         let textField = DTextField()
         textField.backgroundColor = .secondarySystemGroupedBackground

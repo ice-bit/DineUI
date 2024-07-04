@@ -134,6 +134,7 @@
 		55D46FBE2C2D409300F06657 /* SalesReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D46FBD2C2D409300F06657 /* SalesReport.swift */; };
 		55D46FC02C2D51FE00F06657 /* ChartViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D46FBF2C2D51FE00F06657 /* ChartViewModal.swift */; };
 		55D46FC32C2D72F400F06657 /* UserSessionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D46FC22C2D72F400F06657 /* UserSessionManager.swift */; };
+		55E03E4F2C36A5FF00423777 /* SalesChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55E03E4E2C36A5FF00423777 /* SalesChart.swift */; };
 		55F966692BF214C400557C92 /* DatabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966682BF214C400557C92 /* DatabaseService.swift */; };
 		55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666A2BF3344B00557C92 /* QuantityButton.swift */; };
 		55F9666D2BF364D000557C92 /* MenuItemOrderTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */; };
@@ -279,6 +280,7 @@
 		55D46FBD2C2D409300F06657 /* SalesReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesReport.swift; sourceTree = "<group>"; };
 		55D46FBF2C2D51FE00F06657 /* ChartViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartViewModal.swift; sourceTree = "<group>"; };
 		55D46FC22C2D72F400F06657 /* UserSessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserSessionManager.swift; sourceTree = "<group>"; };
+		55E03E4E2C36A5FF00423777 /* SalesChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SalesChart.swift; sourceTree = "<group>"; };
 		55F966682BF214C400557C92 /* DatabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseService.swift; sourceTree = "<group>"; };
 		55F9666A2BF3344B00557C92 /* QuantityButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuantityButton.swift; sourceTree = "<group>"; };
 		55F9666C2BF364D000557C92 /* MenuItemOrderTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemOrderTableViewCell.swift; sourceTree = "<group>"; };
@@ -384,6 +386,7 @@
 		5524F54A2BE9E836003F500C /* Dine */ = {
 			isa = PBXGroup;
 			children = (
+				55E03E4B2C36A5E100423777 /* Charts */,
 				55A4E1262C32C91C001C4562 /* Onboarding */,
 				558350BA2C2DACC600DDA458 /* Category */,
 				55C132072C23FB7100351F96 /* Insights */,
@@ -809,6 +812,14 @@
 			path = Service;
 			sourceTree = "<group>";
 		};
+		55E03E4B2C36A5E100423777 /* Charts */ = {
+			isa = PBXGroup;
+			children = (
+				55E03E4E2C36A5FF00423777 /* SalesChart.swift */,
+			);
+			path = Charts;
+			sourceTree = "<group>";
+		};
 		55F9667E2BF7680400557C92 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
@@ -1049,6 +1060,7 @@
 				552D37FE2BF1F5A0005B1D19 /* BillingController.swift in Sources */,
 				55F966C62BFB64F500557C92 /* TableData.swift in Sources */,
 				552D37E52BF1F4F0005B1D19 /* Order.swift in Sources */,
+				55E03E4F2C36A5FF00423777 /* SalesChart.swift in Sources */,
 				5590DEF22C1B1170007E1F75 /* ProfileEditor.swift in Sources */,
 				552D37BB2BF1F13A005B1D19 /* AuthenticationError.swift in Sources */,
 				55F966702BF3708100557C92 /* UIAlertController+DefaultStyle.swift in Sources */,

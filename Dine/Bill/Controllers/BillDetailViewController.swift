@@ -14,7 +14,7 @@ class BillDetailViewController: UIViewController {
     
     private var scrollView: UIScrollView!
     /// View to hold the scrollable content
-    private var contentView: UIView!
+    private var scrollContentView: UIView!
     
     // StackView that holds info about bill
     private var verticalStackView: UIStackView!
@@ -51,40 +51,25 @@ class BillDetailViewController: UIViewController {
     
     private func setupScrollView() {
         scrollView = UIScrollView()
+        scrollContentView = UIView()
+        
+        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        
         view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentView)
         
         // Set up constraints for the UIScrollView to match the view's size
         NSLayoutConstraint.activate([
-            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
-        ])
-        
-        // Setup content view
-        contentView = UIView()
-        contentView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(contentView)
-        
-        // Due to referring to tableView and stackView before initializing, the app crashes!
-        /*let totalSubviewHeight: CGFloat = tableView.frame.height + cardStackView.frame.height
-        var contentViewHeight: CGFloat = view.frame.height
-        
-        if totalSubviewHeight > contentViewHeight {
-            contentViewHeight = view.frame.height + totalSubviewHeight + 100 // 100 is the extra offset ignoring the spacing between the subviews.
-        }*/
-        
-        NSLayoutConstraint.activate([
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            // Set the width and height constraints for the content view
-            // These constraints define the scrollable area
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.heightAnchor.constraint(equalToConstant: 1000) // Set a height to make the content scrollable
+            scrollContentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
         ])
     }
     
@@ -113,7 +98,7 @@ class BillDetailViewController: UIViewController {
         orderIdInfoView.configureView(title: "Order ID", description: bill.getOrderId.uuidString)
         paymentStatusInfoView.configureView(title: "Payment Status", description: bill.paymentStatus.rawValue)
         
-        contentView.addSubview(verticalStackView)
+        scrollContentView.addSubview(verticalStackView)
         
         verticalStackView.addArrangedSubview(amountInfoView)
         verticalStackView.addArrangedSubview(tipInfoView)
@@ -124,9 +109,9 @@ class BillDetailViewController: UIViewController {
         verticalStackView.addArrangedSubview(paymentStatusInfoView)
         
         NSLayoutConstraint.activate([
-            verticalStackView.centerXAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.centerXAnchor),
-            verticalStackView.widthAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.widthAnchor, multiplier: 0.88),
-            verticalStackView.topAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.topAnchor, constant: 20)
+            verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
+            verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
+            verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 20)
         ])
     }
     
@@ -136,7 +121,7 @@ class BillDetailViewController: UIViewController {
         horizontalStackView.spacing = 12
         horizontalStackView.distribution = .fillEqually
         horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
-        contentView.addSubview(horizontalStackView)
+        scrollContentView.addSubview(horizontalStackView)
         
         paymentButton = UIButton()
         paymentButton.setTitle("Pay*", for: .normal)
@@ -158,10 +143,10 @@ class BillDetailViewController: UIViewController {
         horizontalStackView.addArrangedSubview(paymentButton)
         
         NSLayoutConstraint.activate([
-            horizontalStackView.centerXAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.centerXAnchor),
-            horizontalStackView.widthAnchor.constraint(equalTo: contentView.safeAreaLayoutGuide.widthAnchor, multiplier: 0.88),
+            horizontalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
+            horizontalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
             horizontalStackView.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor, constant: 20),
-            horizontalStackView.heightAnchor.constraint(equalToConstant: 55)
+            horizontalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor)
         ])
     }
     

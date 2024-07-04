@@ -34,7 +34,7 @@ class SignUpViewController: UIViewController {
     private lazy var usernameTextField: UITextField = {
         let textField = DTextField()
         textField.placeholder = "Username"
-        textField.backgroundColor = .secondarySystemBackground
+        textField.backgroundColor = .secondarySystemGroupedBackground
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -42,7 +42,7 @@ class SignUpViewController: UIViewController {
     
     private lazy var passwordTextField: UITextField = {
         let textField = DTextField()
-        textField.backgroundColor = .secondarySystemBackground
+        textField.backgroundColor = .secondarySystemGroupedBackground
         textField.isSecureTextEntry = true
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -52,7 +52,7 @@ class SignUpViewController: UIViewController {
     
     private lazy var confirmPasswordTextField: UITextField = {
         let textField = DTextField()
-        textField.backgroundColor = .secondarySystemBackground
+        textField.backgroundColor = .secondarySystemGroupedBackground
         textField.layer.cornerRadius = 10
         textField.isSecureTextEntry = true
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -89,7 +89,7 @@ class SignUpViewController: UIViewController {
         setupConfirmPasswordVisibiltyToggle()
         setupLoginLabelGesture()
         setupSubviews()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         navigationController?.navigationBar.prefersLargeTitles = true
         title = "Sign Up"
         

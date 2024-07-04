@@ -32,7 +32,7 @@ class LoginViewController: UIViewController {
     private lazy var usernameTextField: UITextField = {
         let textField = DTextField()
         textField.placeholder = "Username"
-        textField.backgroundColor = .secondarySystemBackground
+        textField.backgroundColor = .secondarySystemGroupedBackground
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -40,7 +40,7 @@ class LoginViewController: UIViewController {
 
     private lazy var passwordTextField: UITextField = {
         let textField = DTextField()
-        textField.backgroundColor = .secondarySystemBackground
+        textField.backgroundColor = .secondarySystemGroupedBackground
         textField.isSecureTextEntry = true
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -53,7 +53,7 @@ class LoginViewController: UIViewController {
         button.setTitle("Continue", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.layer.cornerRadius = 10
-        button.backgroundColor = .systemGroupedBackground
+        button.backgroundColor = .app
         button.addTarget(self, action: #selector(loginButtonAction(_:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -84,7 +84,7 @@ class LoginViewController: UIViewController {
         setupSignUpLabelGesture()
         setupPasswordVisibiltyToggle()
         setupForgetLabelGesture()
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         title = "Login"
         navigationController?.navigationBar.prefersLargeTitles = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
@@ -194,8 +194,6 @@ class LoginViewController: UIViewController {
         verticalStackView.addArrangedSubview(passwordTextField)
         verticalStackView.addArrangedSubview(forgotPasswordLabel)
         verticalStackView.addArrangedSubview(loginButton)
-        
-        verticalStackView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
 
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
@@ -207,7 +205,6 @@ class LoginViewController: UIViewController {
             passwordTextField.heightAnchor.constraint(equalToConstant: 44),
             forgotPasswordLabel.heightAnchor.constraint(equalToConstant: 14),
             loginButton.heightAnchor.constraint(equalToConstant: 55),
-            
             
             signUpLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             signUpLabel.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),

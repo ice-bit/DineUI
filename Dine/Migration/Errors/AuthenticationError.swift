@@ -10,7 +10,7 @@ import Foundation
 enum AuthenticationError: Error {
     case invalidUsername(reason: String)
     case invalidPassword(reason: String)
-    case incorretPassword
+    case incorrectPassword
     case notStrongPassword
     case inactiveAccount
     case userAlreadyExists

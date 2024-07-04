@@ -70,7 +70,7 @@ class AuthController: Authentication {
             print("No user found under username: \(username)")
         case .other(let error):
             print("An error occurred: \(error.localizedDescription)")
-        case .incorretPassword:
+        case .incorrectPassword:
             print("Incorrect Password")
         case .notStrongPassword:
             print("Password is not strong")
@@ -89,7 +89,7 @@ class AuthController: Authentication {
             }
             
             guard user.password == password else {
-                throw AuthenticationError.incorretPassword
+                throw AuthenticationError.incorrectPassword
             }
             return .success(user)
         } catch let error as AuthenticationError {

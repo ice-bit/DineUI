@@ -177,7 +177,7 @@ class RecoverPasswordViewController: UIViewController {
             showToast(message: "User not found.")
         case .other:
             showToast(message: "An error occurred.")
-        case .incorretPassword:
+        case .incorrectPassword:
             showToast(message: "Incorrect password")
         case .notStrongPassword:
             showToast(message: "Provide a strong password")

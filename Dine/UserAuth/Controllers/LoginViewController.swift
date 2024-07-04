@@ -10,6 +10,7 @@ import Toast
 
 class LoginViewController: UIViewController {
     private var toggleButton: UIButton!
+    private var toast: Toast!
     
     private lazy var introLabel: UILabel = {
         let label = UILabel()
@@ -166,7 +167,7 @@ class LoginViewController: UIViewController {
             showToast(message: "User not found.")
         case .other:
             showToast(message: "An error occurred.")
-        case .incorretPassword:
+        case .incorrectPassword:
             showToast(message: "Incorrect password")
         case .notStrongPassword:
             showToast(message: "Provide a strong password")
@@ -174,7 +175,10 @@ class LoginViewController: UIViewController {
     }
 
     func showToast(message: String) {
-        let toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: message)
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: message)
         toast.show(haptic: .error)
     }
     

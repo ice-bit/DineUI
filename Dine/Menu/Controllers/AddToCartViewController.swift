@@ -114,10 +114,17 @@ class AddToCartViewController: UIViewController {
             NSLog("The \"OK\" alert occured.")
             }))
             self.present(alert, animated: true, completion: nil)*/
-            let toast = Toast.default(image: UIImage(systemName: "exclamationmark.circle.fill")!, title: "No Tables Available")
-            toast.show(haptic: .error)
+            showErrorToast(with: "No Available Tables")
             proceedbutton.isEnabled = false
         }
+    }
+    
+    private func showErrorToast(with message: String) {
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text(message)
+        toast.show(haptic: .warning)
     }
     
     private func updateUIForNoData() {
@@ -144,7 +151,10 @@ class AddToCartViewController: UIViewController {
     }
     
     // Toast View for the showing number of items
-    func showToast() {
+    func showCartToast() {
+        if let toast {
+            toast.close(animated: true)
+        }
         let config = ToastConfiguration(
             direction: .bottom,
             dismissBy: [.time(time: 2.4)],
@@ -300,7 +310,7 @@ extension AddToCartViewController: MenuItemTableViewCellDelegate {
         // menuCartView.setItemCount(menuItemCart.values.reduce(0, +))
         
         // Update the toast view with proper item count
-        showToast()
+        showCartToast()
         
         for (item, count) in menuItemCart {
             print("\(item.name) - \(count)")

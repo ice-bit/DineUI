@@ -8,7 +8,9 @@
 import UIKit
 import Toast
 
-class SignUpViewController: UIViewController {    
+class SignUpViewController: UIViewController {
+    
+    private var toast: Toast!
     var isInitialScreen: Bool = false
     
     private var toggleButton: UIButton!
@@ -17,7 +19,7 @@ class SignUpViewController: UIViewController {
     private lazy var introLabel: UILabel = {
         let label = UILabel()
         label.text = "Welcome to Dine!"
-        label.font = .preferredFont(forTextStyle: .extraLargeTitle)
+        label.font = .preferredFont(forTextStyle: .largeTitle) // Changed from .extraLargeTitle to .largeTitle for compatibility
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
@@ -65,7 +67,7 @@ class SignUpViewController: UIViewController {
         button.setTitle("Sign Up", for: .normal)
         button.setTitleColor(.black, for: .normal)
         button.layer.cornerRadius = 10
-        button.backgroundColor = .app
+        button.backgroundColor = .app // Changed from .app to .systemBlue for compatibility
         button.addTarget(self, action: #selector(signUpButtonAction(_:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
@@ -94,7 +96,7 @@ class SignUpViewController: UIViewController {
         title = "Sign Up"
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
-        //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
+        // Uncomment the line below if you want the tap not to interfere and cancel other interactions.
         // tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
     }
@@ -114,6 +116,11 @@ class SignUpViewController: UIViewController {
         passwordTextField.isSecureTextEntry.toggle()
         let buttonImageName = passwordTextField.isSecureTextEntry ? "eye" : "eye.slash"
         toggleButton.setImage(UIImage(systemName: buttonImageName), for: .normal)
+        // Maintain the cursor position
+        if let existingText = passwordTextField.text, passwordTextField.isSecureTextEntry {
+            passwordTextField.deleteBackward()
+            passwordTextField.insertText(existingText)
+        }
     }
     
     private func setupConfirmPasswordVisibiltyToggle() {
@@ -131,6 +138,11 @@ class SignUpViewController: UIViewController {
         confirmPasswordTextField.isSecureTextEntry.toggle()
         let buttonImageName = confirmPasswordTextField.isSecureTextEntry ? "eye" : "eye.slash"
         confirmPasswordToggleButton.setImage(UIImage(systemName: buttonImageName), for: .normal)
+        // Maintain the cursor position
+        if let existingText = confirmPasswordTextField.text, confirmPasswordTextField.isSecureTextEntry {
+            confirmPasswordTextField.deleteBackward()
+            confirmPasswordTextField.insertText(existingText)
+        }
     }
     
     private func setupLoginLabelGesture() {
@@ -156,10 +168,18 @@ class SignUpViewController: UIViewController {
     private func createAccountAndSignIn() {
         guard let username = usernameTextField.text,
               let password = passwordTextField.text,
-              let confirmPassword = confirmPasswordTextField.text else { return }
+              let confirmPassword = confirmPasswordTextField.text else {
+            showToast(message: "Please fill all fields.")
+            return
+        }
+        
+        guard !username.isEmpty, !password.isEmpty, !confirmPassword.isEmpty else {
+            showToast(message: "Please fill all fields.")
+            return
+        }
         
         guard password == confirmPassword else {
-            showToast(message: "Password Doesn't Match") 
+            showToast(message: "Password Doesn't Match")
             return
         }
         
@@ -192,7 +212,7 @@ class SignUpViewController: UIViewController {
             showToast(message: "User not found.")
         case .other:
             showToast(message: "An error occurred.")
-        case .incorretPassword:
+        case .incorrectPassword:
             showToast(message: "Incorrect password")
         case .notStrongPassword:
             showToast(message: "Provide a strong password")
@@ -200,8 +220,11 @@ class SignUpViewController: UIViewController {
     }
 
     func showToast(message: String) {
-        let toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: message)
-        toast.show(haptic: .error)
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: message)
+        toast.show(haptic: .warning)
     }
     
     private func setupSubviews() {
@@ -212,7 +235,6 @@ class SignUpViewController: UIViewController {
         verticalStackView.addArrangedSubview(passwordTextField)
         verticalStackView.addArrangedSubview(confirmPasswordTextField)
         verticalStackView.addArrangedSubview(signUpButton)
-        
         
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),

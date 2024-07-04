@@ -10,6 +10,8 @@ import Toast
 
 class AddSectionViewController: UIViewController {
     
+    private var toast: Toast!
+    
     private lazy var verticalStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -59,12 +61,19 @@ class AddSectionViewController: UIViewController {
         setupSubviews()
     }
     
+    private func showErrorToast() {
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text("Invalid Category Name!")
+        toast.show(haptic: .warning)
+    }
+    
     @objc private func addButtonAction(_ sender: UIButton) {
         print(#function)
         guard let categoryName = categoryNameTextField.text,
               !categoryName.isEmpty else { 
-            let toast = Toast.text("Invalid Category Name!")
-            toast.show(haptic: .success)
+            showErrorToast()
             return
         }
         

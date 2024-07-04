@@ -10,6 +10,8 @@ import Toast
 
 class AddTablesViewController: UIViewController {
     
+    private var toast: Toast!
+    
     private lazy var verticalStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
@@ -143,7 +145,10 @@ class AddTablesViewController: UIViewController {
     }
     
     private func showErrorToast(_ message: String) {
-        let toast = Toast.text(message)
-        toast.show(haptic: .error)
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text(message)
+        toast.show(haptic: .warning)
     }
 }

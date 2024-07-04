@@ -14,6 +14,8 @@ class ChooseTableViewController: UIViewController {
     // MARK: - Properties
     private var selectedMenuItems: [MenuItem: Int]
     
+    private var toast: Toast!
+    
     private var tableData: [RestaurantTable] = []
     private var selectedTable: RestaurantTable?
     
@@ -137,11 +139,18 @@ class ChooseTableViewController: UIViewController {
         navigationItem.rightBarButtonItem = confirmBarButton
     }
     
+    private func showErrorToast() {
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: "Select Table")
+        toast.show(haptic: .error)
+    }
+    
     @objc private func confirmButtonAction(_ sender: UIBarButtonItem) {
         do {
             guard let selectedTable else {
-                let toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: "Select Table")
-                toast.show(haptic: .error)
+                showErrorToast()
                 return
             }
             let dataAccess = try SQLiteDataAccess.openDatabase()
@@ -154,14 +163,20 @@ class ChooseTableViewController: UIViewController {
             NotificationCenter.default.post(name: .orderDidChangeNotification, object: nil)
             NotificationCenter.default.post(name: .metricDataDidChangeNotification, object: nil)
             
-            self.dismiss(animated: true) {
-                // Show toast after completion
-                let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Order Added")
-                toast.show(haptic: .success)
-            }
+            self.dismiss(animated: true)
+            // Show toast after completion
+            showSuccessToast()
         } catch {
             print("Unable to create order - \(error)")
         }
+    }
+    
+    private func showSuccessToast() {
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Order Added")
+        toast.show(haptic: .success)
     }
 }
 

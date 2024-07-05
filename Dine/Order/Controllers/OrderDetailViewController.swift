@@ -77,7 +77,7 @@ class OrderDetailViewController: UIViewController {
     }
     
     private func setupTableView() {
-        tableView = UITableView()
+        tableView = DynamicTableView()
         tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseIdentifier)
         tableView.delegate = self
         tableView.dataSource = self

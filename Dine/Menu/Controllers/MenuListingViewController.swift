@@ -46,11 +46,12 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     // MARK: - View LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupSearchBar()
+        setupNoResultsLabel() // Setup noResultsLabel
         title = category.categoryName
         navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .systemGroupedBackground
         setupTableView()
-        setupNoResultsLabel() // Setup noResultsLabel
         setupNavbar()
         setupPlaceholderLabel()
         populateMenuData()
@@ -60,7 +61,6 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             name: .menuItemDidChangeNotification,
             object: nil
         )
-        setupSearchBar()
     }
     
     @objc private func menuItemDidChange(_ sender: NotificationCenter) {

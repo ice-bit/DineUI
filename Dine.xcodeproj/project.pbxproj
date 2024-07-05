@@ -112,6 +112,9 @@
 		5590DEF82C1B2134007E1F75 /* CustomBillDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF72C1B2134007E1F75 /* CustomBillDetailViewController.swift */; };
 		5590DEFA2C1C131A007E1F75 /* OrderDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF92C1C131A007E1F75 /* OrderDetailViewController.swift */; };
 		5590DEFC2C1C5434007E1F75 /* PlainMenuItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */; };
+		55A0BED02C38301E00CED892 /* UIImage+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A0BECF2C38301E00CED892 /* UIImage+Color.swift */; };
+		55A0BED22C3835B400CED892 /* DineButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A0BED12C3835B400CED892 /* DineButton.swift */; };
+		55A0BED42C383BB800CED892 /* CustomButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A0BED32C383BB800CED892 /* CustomButtonType.swift */; };
 		55A4E1282C32C940001C4562 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A4E1272C32C940001C4562 /* OnboardingViewController.swift */; };
 		55C05A502C2EC71D00FE3AB1 /* AddMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C05A4F2C2EC71D00FE3AB1 /* AddMenuView.swift */; };
 		55C05A522C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C05A512C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift */; };
@@ -257,6 +260,9 @@
 		5590DEF72C1B2134007E1F75 /* CustomBillDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomBillDetailViewController.swift; sourceTree = "<group>"; };
 		5590DEF92C1C131A007E1F75 /* OrderDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderDetailViewController.swift; sourceTree = "<group>"; };
 		5590DEFB2C1C5434007E1F75 /* PlainMenuItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlainMenuItemView.swift; sourceTree = "<group>"; };
+		55A0BECF2C38301E00CED892 /* UIImage+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Color.swift"; sourceTree = "<group>"; };
+		55A0BED12C3835B400CED892 /* DineButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineButton.swift; sourceTree = "<group>"; };
+		55A0BED32C383BB800CED892 /* CustomButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtonType.swift; sourceTree = "<group>"; };
 		55A4E1272C32C940001C4562 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
 		55C05A4F2C2EC71D00FE3AB1 /* AddMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMenuView.swift; sourceTree = "<group>"; };
 		55C05A512C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemPhotoModal.swift; sourceTree = "<group>"; };
@@ -369,6 +375,8 @@
 		5524F53F2BE9E836003F500C = {
 			isa = PBXGroup;
 			children = (
+				55A0BED32C383BB800CED892 /* CustomButtonType.swift */,
+				55A0BED12C3835B400CED892 /* DineButton.swift */,
 				5524F54A2BE9E836003F500C /* Dine */,
 				5524F5492BE9E836003F500C /* Products */,
 				552866BA2C2EE23000258C79 /* Frameworks */,
@@ -417,6 +425,7 @@
 				557B5CAD2C2191CC004E5C49 /* UIWindow+setRootViewController.swift */,
 				55C1321E2C2579C700351F96 /* Date+Weekday.swift */,
 				558350BD2C2E81B500DDA458 /* Date+Random.swift */,
+				55A0BECF2C38301E00CED892 /* UIImage+Color.swift */,
 			);
 			path = Dine;
 			sourceTree = "<group>";
@@ -943,6 +952,7 @@
 			files = (
 				552D37DC2BF1F4F0005B1D19 /* BillService.swift in Sources */,
 				552D37E12BF1F4F0005B1D19 /* OrderService.swift in Sources */,
+				55A0BED02C38301E00CED892 /* UIImage+Color.swift in Sources */,
 				5524F6372BEE688D003F500C /* MenuDetailViewController.swift in Sources */,
 				558350B92C2DAA2F00DDA458 /* CategoryService.swift in Sources */,
 				55A4E1282C32C940001C4562 /* OnboardingViewController.swift in Sources */,
@@ -989,6 +999,7 @@
 				55C05A582C2ED22300FE3AB1 /* AddItem.swift in Sources */,
 				55F966CA2BFB650200557C92 /* TableRow.swift in Sources */,
 				5524F62E2BEDE57C003F500C /* OrderCell.swift in Sources */,
+				55A0BED42C383BB800CED892 /* CustomButtonType.swift in Sources */,
 				552D37AD2BF1F09F005B1D19 /* SQLiteError.swift in Sources */,
 				552D37A02BF1F00D005B1D19 /* Date+Formatting.swift in Sources */,
 				5524F62B2BECD422003F500C /* MenuItemDummy.swift in Sources */,
@@ -1003,6 +1014,7 @@
 				552D37B42BF1F09F005B1D19 /* SQLiteDatabase.swift in Sources */,
 				55F966CD2BFC716100557C92 /* ChooseTableViewController.swift in Sources */,
 				552D37EF2BF1F4F0005B1D19 /* MenuItem.swift in Sources */,
+				55A0BED22C3835B400CED892 /* DineButton.swift in Sources */,
 				5548B6A62C04BC96000E99C8 /* MockDatabase.swift in Sources */,
 				55F966692BF214C400557C92 /* DatabaseService.swift in Sources */,
 				5548B6AF2C075907000E99C8 /* MenuItemTableViewCell.swift in Sources */,

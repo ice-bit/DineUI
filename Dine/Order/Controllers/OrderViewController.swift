@@ -368,7 +368,6 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let order = orderData[indexPath.row]
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
-        cell.selectedBackgroundView = UIView() // From giving transparent selected color
         cell.contentConfiguration = UIHostingConfiguration {
             OrderCellView(order: order)
         }
@@ -382,6 +381,7 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let selectedOrder = orderData[indexPath.row]
+        tableView.deselectRow(at: indexPath, animated: true)
         
         guard tableView.isEditing else {
             // Not in editing mode...push to detail vc

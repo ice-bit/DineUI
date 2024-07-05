@@ -241,11 +241,10 @@ extension BillViewController: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
         let billSection = nonEmptyBillSection[indexPath.section]
         guard let bill = tableViewData[billSection]?[indexPath.row] else { return cell }
-        cell.selectionStyle = .none
         cell.contentConfiguration = UIHostingConfiguration {
             BillItem(billData: bill)
         }
-        .background(Color(.systemGroupedBackground))
+        cell.backgroundColor = .systemGroupedBackground
         return cell
     }
     
@@ -255,6 +254,7 @@ extension BillViewController: UITableViewDataSource, UITableViewDelegate {
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         let data = billData[indexPath.row]
         let billDetailViewController = BillDetailViewController(bill: data)
         navigationController?.pushViewController(billDetailViewController, animated: true)

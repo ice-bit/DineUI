@@ -237,7 +237,11 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = isFiltering ? filteredCategories[indexPath.item] : categories[indexPath.item]
-        return collectionView.dequeueConfiguredReusableCell(using: sectionViewRegistration, for: indexPath, item: item)
+        let cell =  collectionView.dequeueConfiguredReusableCell(using: sectionViewRegistration, for: indexPath, item: item)
+        let selectedBackgroundView = UIView()
+        selectedBackgroundView.backgroundColor = .systemGray4
+        cell.selectedBackgroundView = selectedBackgroundView
+        return cell
     }
     
     private var sectionViewRegistration: UICollectionView.CellRegistration<UICollectionViewCell, MenuCategory> = {
@@ -252,6 +256,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     
     // MARK: - UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        collectionView.deselectItem(at: indexPath, animated: true)
         let item = isFiltering ? filteredCategories[indexPath.item] : categories[indexPath.item]
         let sectionDetailVC = MenuListingViewController(category: item)
         navigationController?.pushViewController(sectionDetailVC, animated: true)

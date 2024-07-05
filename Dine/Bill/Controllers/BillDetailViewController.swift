@@ -10,20 +10,19 @@ import Toast
 
 class BillDetailViewController: UIViewController {
     
+    // MARK: - Properties
+    
     private let bill: Bill
+    private var toast: Toast!
     
     private var scrollView: UIScrollView!
-    /// View to hold the scrollable content
     private var scrollContentView: UIView!
-    
-    // StackView that holds info about bill
     private var verticalStackView: UIStackView!
-    
-    // Stack view that holds button at the bottom of the screen
     private var horizontalStackView: UIStackView!
+    private var paymentButton: UIButton!
+    private var deleteButton: UIButton!
     
-    private var paymentButton: UIButton! // Button for payment action
-    private var deleteButton: UIButton! // Button for delete action
+    // MARK: - Initialization
     
     init(bill: Bill) {
         self.bill = bill
@@ -34,32 +33,38 @@ class BillDetailViewController: UIViewController {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // MARK: - Lifecycle
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupViewController()
+        setupSubviews()
+    }
+    
+    // MARK: - Setup Methods
+    
+    private func setupViewController() {
         view.backgroundColor = .systemGroupedBackground
         title = "Bill"
         navigationController?.navigationBar.prefersLargeTitles = true
-        
-        setupSubviews()
     }
     
     private func setupSubviews() {
         setupScrollView()
-        setupVStackView()
-        setupButtonHStackView()
+        setupVerticalStackView()
+        setupHorizontalStackView()
     }
     
     private func setupScrollView() {
         scrollView = UIScrollView()
         scrollContentView = UIView()
         
-        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(scrollView)
         scrollView.addSubview(scrollContentView)
         
-        // Set up constraints for the UIScrollView to match the view's size
         NSLayoutConstraint.activate([
             scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
             scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
@@ -73,32 +78,16 @@ class BillDetailViewController: UIViewController {
         ])
     }
     
-    private func setupVStackView() {
-        verticalStackView = UIStackView()
-        verticalStackView.layer.cornerRadius = 16
-        verticalStackView.layer.masksToBounds = true
-        verticalStackView.backgroundColor = .secondarySystemGroupedBackground
-        verticalStackView.axis = .vertical
-        verticalStackView.distribution = .fillEqually
-        verticalStackView.translatesAutoresizingMaskIntoConstraints = false
+    private func setupVerticalStackView() {
+        verticalStackView = createVerticalStackView()
         
-        let amountInfoView = TitleAndDescriptionView()
-        let tipInfoView = TitleAndDescriptionView()
-        let taxInfoView = TitleAndDescriptionView()
-        let dateInfoView = TitleAndDescriptionView()
-        let billIdInfoView = TitleAndDescriptionView()
-        let orderIdInfoView = TitleAndDescriptionView()
-        let paymentStatusInfoView = TitleAndDescriptionView()
-        
-        amountInfoView.configureView(title: "Amount", description: "$\(bill.getTotalAmount.rounded())")
-        tipInfoView.configureView(title: "Tip", description: "$\(bill.getTip.rounded())")
-        taxInfoView.configureView(title: "Tax", description: "$\(bill.getTax.rounded())")
-        dateInfoView.configureView(title: "Date", description: bill.date.formattedDateString())
-        billIdInfoView.configureView(title: "Bill ID", description: bill.billId.uuidString)
-        orderIdInfoView.configureView(title: "Order ID", description: bill.getOrderId.uuidString)
-        paymentStatusInfoView.configureView(title: "Payment Status", description: bill.paymentStatus.rawValue)
-        
-        scrollContentView.addSubview(verticalStackView)
+        let amountInfoView = createInfoView(title: "Amount", description: "$\(bill.getTotalAmount.rounded())")
+        let tipInfoView = createInfoView(title: "Tip", description: "$\(bill.getTip.rounded())")
+        let taxInfoView = createInfoView(title: "Tax", description: "$\(bill.getTax.rounded())")
+        let dateInfoView = createInfoView(title: "Date", description: bill.date.formattedDateString())
+        let billIdInfoView = createInfoView(title: "Bill ID", description: bill.billId.uuidString)
+        let orderIdInfoView = createInfoView(title: "Order ID", description: bill.getOrderId.uuidString)
+        let paymentStatusInfoView = createInfoView(title: "Payment Status", description: bill.paymentStatus.rawValue)
         
         verticalStackView.addArrangedSubview(amountInfoView)
         verticalStackView.addArrangedSubview(tipInfoView)
@@ -108,6 +97,8 @@ class BillDetailViewController: UIViewController {
         verticalStackView.addArrangedSubview(orderIdInfoView)
         verticalStackView.addArrangedSubview(paymentStatusInfoView)
         
+        scrollContentView.addSubview(verticalStackView)
+        
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
             verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
@@ -115,32 +106,24 @@ class BillDetailViewController: UIViewController {
         ])
     }
     
-    private func setupButtonHStackView() {
-        horizontalStackView = UIStackView()
-        horizontalStackView.axis = .horizontal
-        horizontalStackView.spacing = 12
-        horizontalStackView.distribution = .fillEqually
-        horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
-        scrollContentView.addSubview(horizontalStackView)
+    private func setupHorizontalStackView() {
+        horizontalStackView = createHorizontalStackView()
         
-        paymentButton = UIButton()
-        paymentButton.setTitle("Pay*", for: .normal)
-        paymentButton.setTitleColor(.label, for: .normal)
-        paymentButton.backgroundColor = .secondarySystemGroupedBackground
-        paymentButton.layer.cornerRadius = 12
-        paymentButton.translatesAutoresizingMaskIntoConstraints = false
-        paymentButton.addTarget(self, action: #selector(paymentButtonAction(_:)), for: .touchUpInside)
+        let paymentAction = UIAction { [weak self] _ in
+            self?.showErrorToast()
+        }
         
-        deleteButton = UIButton()
-        deleteButton.setTitle("Delete", for: .normal)
-        deleteButton.setTitleColor(.red, for: .normal)
-        deleteButton.backgroundColor = .secondarySystemGroupedBackground
-        deleteButton.layer.cornerRadius = 14
-        deleteButton.translatesAutoresizingMaskIntoConstraints = false
-        deleteButton.addTarget(self, action: #selector(deleteAction(_:)), for: .touchUpInside)
+        let deleteAction = UIAction { [weak self] _ in
+            self?.deleteBill()
+        }
+        
+        paymentButton = createCustomButton(title: "Payment", type: .normal, primaryAction: paymentAction)
+        deleteButton = createCustomButton(title: "Delete", type: .destructive, primaryAction: deleteAction)
         
         horizontalStackView.addArrangedSubview(deleteButton)
         horizontalStackView.addArrangedSubview(paymentButton)
+        
+        scrollContentView.addSubview(horizontalStackView)
         
         NSLayoutConstraint.activate([
             horizontalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
@@ -150,26 +133,73 @@ class BillDetailViewController: UIViewController {
         ])
     }
     
-    @objc private func paymentButtonAction(_ sender: UIButton) {
-        print(#function)
-        let toast = Toast.text("Not functional!")
+    // MARK: - Helper Methods
+    
+    private func createVerticalStackView() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.layer.cornerRadius = 16
+        stackView.layer.masksToBounds = true
+        stackView.backgroundColor = .secondarySystemGroupedBackground
+        stackView.axis = .vertical
+        stackView.distribution = .fillEqually
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }
+    
+    private func createHorizontalStackView() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 12
+        stackView.distribution = .fillEqually
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }
+    
+    private func createInfoView(title: String, description: String) -> TitleAndDescriptionView {
+        let infoView = TitleAndDescriptionView()
+        infoView.configureView(title: title, description: description)
+        return infoView
+    }
+    
+    private func createCustomButton(title: String, type: CustomButtonType, primaryAction: UIAction? = nil) -> UIButton {
+        var config = UIButton.Configuration.gray()
+        config.cornerStyle = .large
+        config.buttonSize = .large
+        config.title = title
+        config.baseBackgroundColor = .secondarySystemGroupedBackground
+        
+        switch type {
+        case .normal:
+            config.baseForegroundColor = .tintColor
+        case .destructive:
+            config.baseForegroundColor = .red
+        }
+        
+        return UIButton(configuration: config, primaryAction: primaryAction)
+    }
+    
+    private func showErrorToast() {
+        if let toast = toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text("Not functional!")
         toast.show(haptic: .warning)
     }
     
-    @objc private func deleteAction(_ sender: UIButton) {
-        print(#function)
+    private func deleteBill() {
         do {
-            let databaseAccess  = try SQLiteDataAccess.openDatabase()
+            let databaseAccess = try SQLiteDataAccess.openDatabase()
             let billService = BillServiceImpl(databaseAccess: databaseAccess)
             try billService.delete(bill)
             let toast = Toast.text("Bill Deleted!")
             toast.show(haptic: .success)
             NotificationCenter.default.post(name: .billDidChangeNotification, object: nil)
-            // Pop the current view controller
             navigationController?.popViewController(animated: true)
         } catch {
-            print("Failed to perform \(#function) - \(error)")
-            fatalError("Failed to perform \(#function) - \(error)")
+            let toast = Toast.text("Failed to delete bill: \(error.localizedDescription)")
+            toast.show(haptic: .error)
         }
     }
 }
+
+

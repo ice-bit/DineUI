@@ -227,6 +227,12 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         self.present(alertController, animated: true, completion: nil)
     }
     
+    private func congifureSelectedState(for cell: UITableViewCell) {
+        let selectedBackgroundView = UIView()
+        selectedBackgroundView.backgroundColor = UIColor.systemGray3
+        cell.selectedBackgroundView = selectedBackgroundView
+    }
+    
     // MARK: - TableView
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         isFiltering ? filteredItems.count : menuData.count
@@ -234,16 +240,24 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseID, for: indexPath)
-        cell.selectionStyle = .none
         let menuItem = isFiltering ? filteredItems[indexPath.row] : menuData[indexPath.row]
         cell.contentConfiguration = UIHostingConfiguration {
             MenuItemRow(menuItem: menuItem)
         }
         .background(Color(.systemGroupedBackground))
+        cell.backgroundColor = .systemGroupedBackground
+        congifureSelectedState(for: cell)
         return cell
     }
     
+    /*func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let cell = tableView.cellForRow(at: indexPath) else { return indexPath }
+        congifureSelectedState(for: cell)
+        return indexPath
+    }*/
+    
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         let menuItem = isFiltering ? filteredItems[indexPath.row] : menuData[indexPath.row]
         let menuDetailViewHostVC = UIHostingController(rootView: MenuDetailView(menuItem: menuItem))
         navigationController?.pushViewController(menuDetailViewHostVC, animated: true)
@@ -273,10 +287,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
                 self.presentEditAlertController(for: item)
                 
             }
-            /*let action2 = UIAction(title: "Action 2", image: UIImage(systemName: "heart")) { action in
-                // Handle action 2
-                print("Action 2 tapped")
-            }*/
+            
             return UIMenu(title: "", children: [editAction])
         }
     }

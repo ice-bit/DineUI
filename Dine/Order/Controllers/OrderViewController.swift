@@ -92,7 +92,7 @@ class OrderViewController: UIViewController {
     }
     
     private func setupTableView() {
-        tableView = UITableView()
+        tableView = DynamicTableView()
         tableView.allowsMultipleSelectionDuringEditing = true
         tableView.backgroundColor = .systemGroupedBackground
         tableView.separatorStyle = .none

@@ -80,7 +80,7 @@ struct OrderServiceImpl: OrderService {
             let menuItemTable = DatabaseTables.menuItem.rawValue
             let orderItemTable = DatabaseTables.orderMenuItemTable.rawValue
             let menuItemQuery = """
-                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).category_id
+                SELECT \(menuItemTable).MenuItemID, \(menuItemTable).MenuItemName, \(menuItemTable).Price, \(orderItemTable).Quantity, \(menuItemTable).category_id, \(menuItemTable).description
                 FROM \(DatabaseTables.orderMenuItemTable.rawValue)
                 JOIN \(menuItemTable) ON \(orderItemTable).MenuItemID = \(menuItemTable).MenuItemID
                 WHERE \(orderItemTable).OrderID = '\(resultOrder.orderIdValue.uuidString)';

@@ -97,13 +97,14 @@ extension Bill {
     var getOrderedItems: [MenuItem]? {
         do {
             let orderService = try OrderServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
-            guard let order = try? orderService.fetch(orderId) else { return nil }
+            let order = try orderService.fetch(orderId)
+            guard let order else {
+                fatalError("Failed to fetch order!")
+            }
             return order.menuItems
         } catch {
-            print("Unable to fetch orders - \(error)")
+            fatalError("Failed to fetch order: \(error)")
         }
-        
-        return nil
     }
 }
 

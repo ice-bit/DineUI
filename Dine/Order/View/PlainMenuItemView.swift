@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct PlainMenuItemView: View {
-    var menuItem: MenuItem
+    @ObservedObject var menuItem: MenuItem
     
     var body: some View {
         HStack {

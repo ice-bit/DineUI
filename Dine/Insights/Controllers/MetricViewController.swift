@@ -46,7 +46,7 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        title = "Insights"
+        title = "Home"
         navigationController?.navigationBar.prefersLargeTitles = true
         
         // Poppulate data
@@ -158,11 +158,12 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         
         let groupSize = NSCollectionLayoutSize(widthDimension: .fractionalWidth(1.0), heightDimension: .estimated(200))
         let group = NSCollectionLayoutGroup.horizontal(layoutSize: groupSize, subitems: [item])
+        group.contentInsets = .zero
+        group.contentInsets.leading = LayoutMetrics.horizontalMargin
         
         let section = NSCollectionLayoutSection(group: group)
-        // section.orthogonalScrollingBehavior = .groupPaging
+        //section.orthogonalScrollingBehavior = .groupPaging
         section.contentInsets = .zero
-        group.contentInsets.leading = LayoutMetrics.horizontalMargin
         section.contentInsets.trailing = LayoutMetrics.horizontalMargin
         section.contentInsets.bottom = LayoutMetrics.sectionSpacing
         // Title layout

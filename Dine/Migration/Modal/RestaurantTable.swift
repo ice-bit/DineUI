@@ -11,8 +11,8 @@ import SQLite3
 class RestaurantTable: ObservableObject {
     private let _tableId: UUID
     var tableStatus: TableStatus
-    var capacity: Int
-    var locationIdentifier: Int
+    @Published var capacity: Int
+    @Published var locationIdentifier: Int
     @Published var isSelected: Bool = false // For Dynamically changing SwiftUIView
     
     var tableId: UUID {

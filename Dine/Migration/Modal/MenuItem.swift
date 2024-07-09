@@ -8,13 +8,13 @@
 import Foundation
 import SQLite3
 
-class MenuItem {
+class MenuItem: ObservableObject {
     let itemId: UUID
-    var name: String
-    var price: Double
-    var count: Int = 0
+    @Published var name: String
+    @Published var price: Double
+    @Published var count: Int = 0
     let category: MenuCategory
-    let description: String
+    @Published var description: String
     
     init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String) {
         self.itemId = itemId

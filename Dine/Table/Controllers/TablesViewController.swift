@@ -12,6 +12,9 @@ import Toast
 class TablesViewController: UIViewController, UICollectionViewDataSource, UICollectionViewDelegate {
     // MARK: - Properties
     
+    /// Toast View
+    private var toast: Toast!
+    
     /// Service to fetch and manage table data.
     private let tableService: TableService
     
@@ -252,6 +255,23 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
                 return
             }
             
+            guard locationId != table.locationIdentifier else {
+                // Handle the text input
+                print("Location ID text field: \(locationIdString)")
+                print("Capacity text field: \(capacity)")
+                
+                table.locationIdentifier = locationId
+                table.capacity = capacity
+                
+                editTable(table)
+                return
+            }
+            
+            guard let resultTables = try? tableService.fetch() else { fatalError("Parsing tables failed") }
+            if let table = resultTables.first(where: { $0.locationIdentifier == locationId }) {
+                showToast("Location ID Already taken")
+                return
+            }
             
             // Handle the text input
             print("Location ID text field: \(locationIdString)")
@@ -273,11 +293,6 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
         do {
             let tableService = try TableServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
             
-            guard let resultTables = try tableService.fetch() else { throw TableError.parsingFailed }
-            if let _ = resultTables.first(where: { $0.locationIdentifier == table.locationIdentifier }) {
-                throw TableError.locationIdAlreadyTaken
-            }
-            
             // Update
             try tableService.update(table)
             // Show toast
@@ -290,15 +305,12 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
             guard let currentTable = tables.first(where: { $0.tableId == table.tableId }) else { return }
             currentTable.locationIdentifier = table.locationIdentifier
             currentTable.capacity = table.capacity
-            
-            collectionView.reloadData() 
         } catch let error as TableError {
             switch error {
             case .locationIdAlreadyTaken:
-                let toast = Toast.text("Location Identifier Already Exists")
-                toast.show(haptic: .warning)
+                showToast("Location ID Already Exists")
             case .parsingFailed:
-                print("Parsing tables failed")
+                fatalError("Parsing tables failed")
             case .invalidLocationId:
                 print("Invalid table id format")
             case .invalidCapacity:
@@ -314,7 +326,10 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     private func showToast(_ message: String) {
-        let toast = Toast.text(message)
-        toast.show(haptic: .error)
+        if let toast = toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text(message)
+        toast.show(haptic: .warning)
     }
 }

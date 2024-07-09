@@ -205,9 +205,8 @@ class OrderDetailViewController: UIViewController {
     
     private func updateMenuItems() {
         menuItems = orderedItems.compactMap { item, count in
-            var updatedItem = item
-            updatedItem.count = count
-            return count > 0 ? updatedItem : nil
+            item.count = count
+            return count > 0 ? item : nil
         }
         tableView.reloadData()
     }

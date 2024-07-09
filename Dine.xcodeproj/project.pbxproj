@@ -88,6 +88,7 @@
 		552D38122BF1F5FE005B1D19 /* UserDefault.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D38112BF1F5FE005B1D19 /* UserDefault.swift */; };
 		552D38142BF1F856005B1D19 /* CustomNotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D38132BF1F856005B1D19 /* CustomNotifications.swift */; };
 		5532D2462C26FDF40077656C /* RecoverPasswordViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5532D2452C26FDF40077656C /* RecoverPasswordViewController.swift */; };
+		55464FB32C3D16C800D0F25E /* EditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55464FB22C3D16C800D0F25E /* EditViewController.swift */; };
 		5548B6A42C04BA23000E99C8 /* ConfirmOrderViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6A32C04BA23000E99C8 /* ConfirmOrderViewController.swift */; };
 		5548B6A62C04BC96000E99C8 /* MockDatabase.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6A52C04BC96000E99C8 /* MockDatabase.swift */; };
 		5548B6AD2C05AAD9000E99C8 /* DatabaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5548B6AC2C05AAD9000E99C8 /* DatabaseManager.swift */; };
@@ -236,6 +237,7 @@
 		552D38112BF1F5FE005B1D19 /* UserDefault.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserDefault.swift; sourceTree = "<group>"; };
 		552D38132BF1F856005B1D19 /* CustomNotifications.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CustomNotifications.swift; sourceTree = "<group>"; };
 		5532D2452C26FDF40077656C /* RecoverPasswordViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoverPasswordViewController.swift; sourceTree = "<group>"; };
+		55464FB22C3D16C800D0F25E /* EditViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditViewController.swift; sourceTree = "<group>"; };
 		5548B6A32C04BA23000E99C8 /* ConfirmOrderViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConfirmOrderViewController.swift; sourceTree = "<group>"; };
 		5548B6A52C04BC96000E99C8 /* MockDatabase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDatabase.swift; sourceTree = "<group>"; };
 		5548B6AC2C05AAD9000E99C8 /* DatabaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseManager.swift; sourceTree = "<group>"; };
@@ -426,6 +428,7 @@
 				55C1321E2C2579C700351F96 /* Date+Weekday.swift */,
 				558350BD2C2E81B500DDA458 /* Date+Random.swift */,
 				55A0BECF2C38301E00CED892 /* UIImage+Color.swift */,
+				55464FB22C3D16C800D0F25E /* EditViewController.swift */,
 			);
 			path = Dine;
 			sourceTree = "<group>";
@@ -1012,6 +1015,7 @@
 				552D37F22BF1F54E005B1D19 /* Parsable.swift in Sources */,
 				5524F54E2BE9E836003F500C /* SceneDelegate.swift in Sources */,
 				552D37B42BF1F09F005B1D19 /* SQLiteDatabase.swift in Sources */,
+				55464FB32C3D16C800D0F25E /* EditViewController.swift in Sources */,
 				55F966CD2BFC716100557C92 /* ChooseTableViewController.swift in Sources */,
 				552D37EF2BF1F4F0005B1D19 /* MenuItem.swift in Sources */,
 				55A0BED22C3835B400CED892 /* DineButton.swift in Sources */,

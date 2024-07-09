@@ -213,11 +213,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         }
         
         // Create the 'Add Items' action
-        let cancelAction = UIAlertAction(title: "Cancel", style: .default) { _ in
-            // Handle the add items action
-            // guard let self else { return }
-            print("Cancelled")
-        }
+        let cancelAction = UIAlertAction(title: "Cancel", style: .cancel)
         
         // Add the actions to the alert controller
         alertController.addAction(cancelAction)
@@ -308,7 +304,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         
         alertController.addTextField { textField in
             textField.placeholder = "Description"
-            textField.text = String(item.price)
+            textField.text = item.description
         }
         
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in

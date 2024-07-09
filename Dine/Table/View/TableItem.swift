@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct TableItem: View {
-    var table: RestaurantTable
+    @ObservedObject var table: RestaurantTable
     
     var body: some View {
         VStack {

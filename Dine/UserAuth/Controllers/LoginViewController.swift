@@ -11,6 +11,9 @@ import Toast
 class LoginViewController: UIViewController {
     private var toggleButton: UIButton!
     private var toast: Toast!
+    private var scrollView: UIScrollView!
+    private var scrollContentView: UIView!
+    private var scrollContentViewBottomConstraint: NSLayoutConstraint!
     
     private lazy var introLabel: UILabel = {
         let label = UILabel()
@@ -73,12 +76,14 @@ class LoginViewController: UIViewController {
         let label = UILabel()
         label.text = "Don't have an account? Sign Up"
         label.font = .preferredFont(forTextStyle: .footnote)
+        label.textAlignment = .center
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
     }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        setupScrollView()
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
         setupSubviews()
         //createTrackingConstraints()
@@ -94,6 +99,57 @@ class LoginViewController: UIViewController {
         view.addGestureRecognizer(tap)
         
         fetchAccounts()
+        
+        // Keyboard notification listeners
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc private func keyboardWillShow(_ notification: Notification) {
+        guard let userInfo = notification.userInfo else { return }
+        guard let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
+        print("Keyboard height: \(keyboardFrame.cgRectValue.height)")
+        let keyboardHeight = keyboardFrame.cgRectValue.height
+        scrollContentViewBottomConstraint.constant = -keyboardHeight
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    @objc private func keyboardWillHide(_ notification: Notification) {
+        scrollContentViewBottomConstraint.constant = 0
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    private func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollContentView = UIView()
+        
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        // Set up the bottom constraint for scrollContentView
+        scrollContentViewBottomConstraint = scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+        
+        view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentView)
+        
+        NSLayoutConstraint.activate([
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            
+            scrollContentViewBottomConstraint,
+            
+            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            scrollContentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            scrollContentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+        ])
     }
     
     private func setupPasswordVisibiltyToggle() {
@@ -191,27 +247,25 @@ class LoginViewController: UIViewController {
     }
     
     private func setupSubviews() {
-        view.addSubview(verticalStackView)
-        view.addSubview(signUpLabel)
+        scrollContentView.addSubview(verticalStackView)
         verticalStackView.addArrangedSubview(introLabel)
         verticalStackView.addArrangedSubview(usernameTextField)
         verticalStackView.addArrangedSubview(passwordTextField)
         verticalStackView.addArrangedSubview(forgotPasswordLabel)
         verticalStackView.addArrangedSubview(loginButton)
+        verticalStackView.addArrangedSubview(signUpLabel)
 
         NSLayoutConstraint.activate([
-            verticalStackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            verticalStackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
-            verticalStackView.topAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 0.2),
-            verticalStackView.bottomAnchor.constraint(greaterThanOrEqualTo: signUpLabel.topAnchor, constant: -200),
+            verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
+            verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.8),
+            verticalStackView.topAnchor.constraint(lessThanOrEqualTo: scrollContentView.topAnchor),
+            verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor),
 
             usernameTextField.heightAnchor.constraint(equalToConstant: 44),
             passwordTextField.heightAnchor.constraint(equalToConstant: 44),
             forgotPasswordLabel.heightAnchor.constraint(equalToConstant: 14),
             loginButton.heightAnchor.constraint(equalToConstant: 55),
-            
-            signUpLabel.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            signUpLabel.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            signUpLabel.heightAnchor.constraint(equalToConstant: 14),
         ])
     }
     

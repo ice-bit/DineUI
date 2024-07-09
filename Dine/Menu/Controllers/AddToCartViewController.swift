@@ -216,10 +216,10 @@ class AddToCartViewController: UIViewController {
     
     func presentEmptyMenuAlert(on viewController: UIViewController) {
         // Create the alert controller
-        let alertController = UIAlertController(title: "No Items Found", message: "Do you want add menu item?", preferredStyle: .alert)
+        let alertController = UIAlertController(title: "Empty Menu", message: "Add menu items to continue?", preferredStyle: .alert)
         
         // Create the 'cancel' action
-        let cancelAction = UIAlertAction(title: "cancel", style: .destructive) { [weak self] _ in
+        /*let cancelAction = UIAlertAction(title: "cancel", style: .destructive) { [weak self] _ in
             guard let self else { return }
             // Handle the delete action
             print("Cancelled ordering")
@@ -233,15 +233,31 @@ class AddToCartViewController: UIViewController {
             print("Add items")
             self.dismiss(animated: true) {
                 // Select the menu screen
+                self.presentMenuSection()
             }
         }
         
         // Add the actions to the alert controller
         alertController.addAction(cancelAction)
-        alertController.addAction(addItemsAction)
+        alertController.addAction(addItemsAction)*/
+        let continueAction = UIAlertAction(title: "Continue", style: .cancel) { _ in
+            self.dismiss(animated: true)
+        }
+        
+        alertController.addAction(continueAction)
         
         // Present the alert controller
         viewController.present(alertController, animated: true, completion: nil)
+    }
+    
+    private func presentMenuSection() {
+        do {
+            let menuService = try MenuServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            let menuSectionViewController = MenuSectionViewController(menuService: menuService)
+            navigationController?.present(menuSectionViewController, animated: true)
+        } catch {
+            fatalError("Failed to build menuService @\(#line): \(error)")
+        }
     }
 }
 

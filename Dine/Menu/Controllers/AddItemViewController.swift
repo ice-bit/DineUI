@@ -126,6 +126,7 @@ class AddItemViewController: UIViewController {
         stackView.axis = .vertical
         stackView.spacing = 10
         stackView.alignment = .center
+        stackView.distribution = .fillProportionally
     }
     
     private func setupNameTextField() {
@@ -179,16 +180,16 @@ class AddItemViewController: UIViewController {
             stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
             
             addButton.heightAnchor.constraint(equalToConstant: 55),
-            addButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            addButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
             
-            nameTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            nameTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
             nameTextField.heightAnchor.constraint(equalToConstant: 44),
             
             priceTextField.heightAnchor.constraint(equalToConstant: 44),
-            priceTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            priceTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
             
             descTextField.heightAnchor.constraint(equalToConstant: 44),
-            descTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
+            descTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
             
             /*sectionSelectionButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
             sectionSelectionButton.heightAnchor.constraint(equalToConstant: 44),*/

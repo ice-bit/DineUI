@@ -8,11 +8,12 @@
 import UIKit
 import Toast
 
-class LoginViewController: UIViewController {
+class LoginViewController: UIViewController, UITextFieldDelegate {
     private var toggleButton: UIButton!
     private var toast: Toast!
     private var scrollView: UIScrollView!
-    private var scrollContentView: UIView!
+    private var contentView: UIView!
+    private var activeTextField: UITextField?
     private var scrollContentViewBottomConstraint: NSLayoutConstraint!
     
     private lazy var introLabel: UILabel = {
@@ -38,6 +39,7 @@ class LoginViewController: UIViewController {
         textField.placeholder = "Username"
         textField.backgroundColor = .secondarySystemGroupedBackground
         textField.layer.cornerRadius = 10
+        textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
     }()
@@ -47,6 +49,7 @@ class LoginViewController: UIViewController {
         textField.backgroundColor = .secondarySystemGroupedBackground
         textField.isSecureTextEntry = true
         textField.layer.cornerRadius = 10
+        textField.delegate = self
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Password"
         return textField
@@ -101,54 +104,53 @@ class LoginViewController: UIViewController {
         fetchAccounts()
         
         // Keyboard notification listeners
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow(_:)), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide(_:)), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
     }
     
-    @objc private func keyboardWillShow(_ notification: Notification) {
-        guard let userInfo = notification.userInfo else { return }
-        guard let keyboardFrame = userInfo[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue else { return }
-        print("Keyboard height: \(keyboardFrame.cgRectValue.height)")
-        let keyboardHeight = keyboardFrame.cgRectValue.height
-        scrollContentViewBottomConstraint.constant = -keyboardHeight
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
+            scrollView.contentInset = contentInsets
+            scrollView.scrollIndicatorInsets = contentInsets
+            
+            var aRect = self.view.frame
+            aRect.size.height -= keyboardSize.height
+            if let activeField = self.activeTextField {
+                if !aRect.contains(activeField.frame.origin) {
+                    scrollView.scrollRectToVisible(activeField.frame, animated: true)
+                }
+            }
         }
     }
     
-    @objc private func keyboardWillHide(_ notification: Notification) {
-        scrollContentViewBottomConstraint.constant = 0
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
+    @objc func keyboardWillHide(notification: NSNotification) {
+        let contentInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
     }
     
     private func setupScrollView() {
         scrollView = UIScrollView()
-        scrollContentView = UIView()
+        contentView = UIView()
         
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
-        
-        // Set up the bottom constraint for scrollContentView
-        scrollContentViewBottomConstraint = scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor)
+        contentView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(scrollView)
-        scrollView.addSubview(scrollContentView)
+        scrollView.addSubview(contentView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
             
-            scrollContentViewBottomConstraint,
-            
-            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            scrollContentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            scrollContentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
-            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor)
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
         ])
     }
     
@@ -247,25 +249,27 @@ class LoginViewController: UIViewController {
     }
     
     private func setupSubviews() {
-        scrollContentView.addSubview(verticalStackView)
+        contentView.addSubview(verticalStackView)
+        contentView.addSubview(signUpLabel)
         verticalStackView.addArrangedSubview(introLabel)
         verticalStackView.addArrangedSubview(usernameTextField)
         verticalStackView.addArrangedSubview(passwordTextField)
         verticalStackView.addArrangedSubview(forgotPasswordLabel)
         verticalStackView.addArrangedSubview(loginButton)
-        verticalStackView.addArrangedSubview(signUpLabel)
 
         NSLayoutConstraint.activate([
-            verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
-            verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.8),
-            verticalStackView.topAnchor.constraint(lessThanOrEqualTo: scrollContentView.topAnchor),
-            verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor),
+            verticalStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            verticalStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
+            verticalStackView.topAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: contentView.topAnchor, multiplier: 0.2),
+            verticalStackView.bottomAnchor.constraint(greaterThanOrEqualTo: signUpLabel.topAnchor, constant: -20),
 
             usernameTextField.heightAnchor.constraint(equalToConstant: 44),
             passwordTextField.heightAnchor.constraint(equalToConstant: 44),
             forgotPasswordLabel.heightAnchor.constraint(equalToConstant: 14),
             loginButton.heightAnchor.constraint(equalToConstant: 55),
-            signUpLabel.heightAnchor.constraint(equalToConstant: 14),
+            
+            signUpLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            signUpLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
         ])
     }
     
@@ -291,6 +295,14 @@ class LoginViewController: UIViewController {
         print(#function)
         let recoverPasswordViewController = RecoverPasswordViewController()
         self.present(UINavigationController(rootViewController: recoverPasswordViewController), animated: true)
+    }
+    
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        activeTextField = textField
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        activeTextField = nil
     }
     
 }

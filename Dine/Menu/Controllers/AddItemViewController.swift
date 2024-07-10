@@ -18,12 +18,14 @@ class AddItemViewController: UIViewController {
     // MARK: - Properties
     private let category: MenuCategory
     
+    private var scrollView: UIScrollView!
+    private var scrollContentView: UIView!
+    
     private var stackView: UIStackView!
     private var nameTextField: UITextField!
     private var priceTextField: UITextField!
     private var descTextField: UITextField!
     private var addButton: UIButton!
-    // private var sectionSelectionButton: UIButton!
     
     private var pickerView: UIPickerView!
     
@@ -49,6 +51,7 @@ class AddItemViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        view.keyboardLayoutGuide.followsUndockedKeyboard = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
         // tap.cancelsTouchesInView = false
@@ -62,38 +65,35 @@ class AddItemViewController: UIViewController {
     }
     
     // MARK: - @OBJC Methods
-    /*@objc private func selectMenuSectionButtonTapped(_ sender: UIButton) {
-        print("menu selection button tapped")
-        let alert = UIAlertController(title: "Select Section", message: "\n\n\n\n\n\n\n\n\n", preferredStyle: .actionSheet)
-        
-        let pickerViewFrame = CGRect(x: 0, y: 50, width: alert.view.bounds.width - 20, height: 200)
-        pickerView = UIPickerView(frame: pickerViewFrame)
-        // pickerView.delegate = self
-        // pickerView.dataSource = self
-        
-        alert.view.addSubview(pickerView)
-        if let popoverController = alert.popoverPresentationController {
-            popoverController.sourceView = self.view // Specify the view from which the popover should originate
-            popoverController.sourceRect = CGRect(x: self.view.bounds.midX, y: self.view.bounds.midY, width: 0, height: 0) // Set the rectangle for the popover
-            popoverController.permittedArrowDirections = [] // Optional: specify allowed arrow directions
-        }
-        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel, handler: nil))
-        alert.addAction(UIAlertAction(title: "Done", style: .default, handler: { _ in
-            let selectedIndex = self.pickerView.selectedRow(inComponent: 0)
-            let selectedSection = self.pickerData[selectedIndex].rawValue
-            self.selectedMenuSection = MenuSectionType(rawValue: selectedSection)
-            self.sectionSelectionButton.setTitle(selectedSection, for: .normal)
-        }))
-        
-        present(alert, animated: true, completion: nil)
-    }*/
     
     // MARK: - View Setup
     private func configureView() {
         view.backgroundColor = .systemGroupedBackground
     }
     
+    private func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollContentView = UIView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentView)
+        
+        NSLayoutConstraint.activate([
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            
+            scrollContentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+        ])
+    }
+    
     private func setupSubviews() {
+        setupScrollView()
         setupStackView()
         setupNameTextField()
         setupPriceTextField()
@@ -165,19 +165,19 @@ class AddItemViewController: UIViewController {
     }
     
     private func addSubviews() {
-        view.addSubview(stackView)
+        scrollContentView.addSubview(stackView)
         stackView.addArrangedSubview(titleLabel)
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(priceTextField)
         stackView.addArrangedSubview(descTextField)
-        // stackView.addArrangedSubview(sectionSelectionButton)
         stackView.addArrangedSubview(addButton)
     }
     
     private func setupConstraints() {
         NSLayoutConstraint.activate([
-            stackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            stackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 24),
+            stackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
+            stackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 24),
+            stackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor),
             
             addButton.heightAnchor.constraint(equalToConstant: 55),
             addButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
@@ -237,25 +237,6 @@ class AddItemViewController: UIViewController {
         
     }
 }
-
-/*extension AddItemViewController: UIPickerViewDataSource, UIPickerViewDelegate {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        pickerData.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        pickerData[row].rawValue
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        print("Selected Item: \(pickerData[row].rawValue)")
-    }
-    
-}*/
 
 #Preview {
     AddItemViewController(category: MenuCategory(id: UUID(), categoryName: "Starter"))

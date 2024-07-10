@@ -11,6 +11,8 @@ import Toast
 class AddSectionViewController: UIViewController {
     
     private var toast: Toast!
+    private var scrollView: UIScrollView!
+    private var scrollContentView: UIView!
     
     private lazy var verticalStackView: UIStackView = {
         let stackView = UIStackView()
@@ -53,6 +55,8 @@ class AddSectionViewController: UIViewController {
         super.viewDidLoad()
         view.backgroundColor = .systemGroupedBackground
         title = "Add Section"
+        view.keyboardLayoutGuide.followsUndockedKeyboard = true
+        setupScrollView()
         navigationController?.navigationBar.prefersLargeTitles = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
@@ -95,17 +99,39 @@ class AddSectionViewController: UIViewController {
         view.endEditing(true)
     }
     
+    private func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollContentView = UIView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentView)
+        
+        NSLayoutConstraint.activate([
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            
+            scrollContentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+        ])
+    }
+    
     private func setupSubviews() {
-        view.addSubview(verticalStackView)
+        scrollContentView.addSubview(verticalStackView)
         verticalStackView.addArrangedSubview(titleLabel)
         verticalStackView.addArrangedSubview(categoryNameTextField)
         verticalStackView.addArrangedSubview(addButton)
         
 
         NSLayoutConstraint.activate([
-            verticalStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            verticalStackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
-            verticalStackView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 40),
+            verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
+            verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
+            verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 40),
+            verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor),
 
             categoryNameTextField.heightAnchor.constraint(equalToConstant: 44),
             addButton.heightAnchor.constraint(equalToConstant: 55),

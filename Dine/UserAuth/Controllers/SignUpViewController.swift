@@ -8,12 +8,11 @@
 import UIKit
 import Toast
 
-class SignUpViewController: UIViewController, UITextFieldDelegate {
+class SignUpViewController: UIViewController {
     private var toast: Toast!
     var isInitialScreen: Bool = false
     private var scrollView: UIScrollView!
     private var contentView: UIView!
-    private var activeTextField: UITextField?
     private var toggleButton: UIButton!
     private var confirmPasswordToggleButton: UIButton!
     
@@ -40,7 +39,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         textField.backgroundColor = .secondarySystemGroupedBackground
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
-        textField.delegate = self
         return textField
     }()
     
@@ -51,7 +49,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Password"
-        textField.delegate = self
         return textField
     }()
     
@@ -62,7 +59,6 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         textField.isSecureTextEntry = true
         textField.translatesAutoresizingMaskIntoConstraints = false
         textField.placeholder = "Confirm Password"
-        textField.delegate = self
         return textField
     }()
     
@@ -107,7 +103,7 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+        /*if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardSize.height, right: 0)
             scrollView.contentInset = contentInsets
             scrollView.scrollIndicatorInsets = contentInsets
@@ -119,13 +115,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
                     scrollView.scrollRectToVisible(activeField.frame, animated: true)
                 }
             }
-        }
+        }*/
     }
     
     @objc func keyboardWillHide(notification: NSNotification) {
-        let contentInsets = UIEdgeInsets.zero
+        /*let contentInsets = UIEdgeInsets.zero
         scrollView.contentInset = contentInsets
-        scrollView.scrollIndicatorInsets = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets*/
     }
     
     private func setupPasswordVisibiltyToggle() {
@@ -263,16 +259,15 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         verticalStackView.addArrangedSubview(signUpButton)
         
         NSLayoutConstraint.activate([
-            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
-            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
             
-            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             
             verticalStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             verticalStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.8),
@@ -289,13 +284,13 @@ class SignUpViewController: UIViewController, UITextFieldDelegate {
         ])
     }
     
-    func textFieldDidBeginEditing(_ textField: UITextField) {
+    /*func textFieldDidBeginEditing(_ textField: UITextField) {
         activeTextField = textField
     }
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         activeTextField = nil
-    }
+    }*/
 }
 
 

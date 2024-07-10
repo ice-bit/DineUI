@@ -11,7 +11,8 @@ import Toast
 class RecoverPasswordViewController: UIViewController {
     
     private var doneBarButton: UIBarButtonItem!
-    // private var cancelBarButton: UIBarButtonItem!
+    private var scrollView: UIScrollView!
+    private var scrollContentView: UIView!
     
     private lazy var introLabel: UILabel = {
         let label = UILabel()
@@ -33,7 +34,7 @@ class RecoverPasswordViewController: UIViewController {
     private lazy var usernameTextField: UITextField = {
         let textField = DTextField()
         textField.placeholder = "Username"
-        textField.backgroundColor = .secondarySystemBackground
+        textField.backgroundColor = .secondarySystemGroupedBackground
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
         return textField
@@ -41,7 +42,7 @@ class RecoverPasswordViewController: UIViewController {
     
     private lazy var passwordTextField: UITextField = {
         let textField = DTextField()
-        textField.backgroundColor = .secondarySystemBackground
+        textField.backgroundColor = .secondarySystemGroupedBackground
         textField.isSecureTextEntry = true
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
@@ -80,10 +81,10 @@ class RecoverPasswordViewController: UIViewController {
         view.addGestureRecognizer(tap)
 
         isModalInPresentation = true
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         title = "Reset Password"
         navigationController?.navigationBar.prefersLargeTitles = true
-        
+        setupScrollView()
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
         
         setupBarButton()
@@ -189,19 +190,38 @@ class RecoverPasswordViewController: UIViewController {
         toast.show(haptic: .error)
     }
     
+    private func setupScrollView() {
+        scrollView = UIScrollView()
+        scrollContentView = UIView()
+        scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentView)
+        
+        NSLayoutConstraint.activate([
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
+            
+            scrollContentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+        ])
+    }
+    
     private func setupSubviews() {
-        view.addSubview(verticalStackView)
+        scrollContentView.addSubview(verticalStackView)
         verticalStackView.addArrangedSubview(introLabel)
         verticalStackView.addArrangedSubview(usernameTextField)
         verticalStackView.addArrangedSubview(userCheckButton)
-        
-        verticalStackView.setContentCompressionResistancePriority(.defaultLow, for: .vertical)
 
         NSLayoutConstraint.activate([
-            verticalStackView.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
-            verticalStackView.widthAnchor.constraint(equalTo: view.safeAreaLayoutGuide.widthAnchor, multiplier: 0.8),
-            verticalStackView.topAnchor.constraint(greaterThanOrEqualToSystemSpacingBelow: view.safeAreaLayoutGuide.topAnchor, multiplier: 0.2),
-            verticalStackView.bottomAnchor.constraint(greaterThanOrEqualTo: view.keyboardLayoutGuide.topAnchor, constant: -300),
+            verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
+            verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.8),
+            verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 20),
+            verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor),
 
             usernameTextField.heightAnchor.constraint(equalToConstant: 44),
             passwordTextField.heightAnchor.constraint(equalToConstant: 44),

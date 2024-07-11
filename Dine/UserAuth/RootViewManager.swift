@@ -45,7 +45,7 @@ struct RootViewManager {
         
         // Optionally add a transition animation
         let window = UIApplication.shared.windows.first
-        let options: UIView.AnimationOptions = .curveEaseOut
+        let options: UIView.AnimationOptions = .transitionFlipFromLeft
         let duration: TimeInterval = 0.5
         
         // Ensure the window is key and visible
@@ -56,7 +56,7 @@ struct RootViewManager {
                           duration: duration,
                           options: options,
                           animations: {
-            window?.rootViewController = loginViewController
+            window?.rootViewController = UINavigationController(rootViewController: loginViewController) // embed inside a nav con 
         },
                           completion: nil)
         // Set isUserLoggedIn -> false

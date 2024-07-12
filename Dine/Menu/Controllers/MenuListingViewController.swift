@@ -71,15 +71,15 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     @objc private func addMenuItemButtonTapped(_ sender: UIBarButtonItem) {
         print("Add menu button tapped")
         let addMenuVC = AddItemViewController(category: category)
-        if let sheet = addMenuVC.sheetPresentationController {
+        /*if let sheet = addMenuVC.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
             sheet.prefersEdgeAttachedInCompactHeight = true
             sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
             sheet.prefersGrabberVisible = true
-        }
+        }*/
         
-        present(addMenuVC, animated: true)
+        present(UINavigationController(rootViewController: addMenuVC), animated: true)
     }
     
     private func setupPlaceholderLabel() {
@@ -341,7 +341,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             print("Price text field: \(price)")
             print("Description text field: \(descriptionText)")
             
-            let updatedItem = MenuItem(itemId: item.itemId, name: name, price: price, category: item.category, description: descriptionText)
+            let updatedItem = MenuItem(itemId: item.itemId, name: name, price: price, category: item.category, description: descriptionText, image: item.image)
             editItem(updatedItem)
         }
         

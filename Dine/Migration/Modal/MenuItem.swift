@@ -5,7 +5,7 @@
 //  Created by doss-zstch1212 on 04/01/24.
 //
 
-import Foundation
+import UIKit
 import SQLite3
 
 class MenuItem: ObservableObject {
@@ -15,17 +15,30 @@ class MenuItem: ObservableObject {
     @Published var count: Int = 0
     let category: MenuCategory
     @Published var description: String
+    var image: UIImage
     
-    init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String) {
+    var imageData: Data {
+        guard let data = image.pngData() else {
+            fatalError("Image conversion failed in \(#fileID) @\(#line)")
+        }
+        return data
+    }
+    
+    var imageDataHexString: String {
+        return imageData.map { String(format: "%02x", $0) }.joined()
+    }
+    
+    init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String, image: UIImage) {
         self.itemId = itemId
         self.name = name
         self.price = price
         self.category = category
         self.description = description
+        self.image = image
     }
     
-    convenience init(name: String, price: Double, category: MenuCategory, description: String) {
-        self.init(itemId: UUID(), name: name, price: price, category: category, description: description)
+    convenience init(name: String, price: Double, category: MenuCategory, description: String, image: UIImage) {
+        self.init(itemId: UUID(), name: name, price: price, category: category, description: description, image: image)
     }
 }
 
@@ -54,6 +67,7 @@ extension MenuItem: SQLTable {
             Price REAL NOT NULL,
             category_id VARCHAR(32),
             description VARCHAR(255),
+            image BLOB,
             FOREIGN KEY (category_id) REFERENCES \(DatabaseTables.category.rawValue)(id)
         );
         """
@@ -64,7 +78,7 @@ extension MenuItem: SQLUpdatable {
     var createUpdateStatement: String {
         """
         UPDATE \(DatabaseTables.menuItem.rawValue)
-        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), category_id = '\(category.id)', description = '\(description)'
+        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), category_id = '\(category.id)', description = '\(description)', Image = X'\(imageDataHexString)'
         WHERE MenuItemID = '\(itemId)';
         """
     }
@@ -79,8 +93,8 @@ extension MenuItem: SQLDeletable {
 extension MenuItem: SQLInsertable {
     var createInsertStatement: String {
         """
-        INSERT INTO \(DatabaseTables.menuItem.rawValue) (MenuItemID, MenuItemName, Price, category_id, description)
-        VALUES ('\(itemId)', '\(name)', \(price), '\(category.id)', '\(description)');
+        INSERT INTO \(DatabaseTables.menuItem.rawValue) (MenuItemID, MenuItemName, Price, category_id, description, image)
+        VALUES ('\(itemId)', '\(name)', \(price), '\(category.id)', '\(description)', X'\(imageDataHexString)');
         """
     }
 }
@@ -94,6 +108,15 @@ extension MenuItem: DatabaseParsable {
               let categoryIdCString = sqlite3_column_text(statement, 4),
               let categoryNameCString = sqlite3_column_text(statement, 5) else {
             throw DatabaseError.missingRequiredValue
+        }
+        
+        guard let imageData = sqlite3_column_blob(statement, 6) else {
+            throw DatabaseError.imageConversionFailed
+        }
+        let imageSize = sqlite3_column_bytes(statement, 6)
+        let data = Data(bytes: imageData, count: Int(imageSize))
+        guard let image = UIImage(data: data) else {
+            throw DatabaseError.imageConversionFailed
         }
         
         let name = String(cString: nameCString)
@@ -111,7 +134,7 @@ extension MenuItem: DatabaseParsable {
             categoryName: categoryName
         )
         
-        let menuItem = MenuItem(itemId: itemId, name: name, price: price, category: category, description: description)
+        let menuItem = MenuItem(itemId: itemId, name: name, price: price, category: category, description: description, image: image)
         return menuItem
     }
 }

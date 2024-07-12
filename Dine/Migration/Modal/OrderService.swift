@@ -5,7 +5,7 @@
 //  Created by doss-zstch1212 on 26/03/24.
 //
 
-import Foundation
+import UIKit
 
 protocol OrderService {
     func add(_ order: Order) throws
@@ -59,7 +59,8 @@ struct OrderServiceImpl: OrderService {
                             id: UUID(),
                             categoryName: "Starter"
                         ),
-                        description: String()
+                        description: String(),
+                        image: UIImage(named: "burger")!
                     )
                     resultOrder.menuItems.append(menuItem)
                 }
@@ -99,7 +100,8 @@ struct OrderServiceImpl: OrderService {
                             id: UUID(),
                             categoryName: "Starters"
                         ),
-                        description: orderMenuItem.description
+                        description: orderMenuItem.description,
+                        image: UIImage(named: "burger")!
                     )
                     resultOrder.menuItems.append(menuItem)
                 }

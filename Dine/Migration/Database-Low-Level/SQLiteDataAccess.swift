@@ -30,7 +30,7 @@ class SQLiteDataAccess: DatabaseAccess {
             throw FileIOError.documentDirectoryUnavailable
         }
         let fileURL = documentDirectory.appending(path: "dine.sqlite")
-        print("Database connection opened at: \(fileURL.absoluteString)")
+        print("Database connection opened by \(#fileID)")
         let database = try SQLiteDatabase.open(path: fileURL.absoluteString)
         return SQLiteDataAccess(database: database)
     }

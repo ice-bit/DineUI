@@ -5,7 +5,7 @@
 //  Created by doss-zstch1212 on 20/05/24.
 //
 
-import Foundation
+import UIKit
 
 @Observable
 class ModelData {
@@ -28,7 +28,8 @@ class ModelData {
                     id: UUID(),
                     categoryName: "Starter"
                 ),
-                description: String()
+                description: String(),
+                image: UIImage(named: "burger")!
             )]
         )]
     }
@@ -49,7 +50,7 @@ class ModelData {
                 id: UUID(),
                 categoryName: "Starter"
             ),
-            description: "lorem ispsum is not what you think"
+            description: "lorem ispsum is not what you think", image: UIImage(named: "burger")!
         )
      ]
 }

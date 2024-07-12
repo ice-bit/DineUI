@@ -27,19 +27,20 @@ struct MenuServiceImpl: MenuService {
     
     func fetch() throws -> [MenuItem]? {
         // let query = "SELECT * FROM \(DatabaseTables.menuItem.rawValue);"
-        let tableName = DatabaseTables.menuItem.rawValue
+        let menuItemTable = DatabaseTables.menuItem.rawValue
         let query = """
                     SELECT
-                        \(tableName).MenuItemID,
-                        \(tableName).MenuItemName,
-                        \(tableName).Price,
-                        \(tableName).description,
-                        \(tableName).category_id,
-                        Category.name AS category_name
+                        \(menuItemTable).MenuItemID,
+                        \(menuItemTable).MenuItemName,
+                        \(menuItemTable).Price,
+                        \(menuItemTable).description,
+                        \(menuItemTable).category_id,
+                        Category.name AS category_name,
+                        \(menuItemTable).image
                     FROM
-                        \(tableName)
+                        \(menuItemTable)
                     JOIN
-                        Category ON \(tableName).category_id = Category.id;
+                        Category ON \(menuItemTable).category_id = Category.id;
                     """
         guard let results = try databaseAccess.retrieve(query: query, parseRow: MenuItem.parseRow) as? [MenuItem] else {
             throw DatabaseError.conversionFailed

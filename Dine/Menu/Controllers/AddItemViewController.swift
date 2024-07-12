@@ -7,6 +7,7 @@
 
 import UIKit
 import Toast
+import PhotosUI
 
 protocol MenuItemDelegate: AnyObject {
     func menuItemDidAdd(_ item: MenuItem)
@@ -20,6 +21,7 @@ class AddItemViewController: UIViewController {
     
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
+    private var toast: Toast!
     
     private var stackView: UIStackView!
     private var nameTextField: UITextField!
@@ -29,13 +31,27 @@ class AddItemViewController: UIViewController {
     
     private var pickerView: UIPickerView!
     
-    private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Add Menu Item"
-        label.font = .preferredFont(forTextStyle: .largeTitle)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
+    lazy private var imagePickerButton: UIButton = {
+        let button = UIButton()
+        button.setTitle("add photo", for: .normal)
+        button.setTitleColor(.label, for: .normal)
+        button.layer.cornerRadius = 75
+        button.layer.masksToBounds = true
+        button.titleLabel?.font = .preferredFont(forTextStyle: .subheadline)
+        button.layer.borderWidth = 1
+        button.layer.borderColor = .init(gray: 1, alpha: 1)
+        button.backgroundColor = .secondarySystemGroupedBackground
+        button.addTarget(self, action: #selector(imagePickerButtonAction(_:)), for: .touchUpInside)
+        return button
     }()
+    
+    /*private lazy var titleLabel: UILabel = {
+     let label = UILabel()
+     label.text = "Add Menu Item"
+     label.font = .preferredFont(forTextStyle: .largeTitle)
+     label.translatesAutoresizingMaskIntoConstraints = false
+     return label
+     }()*/
     
     // MARK: - Initializer
     init(category: MenuCategory) {
@@ -51,6 +67,8 @@ class AddItemViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Add Item"
+        navigationController?.navigationBar.prefersLargeTitles = true
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
@@ -58,6 +76,19 @@ class AddItemViewController: UIViewController {
         view.addGestureRecognizer(tap)
         configureView()
         setupSubviews()
+    }
+    
+    @objc private func imagePickerButtonAction(_ sender: UIButton) {
+        configureAndPresentPicker()
+    }
+    
+    func configureAndPresentPicker() {
+        var configuration = PHPickerConfiguration()
+        configuration.filter = .images
+        configuration.selectionLimit = 1
+        let pickerViewController = PHPickerViewController(configuration: configuration)
+        pickerViewController.delegate = self
+        self.present(pickerViewController, animated: true)
     }
     
     @objc private func dismissKeyboard() {
@@ -111,14 +142,14 @@ class AddItemViewController: UIViewController {
     }
     
     /*private func setupSectionSelectionButton() {
-        sectionSelectionButton = UIButton()
-        sectionSelectionButton.setTitle("Select Section", for: .normal)
-        sectionSelectionButton.translatesAutoresizingMaskIntoConstraints = false
-        sectionSelectionButton.setTitleColor(.label, for: .normal)
-        sectionSelectionButton.backgroundColor = .systemGray5
-        sectionSelectionButton.layer.cornerRadius = 10
-        sectionSelectionButton.addTarget(self, action: #selector(selectMenuSectionButtonTapped(_:)), for: .touchUpInside)
-    }*/
+     sectionSelectionButton = UIButton()
+     sectionSelectionButton.setTitle("Select Section", for: .normal)
+     sectionSelectionButton.translatesAutoresizingMaskIntoConstraints = false
+     sectionSelectionButton.setTitleColor(.label, for: .normal)
+     sectionSelectionButton.backgroundColor = .systemGray5
+     sectionSelectionButton.layer.cornerRadius = 10
+     sectionSelectionButton.addTarget(self, action: #selector(selectMenuSectionButtonTapped(_:)), for: .touchUpInside)
+     }*/
     
     private func setupStackView() {
         stackView = UIStackView()
@@ -166,7 +197,8 @@ class AddItemViewController: UIViewController {
     
     private func addSubviews() {
         scrollContentView.addSubview(stackView)
-        stackView.addArrangedSubview(titleLabel)
+        //stackView.addArrangedSubview(titleLabel)
+        stackView.addArrangedSubview(imagePickerButton)
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(priceTextField)
         stackView.addArrangedSubview(descTextField)
@@ -191,8 +223,11 @@ class AddItemViewController: UIViewController {
             descTextField.heightAnchor.constraint(equalToConstant: 44),
             descTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
             
+            imagePickerButton.heightAnchor.constraint(equalToConstant: 150),
+            imagePickerButton.widthAnchor.constraint(equalToConstant: 150),
+            
             /*sectionSelectionButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-            sectionSelectionButton.heightAnchor.constraint(equalToConstant: 44),*/
+             sectionSelectionButton.heightAnchor.constraint(equalToConstant: 44),*/
         ])
     }
     
@@ -212,29 +247,74 @@ class AddItemViewController: UIViewController {
             return
         }
         
-        if let name = nameTextField.text {
-            let menuItem = MenuItem(
-                name: name,
-                price: price,
-                category: category,
-                description: description
-            )
-            do  {
+        guard let image = imagePickerButton.backgroundImage(for: .normal) else {
+            if let toast {
+                toast.close(animated: false)
+            }
+            toast = Toast.text("No Image Selected")
+            toast.show(haptic: .warning)
+            return
+        }
+        guard let name = nameTextField.text else { return }
+        let menuItem = MenuItem(
+            name: name,
+            price: price,
+            category: category,
+            description: description,
+            image: image
+        )
+        // Perform database operations asynchronously
+        DispatchQueue.global(qos: .background).async {
+            do {
                 let databaseAccess = try SQLiteDataAccess.openDatabase()
                 let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
                 try menuService.add(menuItem)
+                
                 // Haptic feedback
                 let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                impactFeedback.prepare()
-                impactFeedback.impactOccurred()
-                NotificationCenter.default.post(name: .menuItemDidChangeNotification, object: nil)
+                DispatchQueue.main.async {
+                    impactFeedback.prepare()
+                    impactFeedback.impactOccurred()
+                    
+                    NotificationCenter.default.post(name: .menuItemDidChangeNotification, object: nil)
+                    self.menuItemDelegate?.menuItemDidAdd(menuItem)
+                    self.dismiss(animated: true)
+                }
             } catch {
-                print("Unable to add MenuItem - \(error)")
+                DispatchQueue.main.async {
+                    print("Unable to add MenuItem - \(error)")
+                    let toast = Toast.text("Failed to add menu item!")
+                    toast.show(haptic: .error)
+                }
             }
-            menuItemDelegate?.menuItemDidAdd(menuItem)
-            self.dismiss(animated: true)
         }
         
+        // Dismiss the loading indicator
+        DispatchQueue.main.async {
+            self.dismiss(animated: true) {
+                self.dismiss(animated: true)
+            }
+        }
+    }
+}
+
+extension AddItemViewController: PHPickerViewControllerDelegate {
+    func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
+        picker.dismiss(animated: true)
+        guard let itemProvider = results.first?.itemProvider else { return }
+        
+        if itemProvider.canLoadObject(ofClass: UIImage.self) {
+            itemProvider.loadObject(ofClass: UIImage.self, completionHandler: { image, error in
+                if let selectedImage = image as? UIImage {
+                    DispatchQueue.main.async {
+                        // Update UI
+                        self.imagePickerButton.setBackgroundImage(selectedImage, for: .normal)
+                        self.imagePickerButton.setTitle("", for: .normal)
+                        self.view.layoutIfNeeded()
+                    }
+                }
+            })
+        }
     }
 }
 

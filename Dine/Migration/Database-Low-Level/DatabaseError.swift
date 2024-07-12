@@ -14,6 +14,7 @@ enum DatabaseError: Error {
     case missingRequiredValue
     case conversionFailed
     case fetchFailed
+    case imageConversionFailed
 
     var localizedDescription: String {
         switch self {
@@ -29,6 +30,8 @@ enum DatabaseError: Error {
             return "Conversion from cString failed"
         case .fetchFailed:
             return "Failed to fetch table"
+        case .imageConversionFailed:
+            return "Failed to convert into image (UIImage)"
         }
     }
 }

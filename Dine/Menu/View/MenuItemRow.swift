@@ -12,7 +12,7 @@ struct MenuItemRow: View {
     
     var body: some View {
         HStack {
-            Image("burger")
+            Image(uiImage: menuItem.image)
                 .resizable()
                 .clipShape(.rect(cornerRadius: 10))
                 .frame(width: 75, height: 75)

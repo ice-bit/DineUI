@@ -5,7 +5,7 @@
 //  Created by doss-zstch1212 on 26/06/24.
 //
 
-import Foundation
+import UIKit
 
 struct MetricCollectionViewModel {
     private let metricRecord = MetricRecord()
@@ -43,7 +43,9 @@ struct MetricCollectionViewModel {
             category: MenuCategory(
                 id: UUID(),
                 categoryName: "Starter"
-            ), description: String()
+            ),
+            description: String(),
+            image: UIImage(named: "burger")!
         )
         let popularItemReport = MetricCardViewModal(title: "Popular Item", data: "\(popularItem.name)", cardType: .popularItem)
         

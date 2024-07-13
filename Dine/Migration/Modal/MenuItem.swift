@@ -15,30 +15,70 @@ class MenuItem: ObservableObject {
     @Published var count: Int = 0
     let category: MenuCategory
     @Published var description: String
-    var image: UIImage
-    
-    var imageData: Data {
-        guard let data = image.pngData() else {
-            fatalError("Image conversion failed in \(#fileID) @\(#line)")
+    var imageURL: URL? {
+        didSet {
+            image = getImage()
         }
-        return data
     }
     
-    var imageDataHexString: String {
-        return imageData.map { String(format: "%02x", $0) }.joined()
+    var image: UIImage? {
+        didSet {
+            saveImage()
+        }
     }
     
-    init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String, image: UIImage) {
+    init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String) {
         self.itemId = itemId
         self.name = name
         self.price = price
         self.category = category
         self.description = description
-        self.image = image
     }
     
-    convenience init(name: String, price: Double, category: MenuCategory, description: String, image: UIImage) {
-        self.init(itemId: UUID(), name: name, price: price, category: category, description: description, image: image)
+    convenience init(name: String, price: Double, category: MenuCategory, description: String) {
+        self.init(itemId: UUID(), name: name, price: price, category: category, description: description)
+    }
+    
+    func getImage() -> UIImage? {
+        let fileName = "\(itemId).png"
+        let fileURL = getDocumentsDirectory().appending(path: fileName)
+        
+        do {
+            let imageData = try Data(contentsOf: fileURL)
+            
+            guard let image = UIImage(data: imageData) else {
+                fatalError("Failed to construct 'UIImage' from imageData")
+            }
+            
+            return image
+        } catch {
+            fatalError("Failed to load image: \(error)")
+        }
+    }
+    
+    func saveImage() {
+        guard let image else {
+            fatalError("Unexpectedily found nil while unwrapping")
+        }
+        
+        guard let data = image.jpegData(compressionQuality: 1.0) else {
+            fatalError("Error compressing image")
+        }
+        
+        let fileName = itemId.uuidString
+        let fileURL = getDocumentsDirectory().appending(path: "\(fileName).png")
+        
+        do {
+            try data.write(to: fileURL)
+            print("Image saved successfully at \(fileURL)")
+        } catch {
+            print("Error saving image: \(error)")
+        }
+    }
+    
+    func getDocumentsDirectory() -> URL {
+        let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
+        return paths[0]
     }
 }
 
@@ -67,7 +107,7 @@ extension MenuItem: SQLTable {
             Price REAL NOT NULL,
             category_id VARCHAR(32),
             description VARCHAR(255),
-            image BLOB,
+            imageURL VARCHAR(255),
             FOREIGN KEY (category_id) REFERENCES \(DatabaseTables.category.rawValue)(id)
         );
         """
@@ -78,7 +118,7 @@ extension MenuItem: SQLUpdatable {
     var createUpdateStatement: String {
         """
         UPDATE \(DatabaseTables.menuItem.rawValue)
-        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), category_id = '\(category.id)', description = '\(description)', Image = X'\(imageDataHexString)'
+        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), category_id = '\(category.id)', description = '\(description)', image = \(imageURL)'
         WHERE MenuItemID = '\(itemId)';
         """
     }
@@ -93,8 +133,8 @@ extension MenuItem: SQLDeletable {
 extension MenuItem: SQLInsertable {
     var createInsertStatement: String {
         """
-        INSERT INTO \(DatabaseTables.menuItem.rawValue) (MenuItemID, MenuItemName, Price, category_id, description, image)
-        VALUES ('\(itemId)', '\(name)', \(price), '\(category.id)', '\(description)', X'\(imageDataHexString)');
+        INSERT INTO \(DatabaseTables.menuItem.rawValue) (MenuItemID, MenuItemName, Price, category_id, description, imageURL)
+        VALUES ('\(itemId)', '\(name)', \(price), '\(category.id)', '\(description)', '\(imageURL))');
         """
     }
 }
@@ -110,13 +150,13 @@ extension MenuItem: DatabaseParsable {
             throw DatabaseError.missingRequiredValue
         }
         
-        guard let imageData = sqlite3_column_blob(statement, 6) else {
+        guard let imageURLCString = sqlite3_column_text(statement, 6) else {
             throw DatabaseError.imageConversionFailed
         }
-        let imageSize = sqlite3_column_bytes(statement, 6)
-        let data = Data(bytes: imageData, count: Int(imageSize))
-        guard let image = UIImage(data: data) else {
-            throw DatabaseError.imageConversionFailed
+        
+        let imageURLString = String(cString: imageURLCString)
+        guard let imageURL = URL(string: imageURLString) else {
+            fatalError("Invalid imageURLAbsoluteString")
         }
         
         let name = String(cString: nameCString)
@@ -134,7 +174,8 @@ extension MenuItem: DatabaseParsable {
             categoryName: categoryName
         )
         
-        let menuItem = MenuItem(itemId: itemId, name: name, price: price, category: category, description: description, image: image)
+        let menuItem = MenuItem(itemId: itemId, name: name, price: price, category: category, description: description)
+        menuItem.imageURL = imageURL
         return menuItem
     }
 }

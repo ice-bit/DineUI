@@ -44,8 +44,7 @@ struct MetricCollectionViewModel {
                 id: UUID(),
                 categoryName: "Starter"
             ),
-            description: String(),
-            image: UIImage(named: "burger")!
+            description: String()
         )
         let popularItemReport = MetricCardViewModal(title: "Popular Item", data: "\(popularItem.name)", cardType: .popularItem)
         

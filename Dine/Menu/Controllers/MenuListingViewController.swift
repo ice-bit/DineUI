@@ -341,7 +341,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             print("Price text field: \(price)")
             print("Description text field: \(descriptionText)")
             
-            let updatedItem = MenuItem(itemId: item.itemId, name: name, price: price, category: item.category, description: descriptionText, image: item.image)
+            let updatedItem = MenuItem(itemId: item.itemId, name: name, price: price, category: item.category, description: descriptionText)
             editItem(updatedItem)
         }
         

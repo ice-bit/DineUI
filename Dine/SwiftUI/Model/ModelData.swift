@@ -28,8 +28,7 @@ class ModelData {
                     id: UUID(),
                     categoryName: "Starter"
                 ),
-                description: String(),
-                image: UIImage(named: "burger")!
+                description: String()
             )]
         )]
     }
@@ -50,7 +49,7 @@ class ModelData {
                 id: UUID(),
                 categoryName: "Starter"
             ),
-            description: "lorem ispsum is not what you think", image: UIImage(named: "burger")!
+            description: "lorem ispsum is not what you think"
         )
      ]
 }

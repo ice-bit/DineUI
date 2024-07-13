@@ -260,9 +260,9 @@ class AddItemViewController: UIViewController {
             name: name,
             price: price,
             category: category,
-            description: description,
-            image: image
+            description: description
         )
+        menuItem.image = image
         // Perform database operations asynchronously
         DispatchQueue.global(qos: .background).async {
             do {

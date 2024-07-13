@@ -59,8 +59,7 @@ struct OrderServiceImpl: OrderService {
                             id: UUID(),
                             categoryName: "Starter"
                         ),
-                        description: String(),
-                        image: UIImage(named: "burger")!
+                        description: String()
                     )
                     resultOrder.menuItems.append(menuItem)
                 }
@@ -100,8 +99,7 @@ struct OrderServiceImpl: OrderService {
                             id: UUID(),
                             categoryName: "Starters"
                         ),
-                        description: orderMenuItem.description,
-                        image: UIImage(named: "burger")!
+                        description: orderMenuItem.description
                     )
                     resultOrder.menuItems.append(menuItem)
                 }

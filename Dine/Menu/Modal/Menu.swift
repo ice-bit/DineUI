@@ -10,5 +10,3 @@ import Foundation
 struct Menu {
     let menuSections: [Category]
 }
-
-

@@ -9,6 +9,11 @@ import UIKit
 import SwiftUI
 import Toast
 
+struct MenuItemTableViewViewModal {
+    let sectionHeader: String
+    let items: [MenuItem]
+}
+
 class AddToCartViewController: UIViewController {
     private var tableView: UITableView!
     
@@ -16,6 +21,8 @@ class AddToCartViewController: UIViewController {
     private var noResultsLabel: UILabel! // Added noResultsLabel
     private var menuCartView: MenuCartView!
     let searchController = UISearchController()
+    
+    private var catalogButton: UIButton!
     
     /// View that represents toast
     private var toast: Toast!
@@ -38,6 +45,9 @@ class AddToCartViewController: UIViewController {
         }
     }
     
+    private var tableViewViewModal: [MenuItemTableViewViewModal] = []
+    private var menuCategories: [MenuCategory] = []
+    
     private var menuItems: [MenuItem] = [] {
         didSet {
             tableView.reloadData()
@@ -55,13 +65,15 @@ class AddToCartViewController: UIViewController {
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-         view.backgroundColor = .systemGroupedBackground
+        view.backgroundColor = .systemGroupedBackground
         setupTableView()
-        view = tableView
         loadMenu()
+        populateCategories()
+        populateTableViewVM()
         setupNavBar()
         configureView()
         setupSearchBar()
+        setupCatalogButton()
         setupNoResultsLabel() // Setup noResultsLabel
     }
     
@@ -83,6 +95,29 @@ class AddToCartViewController: UIViewController {
         
         // Initially hidden
         noResultsLabel.isHidden = true
+    }
+    
+    private func populateCategories() {
+        do {
+            let categoryService = try CategoryServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            let result = try categoryService.fetch()
+            if let result {
+                menuCategories = result
+            }
+        } catch {
+            print("Failed to fetch 'MenuCategory' for database: Failed with error: \(error)")
+        }
+    }
+    
+    private func populateTableViewVM() {
+        var tableViewViewModals = [MenuItemTableViewViewModal]()
+        for category in menuCategories {
+            let filteredItems = menuItems.filter { $0.category.id == category.id }
+            let tableViewVM = MenuItemTableViewViewModal(sectionHeader: category.categoryName, items: filteredItems)
+            tableViewViewModals.append(tableViewVM)
+        }
+        
+        tableViewViewModal = tableViewViewModals
     }
     
     private func setupNavBar() {
@@ -189,12 +224,24 @@ class AddToCartViewController: UIViewController {
     }
     
     private func setupTableView() {
-        tableView = UITableView(frame: .zero)
+        tableView = UITableView()
         tableView.separatorStyle = .none
         tableView.backgroundColor = .systemGroupedBackground
         tableView.dataSource = self
+        tableView.translatesAutoresizingMaskIntoConstraints = false
         tableView.register(MenuItemTableViewCell.self, forCellReuseIdentifier: MenuItemTableViewCell.reuseIdentifier)
+        view.addSubview(tableView)
+        
+        // TableView Constraints
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
+        ])
     }
+    
+    
     
     // MARK: - SearchBar Methods
     private func setupSearchBar() {
@@ -259,12 +306,53 @@ class AddToCartViewController: UIViewController {
             fatalError("Failed to build menuService @\(#line): \(error)")
         }
     }
+
+    var showCatalogMenu: UIMenu {
+        var children = [UIMenuElement]()
+        print("Show catalog")
+        for vm in self.tableViewViewModal {
+            let menuElement = UIAction(title: vm.sectionHeader) { [weak self] _ in
+                guard let self else { return }
+                print("\(vm.sectionHeader) selected")
+                if let index = menuCategories.firstIndex(where: { $0.categoryName == vm.sectionHeader }) {
+                    let indexPath = IndexPath(row: 0, section: index)
+                    tableView.scrollToRow(at: indexPath, at: .top, animated: true)
+                }
+            }
+            children.append(menuElement)
+        }
+        let menu = UIMenu(title: "Catalog", options: .singleSelection, children: children)
+        return menu
+    }
+    
+    private func setupCatalogButton() {
+        var config = UIButton.Configuration.borderedProminent()
+        config.baseBackgroundColor = .label
+        config.baseForegroundColor = .systemBackground
+        config.buttonSize = .large
+        config.image = UIImage(systemName: "book.pages")
+        catalogButton = UIButton(configuration: config)
+        catalogButton.translatesAutoresizingMaskIntoConstraints = false
+        catalogButton.menu  = showCatalogMenu
+        catalogButton.showsMenuAsPrimaryAction = true
+        tableView.addSubview(catalogButton)
+        
+        NSLayoutConstraint.activate([
+            catalogButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -24),
+            catalogButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -24),
+            catalogButton.widthAnchor.constraint(equalToConstant: 60),
+            catalogButton.heightAnchor.constraint(equalToConstant: 60)
+        ])
+    }
 }
 
 // MARK: - TableView built-in methods
 extension AddToCartViewController: UITableViewDelegate, UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        isFiltering ? filteredItems.count : tableViewViewModal.count
+    }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        isFiltering ? filteredItems.count : menuItems.count
+        isFiltering ? filteredItems.count : tableViewViewModal[section].items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -274,22 +362,29 @@ extension AddToCartViewController: UITableViewDelegate, UITableViewDataSource {
         cell.selectionStyle = .none
         cell.backgroundColor = .systemGroupedBackground
         
-        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuItems[indexPath.row]
+        let menuItem = isFiltering ? filteredItems[indexPath.row] : tableViewViewModal[indexPath.section].items[indexPath.row]
         cell.configure(menuItem: menuItem)
         cell.delegate = self
         return cell
     }
-     
-     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-         let menuItem: MenuItem
-         if isFiltering {
-             menuItem = filteredItems[indexPath.row]
-         } else {
-             menuItem = menuItems[indexPath.row]
-         }
-         let detailVC = MenuDetailViewController(menu: menuItem)
-         navigationController?.pushViewController(detailVC, animated: true)
-     }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let menuItem: MenuItem
+        if isFiltering {
+            menuItem = filteredItems[indexPath.row]
+        } else {
+            menuItem = tableViewViewModal[indexPath.section].items[indexPath.row]
+        }
+        let detailVC = MenuDetailViewController(menu: menuItem)
+        navigationController?.pushViewController(detailVC, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if isFiltering {
+            return ""
+        }
+        return tableViewViewModal[section].sectionHeader
+    }
 }
 
 extension AddToCartViewController: MenuItemDelegate {

@@ -260,7 +260,8 @@ class AddItemViewController: UIViewController {
             name: name,
             price: price,
             category: category,
-            description: description
+            description: description,
+            image: image
         )
         menuItem.image = image
         // Perform database operations asynchronously

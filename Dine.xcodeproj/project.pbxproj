@@ -107,6 +107,8 @@
 		558350B92C2DAA2F00DDA458 /* CategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350B82C2DAA2F00DDA458 /* CategoryService.swift */; };
 		558350BC2C2DB3C100DDA458 /* AddSectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */; };
 		558350BE2C2E81B500DDA458 /* Date+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BD2C2E81B500DDA458 /* Date+Random.swift */; };
+		5587A66A2C451C3D006D2281 /* UIImageView+cacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5587A6692C451C3D006D2281 /* UIImageView+cacheImage.swift */; };
+		5587A66C2C464C11006D2281 /* MockDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5587A66B2C464C11006D2281 /* MockDataManager.swift */; };
 		5590DEEF2C1ABF6A007E1F75 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEEE2C1ABF6A007E1F75 /* SettingsView.swift */; };
 		5590DEF22C1B1170007E1F75 /* ProfileEditor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF12C1B1170007E1F75 /* ProfileEditor.swift */; };
 		5590DEF42C1B11D6007E1F75 /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEF32C1B11D6007E1F75 /* Profile.swift */; };
@@ -256,6 +258,8 @@
 		558350B82C2DAA2F00DDA458 /* CategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryService.swift; sourceTree = "<group>"; };
 		558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSectionViewController.swift; sourceTree = "<group>"; };
 		558350BD2C2E81B500DDA458 /* Date+Random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Random.swift"; sourceTree = "<group>"; };
+		5587A6692C451C3D006D2281 /* UIImageView+cacheImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+cacheImage.swift"; sourceTree = "<group>"; };
+		5587A66B2C464C11006D2281 /* MockDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataManager.swift; sourceTree = "<group>"; };
 		5590DEEE2C1ABF6A007E1F75 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		5590DEF12C1B1170007E1F75 /* ProfileEditor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileEditor.swift; sourceTree = "<group>"; };
 		5590DEF32C1B11D6007E1F75 /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
@@ -429,6 +433,8 @@
 				558350BD2C2E81B500DDA458 /* Date+Random.swift */,
 				55A0BECF2C38301E00CED892 /* UIImage+Color.swift */,
 				55464FB22C3D16C800D0F25E /* EditViewController.swift */,
+				5587A6692C451C3D006D2281 /* UIImageView+cacheImage.swift */,
+				5587A66B2C464C11006D2281 /* MockDataManager.swift */,
 			);
 			path = Dine;
 			sourceTree = "<group>";
@@ -984,6 +990,7 @@
 				55F9666D2BF364D000557C92 /* MenuItemOrderTableViewCell.swift in Sources */,
 				5548B6A42C04BA23000E99C8 /* ConfirmOrderViewController.swift in Sources */,
 				551AAE2A2BFDEDD900E50FE7 /* SectionView.swift in Sources */,
+				5587A66C2C464C11006D2281 /* MockDataManager.swift in Sources */,
 				5524F5632BEA1F49003F500C /* BillViewController.swift in Sources */,
 				55F966C72BFB64F500557C92 /* ModelData.swift in Sources */,
 				552D37B32BF1F09F005B1D19 /* DatabaseParsable.swift in Sources */,
@@ -1023,6 +1030,7 @@
 				55F966692BF214C400557C92 /* DatabaseService.swift in Sources */,
 				5548B6AF2C075907000E99C8 /* MenuItemTableViewCell.swift in Sources */,
 				5590DEF42C1B11D6007E1F75 /* Profile.swift in Sources */,
+				5587A66A2C451C3D006D2281 /* UIImageView+cacheImage.swift in Sources */,
 				551AAE2C2BFDEF7700E50FE7 /* MenuSectionViewController.swift in Sources */,
 				55C05A522C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift in Sources */,
 				5524F56A2BEA3E3B003F500C /* MenuSectionTableViewCell.swift in Sources */,

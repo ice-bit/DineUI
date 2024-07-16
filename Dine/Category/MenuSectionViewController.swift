@@ -60,6 +60,14 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
             name: .categoryDataDidChangeNotification,
             object: nil
         )
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(mockDataDidChange(_:)), name: .mockDataDidChangeNotification, object: nil)
+    }
+    
+    @objc private func mockDataDidChange(_ sender: Notification) {
+        print("Reloading Category Collection View")
+        populateCategoryData()
+        collectionView.reloadData()
     }
     
     @objc private func categoryDataDidChange(_ notification: Notification) {

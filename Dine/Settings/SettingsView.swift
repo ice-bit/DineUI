@@ -10,6 +10,7 @@ import SwiftUI
 struct SettingsView: View {
     @State var account: Account
     @State var isDarkModeEnabled: Bool = true
+    @AppStorage("isMockDataEnabled") var isMockDataEnabled: Bool = false
     @State private var selectedLanguage = "English"
     let languages = ["English", "Spanish", "French", "German", "Chinese", "Japanese"]
     
@@ -62,7 +63,23 @@ struct SettingsView: View {
                                 .foregroundStyle(.primary)
                         } icon: {
                             Image(systemName: "fork.knife")
-                                .foregroundStyle(.app)
+                        }
+                    }
+                    Toggle(isOn: $isMockDataEnabled) {
+                        Label("Mock Data", systemImage: "book.and.wrench.fill")
+                    }
+                    .onChange(of: isMockDataEnabled, initial: false) { oldValue, newValue in
+                        if newValue {
+                            
+                            print("🔨 Mock data is enabled")
+                            var mockDataManager = MockDataManager()
+                            mockDataManager.generateData()
+                            NotificationCenter.default.post(name: .mockDataDidChangeNotification, object: nil)
+                        } else {
+                            print("🔨 Mock data disabled")
+                            var mockDataManager = MockDataManager()
+                            mockDataManager.deleteGeneratedData()
+                            NotificationCenter.default.post(name: .mockDataDidChangeNotification, object: nil)
                         }
                     }
                 })
@@ -77,7 +94,13 @@ struct SettingsView: View {
                                 .foregroundStyle(.primary)
                         } icon: {
                             Image(systemName: "moon.fill")
-                                .foregroundStyle(.app)
+                        }
+                    }
+                    .onChange(of: isDarkModeEnabled, initial: false) { oldValue, newValue in
+                        if newValue {
+                            // Turn on dark mode
+                        } else {
+                            // Turn of dark mode
                         }
                     }
                     
@@ -92,7 +115,7 @@ struct SettingsView: View {
                                 .foregroundStyle(.primary)
                         } icon: {
                             Image(systemName: "globe")
-                                .foregroundStyle(.app)
+
                         }
                     }
 
@@ -121,6 +144,7 @@ struct SettingsView: View {
             }
             .navigationTitle("Settings")
         }
+        .background(Color(.systemGroupedBackground))
     }
 }
 

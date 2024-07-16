@@ -61,6 +61,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             name: .menuItemDidChangeNotification,
             object: nil
         )
+        NotificationCenter.default.addObserver(self, selector: #selector(menuItemDidChange(_:)), name: .mockDataDidChangeNotification, object: nil)
     }
     
     @objc private func menuItemDidChange(_ sender: NotificationCenter) {

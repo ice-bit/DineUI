@@ -35,8 +35,7 @@ struct MenuServiceImpl: MenuService {
                         \(menuItemTable).Price,
                         \(menuItemTable).description,
                         \(menuItemTable).category_id,
-                        Category.name AS category_name,
-                        \(menuItemTable).imageURL
+                        Category.name AS category_name
                     FROM
                         \(menuItemTable)
                     JOIN

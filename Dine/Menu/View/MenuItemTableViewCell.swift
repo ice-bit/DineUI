@@ -180,7 +180,8 @@ class MenuItemTableViewCell: UITableViewCell {
     
     func configure(menuItem: MenuItem) {
         self.menuItem = menuItem
-        itemImage.image = .burger
+        itemImage.cacheImage(for: menuItem.itemId)
+        
         vegNonVegSymbol.image = UIImage(systemName: "square.dashed.inset.filled")
         itemNameLabel.text = menuItem.name
         let priceString = String(format: "%.2f", menuItem.price)

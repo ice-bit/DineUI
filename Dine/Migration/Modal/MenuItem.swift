@@ -15,17 +15,8 @@ class MenuItem: ObservableObject {
     @Published var count: Int = 0
     let category: MenuCategory
     @Published var description: String
-    var imageURL: URL? {
-        didSet {
-            image = getImage()
-        }
-    }
     
-    var image: UIImage? {
-        didSet {
-            saveImage()
-        }
-    }
+    var image: UIImage?
     
     init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String) {
         self.itemId = itemId
@@ -39,21 +30,16 @@ class MenuItem: ObservableObject {
         self.init(itemId: UUID(), name: name, price: price, category: category, description: description)
     }
     
-    func getImage() -> UIImage? {
-        let fileName = "\(itemId).png"
-        let fileURL = getDocumentsDirectory().appending(path: fileName)
-        
-        do {
-            let imageData = try Data(contentsOf: fileURL)
-            
-            guard let image = UIImage(data: imageData) else {
-                fatalError("Failed to construct 'UIImage' from imageData")
-            }
-            
-            return image
-        } catch {
-            fatalError("Failed to load image: \(error)")
-        }
+    convenience init(name: String, price: Double, category: MenuCategory, description: String, image: UIImage) {
+        self.init(itemId: UUID(), name: name, price: price, category: category, description: description)
+        self.image = image
+        saveImage()
+    }
+    
+    convenience init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String, image: UIImage) {
+        self.init(itemId: itemId, name: name, price: price, category: category, description: description)
+        self.image = image
+        saveImage()
     }
     
     func saveImage() {
@@ -118,7 +104,7 @@ extension MenuItem: SQLUpdatable {
     var createUpdateStatement: String {
         """
         UPDATE \(DatabaseTables.menuItem.rawValue)
-        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), category_id = '\(category.id)', description = '\(description)', image = \(imageURL)'
+        SET MenuItemID = '\(itemId)', MenuItemName = '\(name)', Price = \(price), category_id = '\(category.id)', description = '\(description)'
         WHERE MenuItemID = '\(itemId)';
         """
     }
@@ -133,8 +119,8 @@ extension MenuItem: SQLDeletable {
 extension MenuItem: SQLInsertable {
     var createInsertStatement: String {
         """
-        INSERT INTO \(DatabaseTables.menuItem.rawValue) (MenuItemID, MenuItemName, Price, category_id, description, imageURL)
-        VALUES ('\(itemId)', '\(name)', \(price), '\(category.id)', '\(description)', '\(imageURL))');
+        INSERT INTO \(DatabaseTables.menuItem.rawValue) (MenuItemID, MenuItemName, Price, category_id, description)
+        VALUES ('\(itemId)', '\(name)', \(price), '\(category.id)', '\(description)');
         """
     }
 }
@@ -148,15 +134,6 @@ extension MenuItem: DatabaseParsable {
               let categoryIdCString = sqlite3_column_text(statement, 4),
               let categoryNameCString = sqlite3_column_text(statement, 5) else {
             throw DatabaseError.missingRequiredValue
-        }
-        
-        guard let imageURLCString = sqlite3_column_text(statement, 6) else {
-            throw DatabaseError.imageConversionFailed
-        }
-        
-        let imageURLString = String(cString: imageURLCString)
-        guard let imageURL = URL(string: imageURLString) else {
-            fatalError("Invalid imageURLAbsoluteString")
         }
         
         let name = String(cString: nameCString)
@@ -175,7 +152,6 @@ extension MenuItem: DatabaseParsable {
         )
         
         let menuItem = MenuItem(itemId: itemId, name: name, price: price, category: category, description: description)
-        menuItem.imageURL = imageURL
         return menuItem
     }
 }

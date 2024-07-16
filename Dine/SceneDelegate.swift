@@ -41,7 +41,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
             print("This is the first launch.")
             let rootViewController = SignUpViewController()
             rootViewController.isInitialScreen = true
-            window?.rootViewController = rootViewController
+            window?.rootViewController = UINavigationController(rootViewController: rootViewController)
             window?.makeKeyAndVisible()
             UserDefaults.standard.set(true, forKey: hasLaunchedBeforeKey)
             return

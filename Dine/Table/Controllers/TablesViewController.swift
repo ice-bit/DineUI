@@ -54,9 +54,14 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
         setupAppearance()
         loadTables()
         NotificationCenter.default.addObserver(self, selector: #selector(didAddTable(_:)), name: .didAddTable, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(mockDataDidChange(_:)), name: .mockDataDidChangeNotification, object: nil)
     }
     
     // MARK: - OBJC methods
+    
+    @objc private func mockDataDidChange(_ sender: Notification) {
+        loadTables()
+    }
     
     /// Observer method for when a new table is added.
     @objc private func didAddTable(_ notification: Notification) {
@@ -268,7 +273,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
             }
             
             guard let resultTables = try? tableService.fetch() else { fatalError("Parsing tables failed") }
-            if let table = resultTables.first(where: { $0.locationIdentifier == locationId }) {
+            if let _ = resultTables.first(where: { $0.locationIdentifier == locationId }) {
                 showToast("Location ID Already taken")
                 return
             }

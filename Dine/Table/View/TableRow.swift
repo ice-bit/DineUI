@@ -26,7 +26,7 @@ struct TableRow: View {
             Image(systemName: table.isSelected ? "checkmark" : "plus")
                 .foregroundColor(table.isSelected ? .black : .white)
                 .padding()
-                .background(table.isSelected ? Color.white : Color.black)
+                .background(table.isSelected ? Color(.tertiarySystemGroupedBackground) : Color.black)
                 .clipShape(Circle())
                 .padding(.trailing)
         }

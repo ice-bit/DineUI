@@ -46,6 +46,7 @@ class MenuItemTableViewCell: UITableViewCell {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = .systemFont(ofSize: 18, weight: .medium)
+        label.numberOfLines = 0
         return label
     }()
     
@@ -147,6 +148,9 @@ class MenuItemTableViewCell: UITableViewCell {
         contentView.addSubview(wrapperView)
         stepper.addSubview(itemCountLabel)
         
+        /*wrapperView.backgroundColor = .red
+        hStackView.backgroundColor = .blue*/
+        
         wrapperView.addSubview(hStackView)
         hStackView.addArrangedSubview(itemImage)
         hStackView.addArrangedSubview(labelVStackView)
@@ -163,13 +167,13 @@ class MenuItemTableViewCell: UITableViewCell {
             wrapperView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
             wrapperView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
             
-            itemImage.heightAnchor.constraint(equalToConstant: 90),
-            itemImage.widthAnchor.constraint(equalToConstant: 90),
+            itemImage.heightAnchor.constraint(equalToConstant: 80),
+            itemImage.widthAnchor.constraint(equalToConstant: 80),
             
-            hStackView.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor, constant: 12),
-            hStackView.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor, constant: -12),
-            hStackView.topAnchor.constraint(equalTo: wrapperView.topAnchor, constant: 12),
-            hStackView.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor, constant: -12),
+            hStackView.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor, constant: 16),
+            hStackView.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor, constant: -16),
+            hStackView.topAnchor.constraint(equalTo: wrapperView.topAnchor, constant: 16),
+            hStackView.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor, constant: -16),
 
             itemCountLabel.heightAnchor.constraint(equalToConstant: 20),
             itemCountLabel.widthAnchor.constraint(greaterThanOrEqualToConstant: 20),

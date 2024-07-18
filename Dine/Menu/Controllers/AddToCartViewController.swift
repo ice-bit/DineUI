@@ -45,6 +45,8 @@ class AddToCartViewController: UIViewController {
         }
     }
     
+    private var searchBarStateDidChange: (() -> Void)?
+    
     private var tableViewViewModal: [MenuItemTableViewViewModal] = []
     private var menuCategories: [MenuCategory] = []
     
@@ -75,6 +77,15 @@ class AddToCartViewController: UIViewController {
         setupSearchBar()
         setupCatalogButton()
         setupNoResultsLabel() // Setup noResultsLabel
+        
+        searchBarStateDidChange = {
+            print("Search bar state changed")
+            if self.isFiltering || self.searchController.isActive {
+                self.catalogButton.isHidden = true
+            } else {
+                self.catalogButton.isHidden = false
+            }
+        }
     }
     
     // MARK: - CUSTOM Methods
@@ -397,6 +408,7 @@ extension AddToCartViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         filterContentForSearchText(searchBar.text!)
+        searchBarStateDidChange?()
     }
 }
 

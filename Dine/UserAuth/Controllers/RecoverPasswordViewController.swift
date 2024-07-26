@@ -13,14 +13,15 @@ class RecoverPasswordViewController: UIViewController {
     private var doneBarButton: UIBarButtonItem!
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
+    private var toast: Toast!
     
-    private lazy var introLabel: UILabel = {
+    /*private lazy var introLabel: UILabel = {
         let label = UILabel()
         label.text = "Enter Username"
         label.font = .preferredFont(forTextStyle: .largeTitle)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
-    }()
+    }()*/
     
     private lazy var verticalStackView: UIStackView = {
         let stackView = UIStackView()
@@ -37,6 +38,7 @@ class RecoverPasswordViewController: UIViewController {
         textField.backgroundColor = .secondarySystemGroupedBackground
         textField.layer.cornerRadius = 10
         textField.translatesAutoresizingMaskIntoConstraints = false
+        textField.addTarget(self, action: #selector(usernameTFEditingChanged(_:)), for: .editingDidEnd)
         return textField
     }()
     
@@ -53,7 +55,6 @@ class RecoverPasswordViewController: UIViewController {
     private lazy var userCheckButton: UIButton = {
         let button = UIButton()
         button.setTitle("Continue", for: .normal)
-        button.setTitleColor(.black, for: .normal)
         button.layer.cornerRadius = 10
         button.backgroundColor = .app
         button.addTarget(self, action: #selector(userCheckButtonAction(_:)), for: .touchUpInside)
@@ -64,7 +65,6 @@ class RecoverPasswordViewController: UIViewController {
     private lazy var changePasswordButton: UIButton = {
         let button = UIButton()
         button.setTitle("Continue", for: .normal)
-        button.setTitleColor(.black, for: .normal)
         button.layer.cornerRadius = 10
         button.backgroundColor = .app
         button.addTarget(self, action: #selector(changePasswordButtonAction(_:)), for: .touchUpInside)
@@ -83,7 +83,6 @@ class RecoverPasswordViewController: UIViewController {
         isModalInPresentation = true
         view.backgroundColor = .systemGroupedBackground
         title = "Reset Password"
-        navigationController?.navigationBar.prefersLargeTitles = true
         setupScrollView()
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
         
@@ -94,6 +93,10 @@ class RecoverPasswordViewController: UIViewController {
     @objc private func dismissKeyboard() {
         view.endEditing(true)
     }
+    
+    @objc private func usernameTFEditingChanged(_ sender: UITextField) {
+    }
+    
     
     private func setupBarButton() {
         doneBarButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneButtonAction(_:)))
@@ -111,10 +114,19 @@ class RecoverPasswordViewController: UIViewController {
         print(#function)
         
         if isUserAvailable() {
+            let passwordTFHeader = createTextFieldHeaderLabel(with: "New Password")
+            verticalStackView.addArrangedSubview(passwordTFHeader)
             verticalStackView.addArrangedSubview(passwordTextField)
             verticalStackView.addArrangedSubview(changePasswordButton)
             // verticalStackView.removeArrangedSubview(userCheckButton)
             userCheckButton.isHidden = true
+            
+            // Set custom spacing
+            verticalStackView.setCustomSpacing(30, after: passwordTextField)
+            
+            NSLayoutConstraint.activate([
+                passwordTFHeader.heightAnchor.constraint(equalToConstant: 16)
+            ])
         } else {
             handleLoginError(.noUserFound)
         }
@@ -186,7 +198,10 @@ class RecoverPasswordViewController: UIViewController {
     }
 
     func showToast(message: String) {
-        let toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: message)
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: message)
         toast.show(haptic: .error)
     }
     
@@ -211,22 +226,37 @@ class RecoverPasswordViewController: UIViewController {
         ])
     }
     
+    private func createTextFieldHeaderLabel(with title: String) -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.text = title
+        label.textAlignment = .left
+        return label
+    }
+    
     private func setupSubviews() {
+        let usernameTFHeader = createTextFieldHeaderLabel(with: "Username")
         scrollContentView.addSubview(verticalStackView)
-        verticalStackView.addArrangedSubview(introLabel)
+        //verticalStackView.addArrangedSubview(introLabel)
+        verticalStackView.addArrangedSubview(usernameTFHeader)
         verticalStackView.addArrangedSubview(usernameTextField)
         verticalStackView.addArrangedSubview(userCheckButton)
+        
+        // Set custom spacing
+        verticalStackView.setCustomSpacing(20, after: usernameTextField)
 
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
-            verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.8),
+            verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
             verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 20),
             verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor),
-
-            usernameTextField.heightAnchor.constraint(equalToConstant: 44),
-            passwordTextField.heightAnchor.constraint(equalToConstant: 44),
-            userCheckButton.heightAnchor.constraint(equalToConstant: 44),
-            changePasswordButton.heightAnchor.constraint(equalToConstant: 44),
+            
+            usernameTFHeader.heightAnchor.constraint(equalToConstant: 16),
+            usernameTextField.heightAnchor.constraint(equalToConstant: 49),
+            passwordTextField.heightAnchor.constraint(equalToConstant: 49),
+            userCheckButton.heightAnchor.constraint(equalToConstant: 55),
+            changePasswordButton.heightAnchor.constraint(equalToConstant: 55),
             
         ])
     }

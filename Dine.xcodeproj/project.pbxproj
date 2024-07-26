@@ -107,6 +107,9 @@
 		558350B92C2DAA2F00DDA458 /* CategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350B82C2DAA2F00DDA458 /* CategoryService.swift */; };
 		558350BC2C2DB3C100DDA458 /* AddSectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */; };
 		558350BE2C2E81B500DDA458 /* Date+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BD2C2E81B500DDA458 /* Date+Random.swift */; };
+		55854E6D2C52235800C88733 /* DineTextFieldInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55854E6C2C52235800C88733 /* DineTextFieldInternal.swift */; };
+		55854E6F2C522D5500C88733 /* DineTextInputError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55854E6E2C522D5500C88733 /* DineTextInputError.swift */; };
+		55854E722C5249F700C88733 /* Separator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55854E712C5249F700C88733 /* Separator.swift */; };
 		5587A66A2C451C3D006D2281 /* UIImageView+cacheImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5587A6692C451C3D006D2281 /* UIImageView+cacheImage.swift */; };
 		5587A66C2C464C11006D2281 /* MockDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5587A66B2C464C11006D2281 /* MockDataManager.swift */; };
 		5590DEEF2C1ABF6A007E1F75 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5590DEEE2C1ABF6A007E1F75 /* SettingsView.swift */; };
@@ -119,6 +122,7 @@
 		55A0BED22C3835B400CED892 /* DineButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A0BED12C3835B400CED892 /* DineButton.swift */; };
 		55A0BED42C383BB800CED892 /* CustomButtonType.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A0BED32C383BB800CED892 /* CustomButtonType.swift */; };
 		55A4E1282C32C940001C4562 /* OnboardingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55A4E1272C32C940001C4562 /* OnboardingViewController.swift */; };
+		55B61C062C511F4300A3FF94 /* DineTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55B61C052C511F4300A3FF94 /* DineTextField.swift */; };
 		55C05A502C2EC71D00FE3AB1 /* AddMenuView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C05A4F2C2EC71D00FE3AB1 /* AddMenuView.swift */; };
 		55C05A522C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C05A512C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift */; };
 		55C05A542C2ECCD700FE3AB1 /* ItemImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C05A532C2ECCD700FE3AB1 /* ItemImage.swift */; };
@@ -258,6 +262,9 @@
 		558350B82C2DAA2F00DDA458 /* CategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryService.swift; sourceTree = "<group>"; };
 		558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSectionViewController.swift; sourceTree = "<group>"; };
 		558350BD2C2E81B500DDA458 /* Date+Random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Random.swift"; sourceTree = "<group>"; };
+		55854E6C2C52235800C88733 /* DineTextFieldInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineTextFieldInternal.swift; sourceTree = "<group>"; };
+		55854E6E2C522D5500C88733 /* DineTextInputError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineTextInputError.swift; sourceTree = "<group>"; };
+		55854E712C5249F700C88733 /* Separator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Separator.swift; sourceTree = "<group>"; };
 		5587A6692C451C3D006D2281 /* UIImageView+cacheImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImageView+cacheImage.swift"; sourceTree = "<group>"; };
 		5587A66B2C464C11006D2281 /* MockDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockDataManager.swift; sourceTree = "<group>"; };
 		5590DEEE2C1ABF6A007E1F75 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -270,6 +277,7 @@
 		55A0BED12C3835B400CED892 /* DineButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineButton.swift; sourceTree = "<group>"; };
 		55A0BED32C383BB800CED892 /* CustomButtonType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomButtonType.swift; sourceTree = "<group>"; };
 		55A4E1272C32C940001C4562 /* OnboardingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingViewController.swift; sourceTree = "<group>"; };
+		55B61C052C511F4300A3FF94 /* DineTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineTextField.swift; sourceTree = "<group>"; };
 		55C05A4F2C2EC71D00FE3AB1 /* AddMenuView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddMenuView.swift; sourceTree = "<group>"; };
 		55C05A512C2ECC1900FE3AB1 /* MenuItemPhotoModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemPhotoModal.swift; sourceTree = "<group>"; };
 		55C05A532C2ECCD700FE3AB1 /* ItemImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemImage.swift; sourceTree = "<group>"; };
@@ -400,6 +408,7 @@
 		5524F54A2BE9E836003F500C /* Dine */ = {
 			isa = PBXGroup;
 			children = (
+				55B61C042C511F2400A3FF94 /* DineUI */,
 				55E03E4B2C36A5E100423777 /* Charts */,
 				55A4E1262C32C91C001C4562 /* Onboarding */,
 				558350BA2C2DACC600DDA458 /* Category */,
@@ -744,6 +753,16 @@
 			path = Category;
 			sourceTree = "<group>";
 		};
+		55854E702C5249E400C88733 /* DineTextField */ = {
+			isa = PBXGroup;
+			children = (
+				55B61C052C511F4300A3FF94 /* DineTextField.swift */,
+				55854E6C2C52235800C88733 /* DineTextFieldInternal.swift */,
+				55854E6E2C522D5500C88733 /* DineTextInputError.swift */,
+			);
+			path = DineTextField;
+			sourceTree = "<group>";
+		};
 		5590DEEB2C1ABF51007E1F75 /* Settings */ = {
 			isa = PBXGroup;
 			children = (
@@ -760,6 +779,15 @@
 				55A4E1272C32C940001C4562 /* OnboardingViewController.swift */,
 			);
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		55B61C042C511F2400A3FF94 /* DineUI */ = {
+			isa = PBXGroup;
+			children = (
+				55854E702C5249E400C88733 /* DineTextField */,
+				55854E712C5249F700C88733 /* Separator.swift */,
+			);
+			path = DineUI;
 			sourceTree = "<group>";
 		};
 		55C05A552C2ED1D800FE3AB1 /* PhotoPicker */ = {
@@ -975,6 +1003,7 @@
 				55C1320B2C23FCB100351F96 /* Insight.swift in Sources */,
 				552D38012BF1F5A0005B1D19 /* MenuController.swift in Sources */,
 				552D37E92BF1F4F0005B1D19 /* Restaurant.swift in Sources */,
+				55854E6D2C52235800C88733 /* DineTextFieldInternal.swift in Sources */,
 				552D37DD2BF1F4F0005B1D19 /* RestaurantTable.swift in Sources */,
 				552D37DF2BF1F4F0005B1D19 /* Meal.swift in Sources */,
 				55C1321F2C2579C700351F96 /* Date+Weekday.swift in Sources */,
@@ -999,6 +1028,7 @@
 				552D37E22BF1F4F0005B1D19 /* OrderItemAssociation.swift in Sources */,
 				55C05A542C2ECCD700FE3AB1 /* ItemImage.swift in Sources */,
 				552D37ED2BF1F4F0005B1D19 /* AccountService.swift in Sources */,
+				55854E6F2C522D5500C88733 /* DineTextInputError.swift in Sources */,
 				5524F56E2BEB3FFC003F500C /* MenuItemCell.swift in Sources */,
 				5524F5672BEA1F61003F500C /* MenuViewController.swift in Sources */,
 				552D37EC2BF1F4F0005B1D19 /* Bill.swift in Sources */,
@@ -1064,6 +1094,7 @@
 				552D37EE2BF1F4F0005B1D19 /* DataService.swift in Sources */,
 				557B5CAC2C21522F004E5C49 /* LoginViewController.swift in Sources */,
 				552D37E32BF1F4F0005B1D19 /* Filename.swift in Sources */,
+				55854E722C5249F700C88733 /* Separator.swift in Sources */,
 				55D46FBE2C2D409300F06657 /* SalesReport.swift in Sources */,
 				552D38032BF1F5A0005B1D19 /* AuthorizationController.swift in Sources */,
 				55C05A502C2EC71D00FE3AB1 /* AddMenuView.swift in Sources */,
@@ -1087,6 +1118,7 @@
 				55E03E4F2C36A5FF00423777 /* SalesChart.swift in Sources */,
 				5590DEF22C1B1170007E1F75 /* ProfileEditor.swift in Sources */,
 				552D37BB2BF1F13A005B1D19 /* AuthenticationError.swift in Sources */,
+				55B61C062C511F4300A3FF94 /* DineTextField.swift in Sources */,
 				55F966702BF3708100557C92 /* UIAlertController+DefaultStyle.swift in Sources */,
 				5524F5772BEB4BE4003F500C /* AddItemViewController.swift in Sources */,
 				558350BE2C2E81B500DDA458 /* Date+Random.swift in Sources */,

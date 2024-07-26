@@ -154,7 +154,8 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     @objc private func addButtonAction(_ sender: UIBarButtonItem) {
         print(#function)
         let addSectionViewController = AddSectionViewController()
-        if let sheet = addSectionViewController.sheetPresentationController {
+        let navCon = UINavigationController(rootViewController: addSectionViewController)
+        if let sheet = navCon.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
             sheet.prefersGrabberVisible = true
             sheet.prefersScrollingExpandsWhenScrolledToEdge = true
@@ -162,7 +163,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
             sheet.prefersEdgeAttachedInCompactHeight = true
             sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
         }
-        self.present(addSectionViewController, animated: true)
+        self.present(navCon, animated: true)
     }
     
     private func setupCollectionView() {

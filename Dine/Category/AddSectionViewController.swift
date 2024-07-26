@@ -17,33 +17,30 @@ class AddSectionViewController: UIViewController {
     private lazy var verticalStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
-        stackView.distribution = .fillProportionally
+        stackView.distribution = .fill
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.spacing = 12
         return stackView
     }()
     
-    private lazy var titleLabel: UILabel = {
+    /*private lazy var titleLabel: UILabel = {
         let label = UILabel()
         label.text = "Add Section"
         label.font = .preferredFont(forTextStyle: .largeTitle)
         label.translatesAutoresizingMaskIntoConstraints = false
         return label
-    }()
+    }()*/
     
-    private lazy var categoryNameTextField: UITextField = {
-        let textField = DTextField()
-        textField.placeholder = "Category Name"
-        textField.backgroundColor = .secondarySystemGroupedBackground
-        textField.layer.cornerRadius = 10
-        textField.translatesAutoresizingMaskIntoConstraints = false
-        return textField
+    let categoryDineTextField: DineTextField = {
+        let field = DineTextField()
+        field.titleText = "Category"
+        field.placeholder = "e.g. Appetizers"
+        field.translatesAutoresizingMaskIntoConstraints = false
+        return field
     }()
     
     private lazy var addButton: UIButton = {
         let button = UIButton()
         button.setTitle("Add Section", for: .normal)
-        button.setTitleColor(.black, for: .normal)
         button.layer.cornerRadius = 10
         button.backgroundColor = .app
         button.addTarget(self, action: #selector(addButtonAction(_:)), for: .touchUpInside)
@@ -75,8 +72,8 @@ class AddSectionViewController: UIViewController {
     
     @objc private func addButtonAction(_ sender: UIButton) {
         print(#function)
-        guard let categoryName = categoryNameTextField.text,
-              !categoryName.isEmpty else { 
+        guard let categoryName = categoryDineTextField.inputText,
+              !categoryName.isEmpty else {
             showErrorToast()
             return
         }
@@ -120,22 +117,31 @@ class AddSectionViewController: UIViewController {
         ])
     }
     
+    private func createTextFieldHeaderLabel(with title: String) -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.text = title
+        label.textAlignment = .left
+        return label
+    }
+    
     private func setupSubviews() {
         scrollContentView.addSubview(verticalStackView)
-        verticalStackView.addArrangedSubview(titleLabel)
-        verticalStackView.addArrangedSubview(categoryNameTextField)
+        verticalStackView.addArrangedSubview(categoryDineTextField)
         verticalStackView.addArrangedSubview(addButton)
+        verticalStackView.setCustomSpacing(34, after: categoryDineTextField)
         
-
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
             verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
             verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 40),
             verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor),
-
-            categoryNameTextField.heightAnchor.constraint(equalToConstant: 44),
             addButton.heightAnchor.constraint(equalToConstant: 55),
         ])
     }
-    
+}
+
+#Preview {
+    UINavigationController(rootViewController: AddSectionViewController())
 }

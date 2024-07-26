@@ -72,7 +72,8 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
     @objc private func addTableButtonTapped(sender: UIBarButtonItem) {
         print("Add table button tapped")
         let addTableController = AddTablesViewController()
-        if let sheet = addTableController.sheetPresentationController {
+        let navigationController = UINavigationController(rootViewController: addTableController)
+        if let sheet = navigationController.sheetPresentationController {
             sheet.detents = [.medium(), .large()]
             sheet.prefersGrabberVisible = true
             sheet.prefersScrollingExpandsWhenScrolledToEdge = true
@@ -80,7 +81,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
             sheet.prefersEdgeAttachedInCompactHeight = true
             sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
         }
-        self.present(addTableController, animated: true)
+        self.present(navigationController, animated: true)
     }
     
     // MARK: - Methods

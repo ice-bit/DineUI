@@ -24,18 +24,16 @@ class AddItemViewController: UIViewController {
     private var toast: Toast!
     
     private var stackView: UIStackView!
-    private var nameTextField: UITextField!
-    private var priceTextField: UITextField!
-    private var descTextField: UITextField!
+    private var wrapperStackView: UIStackView!
     private var addButton: UIButton!
     
     private var pickerView: UIPickerView!
     
     lazy private var imagePickerButton: UIButton = {
         let button = UIButton()
-        button.setTitle("add photo", for: .normal)
+        button.setTitle("Add Photo", for: .normal)
         button.setTitleColor(.label, for: .normal)
-        button.layer.cornerRadius = 75
+        button.layer.cornerRadius = 56
         button.layer.masksToBounds = true
         button.titleLabel?.font = .preferredFont(forTextStyle: .subheadline)
         button.layer.borderWidth = 1
@@ -76,6 +74,9 @@ class AddItemViewController: UIViewController {
         view.addGestureRecognizer(tap)
         configureView()
         setupSubviews()
+        nameTextField.onEditingChanged = onEditingChanged
+        priceTextField.onEditingChanged = onEditingChanged
+        descTextField.onEditingChanged = onEditingChanged
     }
     
     @objc private func imagePickerButtonAction(_ sender: UIButton) {
@@ -98,6 +99,15 @@ class AddItemViewController: UIViewController {
     // MARK: - @OBJC Methods
     
     // MARK: - View Setup
+    private func createTextFieldHeaderLabel(with title: String) -> UILabel {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.text = title
+        label.textAlignment = .left
+        return label
+    }
+    
     private func configureView() {
         view.backgroundColor = .systemGroupedBackground
     }
@@ -126,9 +136,6 @@ class AddItemViewController: UIViewController {
     private func setupSubviews() {
         setupScrollView()
         setupStackView()
-        setupNameTextField()
-        setupPriceTextField()
-        setupDescTextField()
         setupAddButton()
         addSubviews()
         setupConstraints()
@@ -153,56 +160,43 @@ class AddItemViewController: UIViewController {
     
     private func setupStackView() {
         stackView = UIStackView()
-        stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
-        stackView.spacing = 10
-        stackView.alignment = .center
-        stackView.distribution = .fillProportionally
-    }
-    
-    private func setupNameTextField() {
-        nameTextField = DTextField()
-        nameTextField.translatesAutoresizingMaskIntoConstraints = false
-        nameTextField.placeholder = "Name"
-        nameTextField.backgroundColor = .secondarySystemGroupedBackground
-        nameTextField.layer.cornerRadius = 12
-    }
-    
-    private func setupPriceTextField() {
-        priceTextField = DTextField()
-        priceTextField.keyboardType = .decimalPad
-        priceTextField.translatesAutoresizingMaskIntoConstraints = false
-        priceTextField.placeholder = "Price Tag"
-        priceTextField.backgroundColor = .secondarySystemGroupedBackground
-        priceTextField.layer.cornerRadius = 12
-    }
-    
-    private func setupDescTextField() {
-        descTextField = DTextField()
-        descTextField.translatesAutoresizingMaskIntoConstraints = false
-        descTextField.placeholder = "Description"
-        descTextField.backgroundColor = .secondarySystemGroupedBackground
-        descTextField.layer.cornerRadius = 12
+        stackView.distribution = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
     }
     
     private func setupAddButton() {
         addButton = UIButton()
         addButton.setTitle("Add Item", for: .normal)
-        addButton.setTitleColor(.black, for: .normal)
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.backgroundColor = .app
         addButton.layer.cornerRadius = 10
         addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
     }
     
+    private func createWrapperStackView() -> UIStackView {
+        let wrapperStackView = UIStackView()
+        wrapperStackView.axis = .vertical
+        wrapperStackView.alignment = .center
+        wrapperStackView.translatesAutoresizingMaskIntoConstraints = false
+        return wrapperStackView
+    }
+    
     private func addSubviews() {
         scrollContentView.addSubview(stackView)
-        //stackView.addArrangedSubview(titleLabel)
-        stackView.addArrangedSubview(imagePickerButton)
+        wrapperStackView = createWrapperStackView()
+        wrapperStackView.addArrangedSubview(imagePickerButton)
+        stackView.addArrangedSubview(wrapperStackView)
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(priceTextField)
         stackView.addArrangedSubview(descTextField)
         stackView.addArrangedSubview(addButton)
+        
+        // Custom spacing
+        stackView.setCustomSpacing(25, after: imagePickerButton)
+        stackView.setCustomSpacing(10, after: nameTextField)
+        stackView.setCustomSpacing(10, after: priceTextField)
+        stackView.setCustomSpacing(34, after: descTextField)
     }
     
     private func setupConstraints() {
@@ -210,37 +204,26 @@ class AddItemViewController: UIViewController {
             stackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
             stackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 24),
             stackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor),
-            
             addButton.heightAnchor.constraint(equalToConstant: 55),
             addButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
-            
             nameTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
-            nameTextField.heightAnchor.constraint(equalToConstant: 44),
-            
-            priceTextField.heightAnchor.constraint(equalToConstant: 44),
             priceTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
-            
-            descTextField.heightAnchor.constraint(equalToConstant: 44),
             descTextField.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.88),
-            
-            imagePickerButton.heightAnchor.constraint(equalToConstant: 150),
-            imagePickerButton.widthAnchor.constraint(equalToConstant: 150),
-            
-            /*sectionSelectionButton.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.8),
-             sectionSelectionButton.heightAnchor.constraint(equalToConstant: 44),*/
+            imagePickerButton.heightAnchor.constraint(equalToConstant: 112),
+            imagePickerButton.widthAnchor.constraint(equalToConstant: 112),
         ])
     }
     
     // MARK: - Actions
     
     @objc private func addButtonTapped() {
-        guard let priceString = priceTextField.text,
+        guard let priceString = priceTextField.inputText,
               let price = Double(priceString) else {
             self.present(UIAlertController().defaultStyle(title: "Failed to Add Item", message: "Provide valid price!"), animated: true)
             return
         }
         
-        guard let description = descTextField.text,
+        guard let description = descTextField.inputText,
               !description.isEmpty else {
             let toast = Toast.text("Invalid Description!")
             toast.show(haptic: .error)
@@ -255,7 +238,7 @@ class AddItemViewController: UIViewController {
             toast.show(haptic: .warning)
             return
         }
-        guard let name = nameTextField.text else { return }
+        guard let name = nameTextField.inputText else { return }
         let menuItem = MenuItem(
             name: name,
             price: price,
@@ -297,6 +280,55 @@ class AddItemViewController: UIViewController {
             }
         }
     }
+    
+    let nameTextField: DineTextField = {
+        let field = DineTextField()
+        field.titleText = "Item Name"
+        field.placeholder = "e.g. McWings"
+        field.translatesAutoresizingMaskIntoConstraints = false
+        return field
+    }()
+    
+    let priceTextField: DineTextField = {
+        let field = DineTextField()
+        field.titleText = "Price Tag"
+        field.placeholder = "Enter Price"
+        field.translatesAutoresizingMaskIntoConstraints = false
+        return field
+    }()
+    
+    let descTextField: DineTextField = {
+        let field = DineTextField()
+        field.titleText = "Description"
+        field.placeholder = "Provide Details"
+        field.translatesAutoresizingMaskIntoConstraints = false
+        return field
+    }()
+    
+    private func validateInputText(_ textField: DineTextField) -> DineTextInputError? {
+        guard let text = textField.inputText else { return nil }
+        
+        if textField == priceTextField {
+            guard !text.isEmpty else { return nil }
+            
+            if Double(text) == nil {
+                return DineTextInputError(localizedDescription: "Please enter a valid price using only numbers and a decimal point.")
+            }
+        }
+
+        return nil
+    }
+    
+    private func animateErrorMessage(for textfield: DineTextField) {
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
+        }
+    }
+    
+    func onEditingChanged(_ textfield: DineTextField) {
+        textfield.error = validateInputText(textfield)
+        animateErrorMessage(for: textfield)
+    }
 }
 
 extension AddItemViewController: PHPickerViewControllerDelegate {
@@ -320,6 +352,6 @@ extension AddItemViewController: PHPickerViewControllerDelegate {
 }
 
 #Preview {
-    AddItemViewController(category: MenuCategory(id: UUID(), categoryName: "Starter"))
+    UINavigationController(rootViewController: AddItemViewController(category: MenuCategory(id: UUID(), categoryName: "Starter")))
 }
 

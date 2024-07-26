@@ -72,15 +72,16 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     @objc private func addMenuItemButtonTapped(_ sender: UIBarButtonItem) {
         print("Add menu button tapped")
         let addMenuVC = AddItemViewController(category: category)
-        /*if let sheet = addMenuVC.sheetPresentationController {
-            sheet.detents = [.medium(), .large()]
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+        let navController = UINavigationController(rootViewController: addMenuVC)
+        if let sheet = navController.sheetPresentationController {
+            sheet.detents = [.large()]
+            sheet.largestUndimmedDetentIdentifier = nil
+            sheet.prefersGrabberVisible = true
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = true
             sheet.prefersEdgeAttachedInCompactHeight = true
             sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
-            sheet.prefersGrabberVisible = true
-        }*/
-        
-        present(UINavigationController(rootViewController: addMenuVC), animated: true)
+        }
+        self.present(navController, animated: true, completion: nil)
     }
     
     private func setupPlaceholderLabel() {

@@ -200,3 +200,10 @@ class MenuItemTableViewCell: UITableViewCell {
     }
 
 }
+
+#Preview {
+    let menuItem: MenuItem = .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!")
+    let cell = MenuItemTableViewCell()
+    cell.configure(menuItem: menuItem)
+    return cell
+}

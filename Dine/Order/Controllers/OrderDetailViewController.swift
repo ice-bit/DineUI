@@ -44,6 +44,7 @@ class OrderDetailViewController: UIViewController {
         setupButtonStackView()
         populateMenuData()
         setupNotifications()
+        setupEditButton()
     }
     
     private func setupView() {
@@ -157,13 +158,12 @@ class OrderDetailViewController: UIViewController {
             self?.initiateBilling()
         }
         let editAction = UIAction { [weak self] _ in
-            self?.initiateEditing()
+            self?.editBarButtonAction()
         }
         
         billButton = createCustomButton(title: "Bill", type: .normal, primaryAction: billAction)
         editButton = createCustomButton(title: "Edit", type: .normal, primaryAction: editAction)
         
-        stackView.addArrangedSubview(editButton)
         stackView.addArrangedSubview(billButton)
         
         return stackView
@@ -254,7 +254,7 @@ class OrderDetailViewController: UIViewController {
         }
     }
     
-    private func initiateEditing() {
+    @objc private func editBarButtonAction() {
         let editCartViewController = EditCartViewController(cart: orderedItems, order: order)
         present(UINavigationController(rootViewController: editCartViewController), animated: true)
     }
@@ -267,7 +267,7 @@ class OrderDetailViewController: UIViewController {
         }
         
         let addItemsAction = UIAlertAction(title: "Add Items", style: .default) { [weak self] _ in
-            self?.initiateEditing()
+            self?.editBarButtonAction()
         }
         
         alertController.addAction(deleteAction)
@@ -293,6 +293,11 @@ class OrderDetailViewController: UIViewController {
         alertController.addAction(cancelAction)
         
         present(alertController, animated: true, completion: nil)
+    }
+    
+    private func setupEditButton() {
+        let editBarButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editBarButtonAction))
+        navigationItem.rightBarButtonItem = editBarButton
     }
     
     private func deleteOrder() {

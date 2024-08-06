@@ -15,13 +15,20 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     private var placeholderLabel: UILabel!
     private var noResultsLabel: UILabel! // Added noResultsLabel
     private let cellReuseID = "MenuItemRow"
-    private let category: MenuCategory
+    private var category: MenuCategory?
     
-    private var menuData: [MenuItem] = [] {
+//    private var menuData: [MenuItem] = [] {
+//        didSet {
+//            updateUIForMenuItemData()
+//        }
+//    }
+    
+    private var activeCategory: MenuCategory? {
         didSet {
-            updateUIForMenuItemData()
+            reloadMenuData()
         }
     }
+    private var menuData: [MenuItem]?
     
     // Search essentials
     private var filteredItems: [MenuItem] = []
@@ -34,27 +41,20 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         searchController.searchBar.text?.isEmpty ?? true
     }
     
-    init(category: MenuCategory) {
-        self.category = category
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
+    private var menuDataSource: [MenuListViewModel] = []
     
     // MARK: - View LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
         setupSearchBar()
         setupNoResultsLabel() // Setup noResultsLabel
-        title = category.categoryName
+        title = "Menu List"
         navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .systemGroupedBackground
         setupTableView()
         setupNavbar()
         setupPlaceholderLabel()
-        populateMenuData()
+        //populateMenuData()
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(menuItemDidChange(_:)),
@@ -62,16 +62,32 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             object: nil
         )
         NotificationCenter.default.addObserver(self, selector: #selector(menuItemDidChange(_:)), name: .mockDataDidChangeNotification, object: nil)
+        populateViewModal()
+        populateDatasource()
     }
     
     @objc private func menuItemDidChange(_ sender: NotificationCenter) {
-        populateMenuData()
+        //populateMenuData()
         tableView.reloadData()
+    }
+    
+    private func fetchCategory() {
+        do {
+            let categoryService = try CategoryServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
+            guard let result = try? categoryService.fetch() else {
+                fatalError("Failed to load")
+            }
+            category = result[0]
+        } catch {
+            print("Failed to load categories: \(error)")
+        }
     }
     
     @objc private func addMenuItemButtonTapped(_ sender: UIBarButtonItem) {
         print("Add menu button tapped")
-        let addMenuVC = AddItemViewController(category: category)
+        guard let activeCategory else { return }
+        let addMenuVC = ItemFormViewController(category: activeCategory) // Unwrapper the option
+        addMenuVC.menuItemDelegate = self
         let navController = UINavigationController(rootViewController: addMenuVC)
         if let sheet = navController.sheetPresentationController {
             sheet.detents = [.large()]
@@ -102,6 +118,15 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         placeholderLabel.isHidden = true
     }
     
+    private func reloadMenuData() {
+        guard let activeCategory else { return }
+        if let dataSet = menuDataSource.first(where: { $0.category.id == activeCategory.id }) {
+            menuData?.removeAll()
+            menuData = dataSet.menuItem
+            tableView.reloadData()
+        }
+    }
+    
     private func setupNoResultsLabel() {
         noResultsLabel = UILabel()
         noResultsLabel.text = "No Results Found"
@@ -121,7 +146,8 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     // Load methods
-    private func populateMenuData() {
+    /*private func populateMenuData() {
+        guard let category else { return }
         do {
             let dataAccess = try SQLiteDataAccess.openDatabase()
             let menuService = MenuServiceImpl(databaseAccess: dataAccess)
@@ -136,9 +162,10 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         } catch {
             fatalError("Unable to fetch menu items - \(error)")
         }
-    }
+    }*/
     
     private func updateUIForMenuItemData() {
+        guard let menuData else { return }
         let hasMenuItems = !menuData.isEmpty
         let hasFilteredItems = !filteredItems.isEmpty
         tableView.isHidden = !(hasMenuItems || isFiltering)
@@ -181,6 +208,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     private func filterContentForSearch(_ searchText: String) {
+        guard let menuData else { return }
         filteredItems = menuData.filter { (menuData: MenuItem) -> Bool in
             menuData.name.lowercased().contains(searchText.lowercased())
         }
@@ -210,7 +238,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
             // Handle the delete action
             print("Order deleted")
             self.deleteMenuItem(item) // delete
-            populateMenuData() // fetch
+            //populateMenuData() // fetch
             tableView.reloadData() // reload to reflect
         }
         
@@ -229,65 +257,6 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         let selectedBackgroundView = UIView()
         selectedBackgroundView.backgroundColor = UIColor.systemGray3
         cell.selectedBackgroundView = selectedBackgroundView
-    }
-    
-    // MARK: - TableView
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        isFiltering ? filteredItems.count : menuData.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseID, for: indexPath)
-        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuData[indexPath.row]
-        cell.contentConfiguration = UIHostingConfiguration {
-            MenuItemRow(menuItem: menuItem)
-        }
-        .background(Color(.systemGroupedBackground))
-        cell.backgroundColor = .systemGroupedBackground
-        congifureSelectedState(for: cell)
-        return cell
-    }
-    
-    /*func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
-        guard let cell = tableView.cellForRow(at: indexPath) else { return indexPath }
-        congifureSelectedState(for: cell)
-        return indexPath
-    }*/
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        tableView.deselectRow(at: indexPath, animated: true)
-        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuData[indexPath.row]
-        let menuDetailViewHostVC = UIHostingController(rootView: MenuDetailView(menuItem: menuItem))
-        navigationController?.pushViewController(menuDetailViewHostVC, animated: true)
-    }
-    
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let item = menuData[indexPath.row]
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completionHandler in
-            guard let self else { return }
-            print("Delete action")
-            presentWarning(for: item)
-            
-            completionHandler(true)
-        }
-        
-        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
-        return configuration
-    }
-    
-    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let item = menuData[indexPath.row]
-        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
-            let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [weak self] action in
-                // Handle action 1
-                guard let self else { return }
-                print("Edit context menu action")
-                self.presentEditAlertController(for: item)
-                
-            }
-            
-            return UIMenu(title: "", children: [editAction])
-        }
     }
     
     private func presentEditAlertController(for item: MenuItem) {
@@ -354,6 +323,7 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
     }
     
     private func editItem(_ item: MenuItem) {
+        guard let menuData else { return }
         do {
             let menuService = try MenuServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
             try menuService.update(item)
@@ -374,6 +344,30 @@ class MenuListingViewController: UIViewController, UITableViewDataSource, UITabl
         let toast = Toast.text(message)
         toast.show(haptic: .error)
     }
+    
+    private func populateViewModal() {
+        do {
+            let dbAccess = try SQLiteDataAccess.openDatabase()
+            let categoryService = CategoryServiceImpl(databaseAccess: dbAccess)
+            let menuService = MenuServiceImpl(databaseAccess: dbAccess)
+            let categoriesResult = try categoryService.fetch()
+            let menuItemsResult = try menuService.fetch()
+            if let categories = categoriesResult, let menuItems = menuItemsResult {
+                for category in categories {
+                    let filteredItems = menuItems.filter { $0.category.id == category.id }
+                    let menuListViewModal = MenuListViewModel(category: category, menuItem: filteredItems)
+                    menuDataSource.append(menuListViewModal)
+                }
+            }
+        } catch {
+            
+        }
+    }
+    
+    private func populateDatasource() {
+        activeCategory = menuDataSource[0].category
+        menuData = menuDataSource[0].menuItem
+    }
 }
 
 extension MenuListingViewController: UISearchResultsUpdating {
@@ -383,13 +377,135 @@ extension MenuListingViewController: UISearchResultsUpdating {
     }
 }
 
+extension MenuListingViewController: MenuItemDelegate {
+    func menuDidChange(_ item: MenuItem) {
+        menuData?.append(item) // Gonna boom
+        tableView.reloadData()
+    }
+}
+
+extension MenuListingViewController {
+    // MARK: - TableView
+    func numberOfSections(in tableView: UITableView) -> Int {
+        1
+    }
+    
+    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard let activeCategory else { return nil }
+        let headerView = MenuListHeader()
+        headerView.title.text = activeCategory.categoryName
+        headerView.onHeaderTapped = onCategoryHeaderTapped
+        return headerView
+    }
+    
+    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        55
+    }
+    
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        guard let menuData else { return 0 }
+        if menuData.isEmpty {
+            return 1
+        }
+        return isFiltering ? filteredItems.count : menuData.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let menuData else { return UITableViewCell()}
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseID, for: indexPath)
+        if menuData.isEmpty {
+            let leadingMargin = tableView.frame.width / 5
+            cell.contentConfiguration = UIHostingConfiguration {
+                NoResultCellView()
+            }
+            .margins(.leading, leadingMargin)
+            return cell
+        }
+        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuData[indexPath.row]
+        cell.contentConfiguration = UIHostingConfiguration {
+            MenuItemRow(menuItem: menuItem)
+        }
+        .margins(.horizontal, 20)
+        .background(Color(.systemGroupedBackground))
+        cell.backgroundColor = .systemGroupedBackground
+        congifureSelectedState(for: cell)
+        return cell
+    }
+    
+    /*func tableView(_ tableView: UITableView, willSelectRowAt indexPath: IndexPath) -> IndexPath? {
+        guard let cell = tableView.cellForRow(at: indexPath) else { return indexPath }
+        congifureSelectedState(for: cell)
+        return indexPath
+    }*/
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        guard let menuData else { return }
+        guard !menuData.isEmpty else { return }
+        tableView.deselectRow(at: indexPath, animated: true)
+        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuData[indexPath.row]
+//        let menuDetailViewHostVC = UIHostingController(rootView: MenuDetailView(menuItem: menuItem))
+        let menuDetailViewController = MenuDetailViewController(menu: menuItem)
+        navigationController?.pushViewController(menuDetailViewController, animated: true)
+    }
+    
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        guard let menuData else { return nil }
+        guard !menuData.isEmpty else { return nil }
+        let item = menuData[indexPath.row]
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completionHandler in
+            guard let self else { return }
+            print("Delete action")
+            presentWarning(for: item)
+            
+            completionHandler(true)
+        }
+        
+        let configuration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return configuration
+    }
+    
+    func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
+        guard let menuData else { return nil }
+        guard !menuData.isEmpty else { return nil }
+        let item = menuData[indexPath.row]
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [weak self] action in
+                // Handle action 1
+                guard let self else { return }
+                print("Edit context menu action")
+                self.presentEditAlertController(for: item)
+                
+            }
+            
+            return UIMenu(title: "", children: [editAction])
+        }
+    }
+    
+    private func onCategoryHeaderTapped() {
+        print(#function)
+        do {
+            let dbAccess = try SQLiteDataAccess.openDatabase()
+            let menuService = MenuServiceImpl(databaseAccess: dbAccess)
+            let menuSectionViewcontroller = MenuSectionViewController(menuService: menuService)
+            menuSectionViewcontroller.didSelectCategory = didSelectedCategory
+            self.present(UINavigationController(rootViewController: menuSectionViewcontroller), animated: true)
+        } catch {
+            fatalError("Failed to buid menu service \(#function)")
+        }
+    }
+    
+    private func didSelectedCategory(_ category: MenuCategory) {
+        print(#function)
+        activeCategory = category
+    }
+    
+}
+
 #Preview{
-    UINavigationController(
-        rootViewController: MenuListingViewController(
-            category: MenuCategory(
-                id: UUID(),
-                categoryName: "Starter"
-            )
-        )
-    )
+    UINavigationController(rootViewController: MenuListingViewController())
+}
+
+struct MenuListViewModel {
+    let category: MenuCategory
+    let menuItem: [MenuItem]
 }

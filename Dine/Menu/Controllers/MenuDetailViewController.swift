@@ -9,15 +9,16 @@ import UIKit
 
 class MenuDetailViewController: UIViewController {
     
-    private let menu: MenuItem
+    private var scrollView: UIScrollView!
+    private var scrollContentView: UIView!
+    
+    private var menu: MenuItem
     
     private var itemImageView: UIImageView!
     private var nameTag: UILabel!
     private var priceTag: UILabel!
     private var staticAboutTag: UILabel!
     private var descriptionTag: UILabel!
-    private var scrollView: UIScrollView!
-//    private var addButton:
     
     init(menu: MenuItem) {
         self.menu = menu
@@ -31,6 +32,7 @@ class MenuDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "Item"
+        navigationController?.navigationBar.prefersLargeTitles = true
         setupNavbar()
         setupSubview()
         configView()
@@ -48,18 +50,29 @@ class MenuDetailViewController: UIViewController {
         setupPriceLabel()
         setupAboutTag()
         setupDescriptionTag()
-        setupConstraints()
+        configureContents()
     }
     
     private func setupScrollView() {
         scrollView = UIScrollView()
+        scrollContentView = UIView()
+        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
+        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(scrollView)
+        scrollView.addSubview(scrollContentView)
         
         NSLayoutConstraint.activate([
-            scrollView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            scrollView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
-            scrollView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor),
-            scrollView.heightAnchor.constraint(equalToConstant: 1500),
+            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.topAnchor.constraint(equalTo: view.topAnchor),
+            scrollView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            
+            scrollContentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
         ])
     }
     
@@ -69,16 +82,19 @@ class MenuDetailViewController: UIViewController {
     }
     
     @objc private func editButtonAction(_ sender: UIBarButtonItem) {
+        let editViewController = ItemFormViewController(menuItem: menu)
+        editViewController.menuItemDelegate = self
+        self.present(UINavigationController(rootViewController: editViewController), animated: true)
         
     }
     
     private func setupMenuImage() {
         itemImageView = UIImageView()
-        itemImageView.image = UIImage(named: "burger")
+        itemImageView.image = menu.image ?? UIImage(named: "burger")
         itemImageView.layer.cornerRadius = 14
         itemImageView.clipsToBounds = true
         itemImageView.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(itemImageView)
+        scrollContentView.addSubview(itemImageView)
     }
     
     private func setupItemTitle() {
@@ -88,7 +104,7 @@ class MenuDetailViewController: UIViewController {
         nameTag.textAlignment = .center
         nameTag.font = .systemFont(ofSize: 28, weight: .bold)
         nameTag.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(nameTag)
+        scrollContentView.addSubview(nameTag)
     }
     
     private func setupPriceLabel() {
@@ -96,7 +112,7 @@ class MenuDetailViewController: UIViewController {
         priceTag.text = "$\(String(menu.price))"
         priceTag.font = .systemFont(ofSize: 20)
         priceTag.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(priceTag)
+        scrollContentView.addSubview(priceTag)
     }
     
     private func setupAboutTag() {
@@ -104,42 +120,59 @@ class MenuDetailViewController: UIViewController {
         staticAboutTag.text = "About"
         staticAboutTag.font = .systemFont(ofSize: 19, weight: .semibold)
         staticAboutTag.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(staticAboutTag)
+        scrollContentView.addSubview(staticAboutTag)
     }
     
     private func setupDescriptionTag() {
         descriptionTag = UILabel()
         descriptionTag.numberOfLines = 0
         descriptionTag.textAlignment = .center
-        descriptionTag.text = """
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-        """
+        descriptionTag.text = menu.description
         descriptionTag.font = .systemFont(ofSize: 16)
         descriptionTag.translatesAutoresizingMaskIntoConstraints = false
-        scrollView.addSubview(descriptionTag)
+        scrollContentView.addSubview(descriptionTag)
     }
     
-    private func setupConstraints() {
+    private func configureContents() {
+        scrollContentView.addSubview(horizontalStackView)
+        horizontalStackView.addArrangedSubview(itemImageView)
+        horizontalStackView.addArrangedSubview(nameTag)
+        horizontalStackView.addArrangedSubview(priceTag)
+        horizontalStackView.addArrangedSubview(staticAboutTag)
+        horizontalStackView.addArrangedSubview(descriptionTag)
+        
         NSLayoutConstraint.activate([
-            itemImageView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            itemImageView.heightAnchor.constraint(equalToConstant: 241),
-            itemImageView.widthAnchor.constraint(equalToConstant: 241),
-            itemImageView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor, constant: 20),
-            
-            nameTag.topAnchor.constraint(equalTo: itemImageView.bottomAnchor, constant: 12),
-            nameTag.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            nameTag.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
-            
-            priceTag.topAnchor.constraint(equalTo: nameTag.bottomAnchor, constant: 8),
-            priceTag.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            
-            staticAboutTag.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            staticAboutTag.topAnchor.constraint(equalTo: priceTag.bottomAnchor, constant: 8),
-            
-            descriptionTag.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            descriptionTag.topAnchor.constraint(equalTo: staticAboutTag.bottomAnchor, constant: 8),
-            descriptionTag.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
+            horizontalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 20),
+            horizontalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
+            horizontalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor, constant: -20),
+            horizontalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
+            itemImageView.heightAnchor.constraint(equalToConstant: 150),
+            itemImageView.widthAnchor.constraint(equalToConstant: 150),
         ])
     }
     
+    private lazy var horizontalStackView: UIStackView = {
+        let horizontalStackView = UIStackView()
+        horizontalStackView.axis = .vertical
+        horizontalStackView.distribution = .fill
+        horizontalStackView.alignment = .center
+        horizontalStackView.spacing = 8
+        horizontalStackView.translatesAutoresizingMaskIntoConstraints = false
+        return horizontalStackView
+    }()
+    
+}
+
+extension MenuDetailViewController: MenuItemDelegate {
+    func menuDidChange(_ item: MenuItem) {
+        itemImageView.image = item.image
+        nameTag.text = item.name
+        priceTag.text = String(item.price)
+        descriptionTag.text = item.description
+    }
+}
+
+#Preview {
+    let menu = MenuItem(name: "Chicken", price: 8.99, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "dewirgbvhsevfygv fgeru gefgvegv gdsv suvgjsdbhv vbsfjv gsdihvg sydvb dsvjgvcsgv hsdvcjhsdv vbsdgvhdsbv vcshkvhd b")
+    return UINavigationController(rootViewController: MenuDetailViewController(menu: menu))
 }

@@ -1,8 +1,8 @@
 //
-//  MenuListViewController.swift
+//  CartViewController.swift
 //  Dine
 //
-//  Created by doss-zstch1212 on 08/05/24.
+//  Created by ice on 08/05/24.
 //
 
 import UIKit
@@ -14,7 +14,7 @@ struct MenuItemTableViewViewModal {
     let items: [MenuItem]
 }
 
-class AddToCartViewController: UIViewController {
+class CartViewController: UIViewController {
     private var tableView: UITableView!
     
     private var addItemsButton: UIButton!
@@ -205,8 +205,8 @@ class AddToCartViewController: UIViewController {
             direction: .bottom,
             dismissBy: [.time(time: 2.4)],
             animationTime: 0.2,
-            enteringAnimation: .fade(alpha: 1.0),
-            exitingAnimation: .fade(alpha: 0.5)
+            enteringAnimation: .fade(alpha: 0),
+            exitingAnimation: .fade(alpha: 0)
         )
         
         let itemCount = menuItemCart.values.reduce(0, +)
@@ -358,7 +358,7 @@ class AddToCartViewController: UIViewController {
 }
 
 // MARK: - TableView built-in methods
-extension AddToCartViewController: UITableViewDelegate, UITableViewDataSource {
+extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
         isFiltering ? filteredItems.count : tableViewViewModal.count
     }
@@ -398,13 +398,7 @@ extension AddToCartViewController: UITableViewDelegate, UITableViewDataSource {
     }
 }
 
-extension AddToCartViewController: MenuItemDelegate {
-    func menuItemDidAdd(_ item: MenuItem) {
-        menuItems.append(item)
-    }
-}
-
-extension AddToCartViewController: UISearchResultsUpdating {
+extension CartViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         filterContentForSearchText(searchBar.text!)
@@ -412,7 +406,7 @@ extension AddToCartViewController: UISearchResultsUpdating {
     }
 }
 
-extension AddToCartViewController: MenuItemTableViewCellDelegate {
+extension CartViewController: MenuItemTableViewCellDelegate {
     func menuTableViewCell(_ cell: MenuItemTableViewCell, didChangeItemCount count: Int, for menuItem: MenuItem) {
         // Remove the key if the count is zero.
         if count > 0 {
@@ -442,5 +436,20 @@ extension AddToCartViewController: MenuItemTableViewCellDelegate {
 }
 
 #Preview {
-    AddToCartViewController()
+    let menuItem: [MenuItem] = [
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Appetizer"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Side course"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Chicken bOom"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
+        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
+            .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
+    ]
+    let vc = CartViewController()
+    return vc
 }

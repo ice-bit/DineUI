@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import SwiftUI
 import Toast
 
 class BillDetailViewController: UIViewController {
@@ -21,6 +22,12 @@ class BillDetailViewController: UIViewController {
     private var horizontalStackView: UIStackView!
     private var paymentButton: UIButton!
     private var deleteButton: UIButton!
+    
+    private let cellReuseIdentifier = "menuItemCell" // Reuse identifier for table view cells
+    private var menuItems: [MenuItem] = []
+    private var tableView: UITableView!
+    
+    private var associateOrder: Order?
     
     // MARK: - Initialization
     
@@ -39,10 +46,11 @@ class BillDetailViewController: UIViewController {
         super.viewDidLoad()
         setupViewController()
         setupSubviews()
+        setAssociatedOrder()
+        createMenu()
     }
     
     // MARK: - Setup Methods
-    
     private func setupViewController() {
         view.backgroundColor = .systemGroupedBackground
         title = "Bill"
@@ -51,6 +59,7 @@ class BillDetailViewController: UIViewController {
     
     private func setupSubviews() {
         setupScrollView()
+        //setupTableView()
         setupVerticalStackView()
         setupHorizontalStackView()
     }
@@ -78,6 +87,25 @@ class BillDetailViewController: UIViewController {
         ])
     }
     
+    private func setupTableView() {
+        tableView = DynamicTableView()
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: cellReuseIdentifier)
+        tableView.delegate = self
+        tableView.dataSource = self
+        tableView.separatorStyle = .none
+        tableView.isScrollEnabled = false
+        tableView.layer.cornerRadius = 12
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+        
+        scrollContentView.addSubview(tableView)
+        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: scrollContentView.topAnchor),
+            tableView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
+            tableView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
+        ])
+    }
+    
     private func setupVerticalStackView() {
         verticalStackView = createVerticalStackView()
         
@@ -88,6 +116,11 @@ class BillDetailViewController: UIViewController {
         let billIdInfoView = createInfoView(title: "Bill ID", description: bill.billId.uuidString)
         let orderIdInfoView = createInfoView(title: "Order ID", description: bill.getOrderId.uuidString)
         let paymentStatusInfoView = createInfoView(title: "Payment Status", description: bill.paymentStatus.rawValue)
+        
+        if let order = bill.getOrder, let table = order.getTable {
+            let tableStatusView = createInfoView(title: "Table", description: table.locationIdentifier.description)
+            verticalStackView.addArrangedSubview(tableStatusView)
+        }
         
         verticalStackView.addArrangedSubview(amountInfoView)
         verticalStackView.addArrangedSubview(tipInfoView)
@@ -100,9 +133,9 @@ class BillDetailViewController: UIViewController {
         scrollContentView.addSubview(verticalStackView)
         
         NSLayoutConstraint.activate([
-            verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
-            verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
-            verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 20)
+            verticalStackView.leadingAnchor.constraint(equalTo: scrollContentView.leadingAnchor, constant: 20),
+            verticalStackView.trailingAnchor.constraint(equalTo: scrollContentView.trailingAnchor, constant: -20),
+            verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 20),
         ])
     }
     
@@ -113,24 +146,32 @@ class BillDetailViewController: UIViewController {
             self?.showErrorToast()
         }
         
-        let deleteAction = UIAction { [weak self] _ in
-            self?.deleteBill()
-        }
+        paymentButton = createCustomButton(title: "Checkout", type: .normal, primaryAction: paymentAction)
         
-        paymentButton = createCustomButton(title: "Payment", type: .normal, primaryAction: paymentAction)
-        deleteButton = createCustomButton(title: "Delete", type: .destructive, primaryAction: deleteAction)
-        
-        horizontalStackView.addArrangedSubview(deleteButton)
         horizontalStackView.addArrangedSubview(paymentButton)
         
         scrollContentView.addSubview(horizontalStackView)
         
         NSLayoutConstraint.activate([
-            horizontalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
-            horizontalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
+            horizontalStackView.leadingAnchor.constraint(equalTo: scrollContentView.leadingAnchor, constant: 20),
+            horizontalStackView.trailingAnchor.constraint(equalTo: scrollContentView.trailingAnchor, constant: -20),
             horizontalStackView.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor, constant: 20),
             horizontalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor)
         ])
+    }
+    
+    private func setAssociatedOrder() {
+        do {
+            let dbAccess = try SQLiteDataAccess.openDatabase()
+            let orderService = OrderServiceImpl(databaseAccess: dbAccess)
+            let resultOrders = try orderService.fetch()
+            guard let orders = resultOrders else { return }
+            guard let order = orders.first(where: { $0.orderIdValue == bill.getOrderId }) else { return }
+            menuItems = order.menuItems
+            associateOrder = order
+        } catch {
+            fatalError("Failed to get associated order")
+        }
     }
     
     // MARK: - Helper Methods
@@ -166,11 +207,11 @@ class BillDetailViewController: UIViewController {
         config.cornerStyle = .large
         config.buttonSize = .large
         config.title = title
-        config.baseBackgroundColor = .secondarySystemGroupedBackground
+        config.baseBackgroundColor = .app
         
         switch type {
         case .normal:
-            config.baseForegroundColor = .tintColor
+            config.baseForegroundColor = .systemBackground
         case .destructive:
             config.baseForegroundColor = .red
         }
@@ -200,6 +241,43 @@ class BillDetailViewController: UIViewController {
             toast.show(haptic: .error)
         }
     }
+
+    private func createMenu() {
+        let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { _ in
+            print("Edit action")
+        }
+        
+        let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash")) { [weak self] _ in
+            print("Delete action")
+            guard let self else { return }
+            self.deleteBill()
+        }
+        
+        let menu = UIMenu(children: [/*editAction, */deleteAction])
+        let menuBarButton = UIBarButtonItem(image: UIImage(systemName: "ellipsis.circle"), menu: menu)
+        navigationItem.rightBarButtonItem = menuBarButton
+    }
 }
 
+extension BillDetailViewController: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return menuItems.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseIdentifier, for: indexPath)
+        let menuItem = menuItems[indexPath.row]
+        cell.selectionStyle = .none
+        
+        cell.contentConfiguration = UIHostingConfiguration {
+            PlainMenuItemView(menuItem: menuItem)
+        }.background(Color(.secondarySystemGroupedBackground))
+        
+        return cell
+    }
+}
 
+#Preview {
+    let bill = Bill(amount: 33.8, tax: 0.99, orderId: UUID(), isPaid: false)
+    return UINavigationController(rootViewController: BillDetailViewController(bill: bill))
+}

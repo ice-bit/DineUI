@@ -32,6 +32,8 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
         searchController.isActive && !isSearchBarEmpty
     }
     
+    var didSelectCategory: ((MenuCategory) -> Void)?
+    
     // MARK: - Init
     init(menuService: MenuService) {
         self.menuService = menuService
@@ -258,7 +260,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
             cell.contentConfiguration = UIHostingConfiguration {
                 SectionView(catergory: item)
             }
-            .margins(.horizontal, 14)
+            .margins(.horizontal, 20)
             .margins(.vertical, 8)
         }
     }()
@@ -267,8 +269,10 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         collectionView.deselectItem(at: indexPath, animated: true)
         let item = isFiltering ? filteredCategories[indexPath.item] : categories[indexPath.item]
-        let sectionDetailVC = MenuListingViewController(category: item)
-        navigationController?.pushViewController(sectionDetailVC, animated: true)
+        didSelectCategory?(item)
+        self.dismiss(animated: true)
+        /*let sectionDetailVC = MenuListingViewController(category: item)
+        navigationController?.pushViewController(sectionDetailVC, animated: true)*/
     }
 }
 

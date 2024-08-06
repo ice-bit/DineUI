@@ -1,5 +1,5 @@
 //
-//  AddItemViewController.swift
+//  ItemFormViewController.swift
 //  Dine
 //
 //  Created by doss-zstch1212 on 08/05/24.
@@ -10,14 +10,15 @@ import Toast
 import PhotosUI
 
 protocol MenuItemDelegate: AnyObject {
-    func menuItemDidAdd(_ item: MenuItem)
+    func menuDidChange(_ item: MenuItem)
 }
 
-class AddItemViewController: UIViewController {
+class ItemFormViewController: UIViewController {
     weak var menuItemDelegate: MenuItemDelegate?
     
     // MARK: - Properties
     private let category: MenuCategory
+    private var menuItem: MenuItem?
     
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
@@ -28,6 +29,9 @@ class AddItemViewController: UIViewController {
     private var addButton: UIButton!
     
     private var pickerView: UIPickerView!
+    
+    // This property will store the active text field
+    var activeTextField: DineTextField?
     
     lazy private var imagePickerButton: UIButton = {
         let button = UIButton()
@@ -57,6 +61,12 @@ class AddItemViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
     }
     
+    init(menuItem: MenuItem) {
+        self.menuItem = menuItem
+        self.category = menuItem.category
+        super.init(nibName: nil, bundle: nil)
+    }
+    
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
@@ -74,9 +84,49 @@ class AddItemViewController: UIViewController {
         view.addGestureRecognizer(tap)
         configureView()
         setupSubviews()
+        
+        // Register for keyboard notifications
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        
+        bindTextFieldEvents()
+        configureForEditing()
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
+            let keyboardFrame = keyboardSize.cgRectValue
+            let keyboardHeight = keyboardFrame.height
+
+            var contentInsets = scrollView.contentInset
+            contentInsets.bottom = keyboardHeight
+            scrollView.contentInset = contentInsets
+            scrollView.scrollIndicatorInsets = contentInsets
+
+            // Scroll to the active text field
+            if let activeField = activeTextField {
+                scrollView.scrollRectToVisible(activeField.textfield.frame, animated: true)
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        let contentInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
+    }
+
+    
+    private func bindTextFieldEvents() {
         nameTextField.onEditingChanged = onEditingChanged
         priceTextField.onEditingChanged = onEditingChanged
         descTextField.onEditingChanged = onEditingChanged
+        nameTextField.onDidBeginEditing = onDidBeginEditing
+        priceTextField.onDidBeginEditing = onDidBeginEditing
+        descTextField.onDidBeginEditing = onDidBeginEditing
+        nameTextField.onDidEndEditing = onDidEndEditing
+        priceTextField.onDidEndEditing = onDidEndEditing
+        descTextField.onDidEndEditing = onDidEndEditing
     }
     
     @objc private func imagePickerButtonAction(_ sender: UIButton) {
@@ -115,21 +165,24 @@ class AddItemViewController: UIViewController {
     private func setupScrollView() {
         scrollView = UIScrollView()
         scrollContentView = UIView()
+        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollContentView.translatesAutoresizingMaskIntoConstraints = false
+        
         view.addSubview(scrollView)
         scrollView.addSubview(scrollContentView)
         
         NSLayoutConstraint.activate([
-            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
             
-            scrollContentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            scrollContentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            scrollContentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
         ])
     }
     
@@ -167,11 +220,11 @@ class AddItemViewController: UIViewController {
     
     private func setupAddButton() {
         addButton = UIButton()
-        addButton.setTitle("Add Item", for: .normal)
+        addButton.setTitle("Save", for: .normal)
         addButton.translatesAutoresizingMaskIntoConstraints = false
         addButton.backgroundColor = .app
         addButton.layer.cornerRadius = 10
-        addButton.addTarget(self, action: #selector(addButtonTapped), for: .touchUpInside)
+        addButton.addTarget(self, action: #selector(saveAction), for: .touchUpInside)
     }
     
     private func createWrapperStackView() -> UIStackView {
@@ -216,75 +269,81 @@ class AddItemViewController: UIViewController {
     
     // MARK: - Actions
     
-    @objc private func addButtonTapped() {
+    @objc private func saveAction() {
         guard let priceString = priceTextField.inputText,
               let price = Double(priceString) else {
-            self.present(UIAlertController().defaultStyle(title: "Failed to Add Item", message: "Provide valid price!"), animated: true)
+            presentAlert(title: "Failed to Add Item", message: "Provide a valid price!")
             return
         }
         
-        guard let description = descTextField.inputText,
-              !description.isEmpty else {
-            let toast = Toast.text("Invalid Description!")
-            toast.show(haptic: .error)
+        guard let description = descTextField.inputText, !description.isEmpty else {
+            showToast(message: "Invalid Description!", haptic: .error)
             return
         }
         
         guard let image = imagePickerButton.backgroundImage(for: .normal) else {
-            if let toast {
-                toast.close(animated: false)
-            }
-            toast = Toast.text("No Image Selected")
-            toast.show(haptic: .warning)
+            showToast(message: "No Image Selected", haptic: .warning)
             return
         }
-        guard let name = nameTextField.inputText else { return }
-        let menuItem = MenuItem(
-            name: name,
-            price: price,
-            category: category,
-            description: description,
-            image: image
-        )
-        menuItem.image = image
-        // Perform database operations asynchronously
-        DispatchQueue.global(qos: .background).async {
-            do {
-                let databaseAccess = try SQLiteDataAccess.openDatabase()
-                let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
-                try menuService.add(menuItem)
-                
-                // Haptic feedback
-                let impactFeedback = UIImpactFeedbackGenerator(style: .medium)
-                DispatchQueue.main.async {
-                    impactFeedback.prepare()
-                    impactFeedback.impactOccurred()
-                    
-                    NotificationCenter.default.post(name: .menuItemDidChangeNotification, object: nil)
-                    self.menuItemDelegate?.menuItemDidAdd(menuItem)
-                    self.dismiss(animated: true)
-                }
-            } catch {
-                DispatchQueue.main.async {
-                    print("Unable to add MenuItem - \(error)")
-                    let toast = Toast.text("Failed to add menu item!")
-                    toast.show(haptic: .error)
-                }
-            }
-        }
         
-        // Dismiss the loading indicator
-        DispatchQueue.main.async {
-            self.dismiss(animated: true) {
-                self.dismiss(animated: true)
+        guard let name = nameTextField.inputText else { return }
+        
+        let newItem = MenuItem(name: name, price: price, category: category, description: description, image: image)
+        
+        saveMenuItem(newItem)
+    }
+
+    private func presentAlert(title: String, message: String) {
+        let alertController = UIAlertController().defaultStyle(title: title, message: message)
+        present(alertController, animated: true)
+    }
+
+    private func showToast(message: String, haptic: UINotificationFeedbackGenerator.FeedbackType) {
+        let toast = Toast.text(message)
+        toast.show(haptic: haptic)
+    }
+
+    private func saveMenuItem(_ menuItem: MenuItem) {
+        do {
+            let databaseAccess = try SQLiteDataAccess.openDatabase()
+            let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
+            
+            if let existingMenuItem = self.menuItem {
+                try updateMenuItem(existingMenuItem, with: menuItem, using: menuService)
+            } else {
+                try menuService.add(menuItem)
+                menuItemDelegate?.menuDidChange(menuItem)
             }
+            
+            self.showToast(message: "Item Added", haptic: .success)
+            self.dismiss(animated: true)
+        } catch {
+            self.handleDatabaseError(error)
         }
+    }
+
+    private func updateMenuItem(_ existingMenuItem: MenuItem, with newItem: MenuItem, using menuService: MenuServiceImpl) throws {
+        existingMenuItem.image = newItem.image
+        existingMenuItem.name = newItem.name
+        existingMenuItem.price = newItem.price
+        existingMenuItem.description = newItem.description
+        try menuService.update(existingMenuItem)
+        menuItemDelegate?.menuDidChange(existingMenuItem)
+    }
+
+    private func handleDatabaseError(_ error: Error) {
+        print("Unable to add MenuItem - \(error)")
+        self.showToast(message: "Failed to add menu item!", haptic: .warning)
+    }
+
+    
+    private func addItem(_ menuItem: MenuItem) async {
+        
     }
     
     let nameTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Item Name"
-        field.placeholder = "e.g. McWings"
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -292,7 +351,7 @@ class AddItemViewController: UIViewController {
     let priceTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Price Tag"
-        field.placeholder = "Enter Price"
+        field.keyboardType = .decimalPad
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -300,10 +359,23 @@ class AddItemViewController: UIViewController {
     let descTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Description"
-        field.placeholder = "Provide Details"
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
+    
+    private func configureForEditing() {
+        if let menuItem {
+            nameTextField.inputText = menuItem.name
+            priceTextField.inputText = String(menuItem.price)
+            descTextField.inputText = menuItem.description
+            imagePickerButton.setTitle(nil, for: .normal)
+            imagePickerButton.setImage(menuItem.image, for: .normal)
+        } else {
+            nameTextField.placeholder = "e.g. McWings"
+            priceTextField.placeholder = "Enter Price"
+            descTextField.placeholder = "Provide Details"
+        }
+    }
     
     private func validateInputText(_ textField: DineTextField) -> DineTextInputError? {
         guard let text = textField.inputText else { return nil }
@@ -329,9 +401,15 @@ class AddItemViewController: UIViewController {
         textfield.error = validateInputText(textfield)
         animateErrorMessage(for: textfield)
     }
+    
+    deinit {
+        // Remove observers
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
 }
 
-extension AddItemViewController: PHPickerViewControllerDelegate {
+extension ItemFormViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
         guard let itemProvider = results.first?.itemProvider else { return }
@@ -351,7 +429,17 @@ extension AddItemViewController: PHPickerViewControllerDelegate {
     }
 }
 
+extension ItemFormViewController {
+    private func onDidBeginEditing(_ textField: DineTextField) {
+        activeTextField = textField
+    }
+    
+    private func onDidEndEditing(_ textField: DineTextField) {
+        activeTextField = nil
+    }
+}
+
 #Preview {
-    UINavigationController(rootViewController: AddItemViewController(category: MenuCategory(id: UUID(), categoryName: "Starter")))
+    UINavigationController(rootViewController: ItemFormViewController(category: MenuCategory(id: UUID(), categoryName: "Starter")))
 }
 

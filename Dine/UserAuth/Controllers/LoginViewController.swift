@@ -250,7 +250,6 @@ class LoginViewController: UIViewController {
             verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
             verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
             verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 100),
-//            forgotPasswordLabel.heightAnchor.constraint(equalToConstant: 14),
             loginButton.heightAnchor.constraint(equalToConstant: 55),
             signUpLabel.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
             signUpLabel.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor, constant: 20),

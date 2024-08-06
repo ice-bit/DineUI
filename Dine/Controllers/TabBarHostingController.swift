@@ -40,17 +40,13 @@ class TabBarHostingController: UITabBarController {
         let tableViewController = TablesViewController(tableService: tableService)
         tableViewController.tabBarItem = UITabBarItem(title: "Tables", image: UIImage(systemName: "table.furniture"), selectedImage: UIImage(systemName: "table.furniture.fill"))
         
-        guard let menuSectionViewController = vcFactory.createMenuSectionViewController() else {
-            print("Error: Failed to create instance of MenuSectionViewController.")
-            return
-        }
-        
-        menuSectionViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "menucard"), selectedImage: UIImage(systemName: "menucard.fill"))
+        let menuListingViewController = MenuListingViewController()
+        menuListingViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "menucard"), selectedImage: UIImage(systemName: "menucard.fill"))
         
         let orderNavigationController = UINavigationController(rootViewController: orderViewController)
         let billNavigationController = UINavigationController(rootViewController: billViewController)
         let tableNavigationController = UINavigationController(rootViewController: tableViewController)
-        let menuNavigationController = UINavigationController(rootViewController: menuSectionViewController)
+        let menuNavigationController = UINavigationController(rootViewController: menuListingViewController)
         
         let metricViewController = MetricViewController()
         metricViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))

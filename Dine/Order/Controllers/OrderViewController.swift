@@ -223,7 +223,7 @@ class OrderViewController: UIViewController {
     }
     
     @objc private func addOrder() {
-        let menuListVC = AddToCartViewController()
+        let menuListVC = CartViewController()
         menuListVC.isModalInPresentation = true
         let navController = UINavigationController(rootViewController: menuListVC)
         present(navController, animated: true)

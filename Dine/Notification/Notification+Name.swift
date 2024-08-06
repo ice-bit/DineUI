@@ -22,4 +22,6 @@ extension Notification.Name {
     static let tablesDidChangeNotification = Notification.Name("com.euphoria.Dine.tablesDidChangeNotification")
     /// Broadcaster name for changes in mock data.
     static let mockDataDidChangeNotification = Notification.Name("com.euphoria.Dine.mockDataDidChangeNotification")
+    
+    static let headerTappedNotification = Notification.Name("com.euphoria.Dine.headerTappedNotification")
 }

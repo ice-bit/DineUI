@@ -12,9 +12,10 @@ class SignUpViewController: UIViewController {
     private var toast: Toast!
     var isInitialScreen: Bool = false
     private var scrollView: UIScrollView!
-    private var contentView: UIView!
+    private var scrollContentView: UIView!
     private var toggleButton: UIButton!
     private var confirmPasswordToggleButton: UIButton!
+    private var activeTextField: DineTextField?
     
     private lazy var introLabel: UILabel = {
         let label = UILabel()
@@ -44,36 +45,36 @@ class SignUpViewController: UIViewController {
         return button
     }()
     
-    private lazy var loginLabel: UILabel = {
-        let label = UILabel()
-        // Full string
-        let fullString = "Already have an account? Login"
+    /*private lazy var loginLabel: UILabel = {
+     let label = UILabel()
+     // Full string
+     let fullString = "Already have an account? Login"
 
-        // Underline range
-        let underlineRange = (fullString as NSString).range(of: "Login")
+     // Underline range
+     let underlineRange = (fullString as NSString).range(of: "Login")
 
-        // Create an attributed string
-        let attributedString = NSMutableAttributedString(string: fullString)
+     // Create an attributed string
+     let attributedString = NSMutableAttributedString(string: fullString)
 
-        // Add underline attribute to the specific range
-        attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: underlineRange)
-        
-        // Set attributed string
-        label.attributedText = attributedString
-        label.font = .preferredFont(forTextStyle: .footnote)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+     // Add underline attribute to the specific range
+     attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: underlineRange)
+     
+     // Set attributed string
+     label.attributedText = attributedString
+     label.font = .preferredFont(forTextStyle: .footnote)
+     label.translatesAutoresizingMaskIntoConstraints = false
+     return label
+ }()*/
     
     override func viewDidLoad() {
         super.viewDidLoad()
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
-        if isInitialScreen {
+        /*if isInitialScreen {
             loginLabel.isHidden = true
-        }
+        }*/
         setupPasswordVisibiltyToggle()
         setupConfirmPasswordVisibiltyToggle()
-        setupLoginLabelGesture()
+//        setupLoginLabelGesture()
         setupSubviews()
         view.backgroundColor = .systemGroupedBackground
         title = "Sign Up"
@@ -83,7 +84,46 @@ class SignUpViewController: UIViewController {
         usernameDineTextField.onEditingChanged = onEditingChanged
         passwordDineTextField.onEditingChanged = onEditingChanged
         confirmPasswordDineTextField.onEditingChanged = onEditingChanged
+        
+        // Register for keyboard notifications
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        usernameDineTextField.onDidEndEditing = onDidEndEditing
+        usernameDineTextField.onDidBeginEditing = onDidBeginEditing
+        passwordDineTextField.onEditingChanged = onEditingChanged
+        passwordDineTextField.onDidBeginEditing = onDidBeginEditing
+        passwordDineTextField.onDidEndEditing = onDidEndEditing
+        confirmPasswordDineTextField.onEditingChanged = onEditingChanged
+        confirmPasswordDineTextField.onDidBeginEditing = onDidBeginEditing
+        confirmPasswordDineTextField.onDidEndEditing = onDidEndEditing
+    }
     
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let keyboardHeight = keyboardSize.height
+            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+            
+            /*scrollView.contentInset = contentInsets
+            scrollView.scrollIndicatorInsets = contentInsets*/
+            
+            var visibleRect = self.view.frame
+            visibleRect.size.height -= keyboardHeight
+
+            if let activeTextField = self.activeTextField {
+                // Convert the text field's frame to the scroll view's coordinate system
+                let textFieldFrameInScrollView = activeTextField.convert(activeTextField.bounds, to: scrollView)
+                // Check if the active text field is not visible
+                if !visibleRect.contains(textFieldFrameInScrollView.origin) {
+                    scrollView.scrollRectToVisible(textFieldFrameInScrollView, animated: true)
+                }
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        let contentInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
     }
     
     private func setupPasswordVisibiltyToggle() {
@@ -136,11 +176,11 @@ class SignUpViewController: UIViewController {
         }
     }
     
-    private func setupLoginLabelGesture() {
+    /*private func setupLoginLabelGesture() {
         loginLabel.isUserInteractionEnabled = true
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(loginLabelAction(_:)))
         loginLabel.addGestureRecognizer(tapGesture)
-    }
+    }*/
     
     @objc private func loginLabelAction(_ sender: UILabel) {
         navigationController?.popViewController(animated: true)
@@ -228,13 +268,13 @@ class SignUpViewController: UIViewController {
     private func setupSubviews() {
         scrollView = UIScrollView()
         scrollView.translatesAutoresizingMaskIntoConstraints = false
-        contentView = UIView()
-        contentView.translatesAutoresizingMaskIntoConstraints = false
+        scrollContentView = UIView()
+        scrollContentView.translatesAutoresizingMaskIntoConstraints = false
         
         view.addSubview(scrollView)
-        scrollView.addSubview(contentView)
-        contentView.addSubview(verticalStackView)
-        contentView.addSubview(loginLabel)
+        scrollView.addSubview(scrollContentView)
+        scrollContentView.addSubview(verticalStackView)
+//        contentView.addSubview(loginLabel)
         
         verticalStackView.addArrangedSubview(introLabel)
         verticalStackView.addArrangedSubview(usernameDineTextField)
@@ -247,21 +287,25 @@ class SignUpViewController: UIViewController {
         verticalStackView.setCustomSpacing(34, after: confirmPasswordDineTextField)
         
         NSLayoutConstraint.activate([
-            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
-            contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
-            contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
-            verticalStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            verticalStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.88),
-            verticalStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 65),
+            
+            scrollContentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            scrollContentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
+            scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
+            scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
+            verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
+            verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 65),
+            verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor, constant: -20),
             signUpButton.heightAnchor.constraint(equalToConstant: 55),
-            loginLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
+            /*loginLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             loginLabel.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor, constant: 20),
-            loginLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),
+            loginLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),*/
         ])
     }
     
@@ -351,6 +395,15 @@ class SignUpViewController: UIViewController {
 
 }
 
+extension SignUpViewController {
+    private func onDidBeginEditing(_ textField: DineTextField) {
+        activeTextField = textField
+    }
+    
+    private func onDidEndEditing(_ textField: DineTextField) {
+        activeTextField = nil
+    }
+}
 
 #Preview {
     UINavigationController(rootViewController: SignUpViewController())

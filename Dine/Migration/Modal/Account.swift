@@ -13,7 +13,11 @@ enum AccountStatus: String, Codable {
 }
 
 enum UserRole: String, CaseIterable, Codable {
-    case admin, manager, waitStaff, kitchenStaff, employee
+    case admin = "Administrator"
+    case manager = "Management Staff"
+    case waitStaff = "Wait Staff"
+    case kitchenStaff = "Kitchen Staff"
+    case employee = "Employee"
 }
 
 class Account: Codable {
@@ -76,6 +80,16 @@ class Account: Codable {
     
     func updatePassword(_ password: String) {
         self._password = password
+    }
+    
+    func updateRole(_ role: UserRole) {
+        self._userRole = role
+    }
+    
+    func updateAccount(_ account: Account) {
+        updateUsername(account.username)
+        updatePassword(account.password)
+        updateRole(account.userRole)
     }
     
     // TODO: Add a hashed password and then compare the hashed input password with the stored hashed password(CryptoKit)

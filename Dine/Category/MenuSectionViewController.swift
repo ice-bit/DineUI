@@ -20,7 +20,6 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
             updateUIForData()
         }
     }
-    private let menuService: MenuService
     
     // Search Components
     private var filteredCategories: [MenuCategory] = []
@@ -33,16 +32,6 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     }
     
     var didSelectCategory: ((MenuCategory) -> Void)?
-    
-    // MARK: - Init
-    init(menuService: MenuService) {
-        self.menuService = menuService
-        super.init(nibName: nil, bundle: nil)
-    }
-    
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
     
     // MARK: - View lifecycle methods
     override func viewDidLoad() {

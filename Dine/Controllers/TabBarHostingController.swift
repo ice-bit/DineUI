@@ -42,11 +42,14 @@ class TabBarHostingController: UITabBarController {
         
         let menuListingViewController = MenuListingViewController()
         menuListingViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "menucard"), selectedImage: UIImage(systemName: "menucard.fill"))
+        let controlViewController = ManagerSettingsViewController()
+        controlViewController.tabBarItem = UITabBarItem(title: "Controls", image: UIImage(systemName: "gear"), selectedImage: UIImage(systemName: "gear.circle"))
         
         let orderNavigationController = UINavigationController(rootViewController: orderViewController)
         let billNavigationController = UINavigationController(rootViewController: billViewController)
         let tableNavigationController = UINavigationController(rootViewController: tableViewController)
         let menuNavigationController = UINavigationController(rootViewController: menuListingViewController)
+        let controlNavigationController = UINavigationController(rootViewController: controlViewController)
         
         let metricViewController = MetricViewController()
         metricViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
@@ -61,7 +64,7 @@ class TabBarHostingController: UITabBarController {
             billNavigationController,
             tableNavigationController,
             menuNavigationController,
-            //UINavigationController(rootViewController: editViewController)
+            controlNavigationController
         ]
         self.viewControllers = viewControllers
         hidesBottomBarWhenPushed = false
@@ -89,7 +92,7 @@ struct ViewControllerFactory {
         
         let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
         
-        return MenuSectionViewController(menuService: menuService)
+        return MenuSectionViewController()
     }
 }
 

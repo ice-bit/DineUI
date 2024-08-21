@@ -311,7 +311,7 @@ class CartViewController: UIViewController {
     private func presentMenuSection() {
         do {
             let menuService = try MenuServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
-            let menuSectionViewController = MenuSectionViewController(menuService: menuService)
+            let menuSectionViewController = MenuSectionViewController()
             navigationController?.present(menuSectionViewController, animated: true)
         } catch {
             fatalError("Failed to build menuService @\(#line): \(error)")

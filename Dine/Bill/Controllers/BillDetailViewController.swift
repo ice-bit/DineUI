@@ -147,6 +147,11 @@ class BillDetailViewController: UIViewController {
         }
         
         paymentButton = createCustomButton(title: "Checkout", type: .normal, primaryAction: paymentAction)
+        if let account = UserSessionManager.shared.loadAccount() {
+            if account.userRole == .waitStaff {
+                paymentButton.isEnabled = UserDefaultsManager.shared.isPaymentEnabled
+            }
+        }
         
         horizontalStackView.addArrangedSubview(paymentButton)
         

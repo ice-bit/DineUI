@@ -33,7 +33,7 @@ class UserSessionManager {
             let encoder = JSONEncoder()
             let data = try encoder.encode(account)
             UserDefaults.standard.set(data, forKey: userDefaultsKey)
-            UserDefaults.standard.set(true, forKey: "isUserLoggedIn")
+            UserDefaultsManager.shared.isUserLoggedIn = true
         } catch {
             print("Error encoding user: \(error.localizedDescription)")
         }
@@ -55,6 +55,6 @@ class UserSessionManager {
 
     func clearAccount() {
         UserDefaults.standard.removeObject(forKey: userDefaultsKey)
-        UserDefaults.standard.set(false, forKey: "isUserLoggedIn")
+        UserDefaultsManager.shared.isUserLoggedIn = false
     }
 }

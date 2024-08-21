@@ -31,7 +31,11 @@ class ItemFormViewController: UIViewController {
     private var pickerView: UIPickerView!
     
     // This property will store the active text field
-    var activeTextField: DineTextField?
+    var activeTextField: DineTextField? {
+        didSet {
+            
+        }
+    }
     
     lazy private var imagePickerButton: UIButton = {
         let button = UIButton()
@@ -94,18 +98,23 @@ class ItemFormViewController: UIViewController {
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
-        if let keyboardSize = notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue {
-            let keyboardFrame = keyboardSize.cgRectValue
-            let keyboardHeight = keyboardFrame.height
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let keyboardHeight = keyboardSize.height
+            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+            
+            /*scrollView.contentInset = contentInsets
+            scrollView.scrollIndicatorInsets = contentInsets*/
+            
+            var visibleRect = self.view.frame
+            visibleRect.size.height -= keyboardHeight
 
-            var contentInsets = scrollView.contentInset
-            contentInsets.bottom = keyboardHeight
-            scrollView.contentInset = contentInsets
-            scrollView.scrollIndicatorInsets = contentInsets
-
-            // Scroll to the active text field
-            if let activeField = activeTextField {
-                scrollView.scrollRectToVisible(activeField.textfield.frame, animated: true)
+            if let activeTextField = self.activeTextField {
+                // Convert the text field's frame to the scroll view's coordinate system
+                let textFieldFrameInScrollView = activeTextField.convert(activeTextField.bounds, to: scrollView)
+                // Check if the active text field is not visible
+                if !visibleRect.contains(textFieldFrameInScrollView.origin) {
+                    scrollView.scrollRectToVisible(textFieldFrameInScrollView, animated: true)
+                }
             }
         }
     }
@@ -147,6 +156,7 @@ class ItemFormViewController: UIViewController {
     }
     
     // MARK: - @OBJC Methods
+    // looking for methods? sorry for disappointing :(
     
     // MARK: - View Setup
     private func createTextFieldHeaderLabel(with title: String) -> UILabel {

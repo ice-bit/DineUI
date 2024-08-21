@@ -14,7 +14,7 @@ class MenuListHeader: UITableViewHeaderFooterView {
     
     lazy var title: UILabel = {
         let label = UILabel()
-        label.font = .preferredFont(forTextStyle: .subheadline)
+        label.font = .preferredFont(forTextStyle: .headline)
         return label
     }()
     

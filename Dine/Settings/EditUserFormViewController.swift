@@ -1,28 +1,47 @@
 //
-//  LoginViewController.swift
+//  EditUserFormViewController.swift
 //  Dine
 //
-//  Created by doss-zstch1212 on 18/06/24.
+//  Created by doss-zstch1212 on 08/08/24.
 //
 
 import UIKit
-import Toast
+import LocalAuthentication
 
-class LoginViewController: UIViewController {
+class EditUserFormViewController: UIViewController {
+    private let account: Account
     private var toggleButton: UIButton!
-    private var toast: Toast!
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
+    private var editButton: UIBarButtonItem!
+    private var selectedUserRole: UserRole? {
+        didSet {
+            if let selectedUserRole {
+                dinePicker.contentLabel.text = selectedUserRole.rawValue
+            }
+        }
+    }
+    var onDidEditUser: ((Account) -> Void)?
     
-    private lazy var introLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Welcome to Dine!"
-        label.font = .preferredFont(forTextStyle: .largeTitle)
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()
+    private var inEditMode: Bool = false {
+        didSet {
+            didChangeEditMode()
+        }
+    }
+    
+    /// An authentication context stored at class scope so it's available for use during UI updates.
+    var context = LAContext()
+    
+    private var state: AuthenticationState = .unauthenticated {
+        didSet {
+            switch state {
+            case .authenticated:
+                inEditMode = true
+            case .unauthenticated:
+                inEditMode = false
+            }
+        }
+    }
     
     private lazy var verticalStackView: UIStackView = {
         let stackView = UIStackView()
@@ -33,13 +52,14 @@ class LoginViewController: UIViewController {
         return stackView
     }()
     
-    private lazy var loginButton: UIButton = {
+    private lazy var saveButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Continue", for: .normal)
+        button.setTitle("Save", for: .normal)
         button.layer.cornerRadius = 10
         button.backgroundColor = .app
-        button.addTarget(self, action: #selector(loginButtonAction(_:)), for: .touchUpInside)
+        button.addTarget(self, action: #selector(saveButtonAction(_:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
+        button.isHidden = true
         return button
     }()
     
@@ -57,57 +77,111 @@ class LoginViewController: UIViewController {
         return label
     }()
     
-        /*private lazy var signUpLabel: UILabel = {
-        let label = UILabel()
-        // Full string
-        let fullString = "Don't have an account? Sign Up"
-
-        // Underline range
-        let underlineRange = (fullString as NSString).range(of: "Sign Up")
-
-        // Create an attributed string
-        let attributedString = NSMutableAttributedString(string: fullString)
-
-        // Add underline attribute to the specific range
-        attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: underlineRange)
-
-        // Set the attributed string to the label
-        label.attributedText = attributedString
-        label.font = .preferredFont(forTextStyle: .footnote)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()*/
+    enum AuthenticationState {
+        case authenticated, unauthenticated
+    }
+    
+    init(account: Account) {
+        self.account = account
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupScrollView()
+        title = "Edit"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        view.backgroundColor = .systemGroupedBackground
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
+        setupScrollView()
         setupSubviews()
-        //createTrackingConstraints()
-        //setupSignUpLabelGesture()
         setupPasswordVisibiltyToggle()
         setupForgetLabelGesture()
-        view.backgroundColor = .systemGroupedBackground
-        title = "Login"
+        fetchAccounts()
+        usernameDineTextField.inputText = account.username
+        passwordDineTextField.inputText = account.password
+        selectedUserRole = account.userRole
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
         // tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
-        fetchAccounts()
-        //usernameDineTextField.onEditingChanged = onEditingChanged
-        //passwordDineTextField.onEditingChanged = onEditingChanged
+        setupPicker()
+        setupNavigationBar()
     }
     
-    private func createTextFieldHeaderLabel(with title: String) -> UILabel {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = .preferredFont(forTextStyle: .subheadline)
-        label.text = title
-        label.textAlignment = .left
-        return label
+    private func setupNavigationBar() {
+        editButton = UIBarButtonItem(title: "Edit", style: .plain, target: self, action: #selector(editButtonAction))
+        navigationItem.rightBarButtonItem = editButton
     }
     
+    @objc private func editButtonAction() {
+        if state == .authenticated {
+            // Set to unauthenticated state
+            state = .unauthenticated
+        } else {
+            context = LAContext()
+            
+            context.localizedCancelTitle = "Enter Passcode"
+            // First check if we have the needed hardware support.
+            var error: NSError?
+            guard context.canEvaluatePolicy(.deviceOwnerAuthentication, error: &error) else {
+                print(error?.localizedDescription ?? "Can't evaluate policy")
+
+                // Fall back to a asking for username and password.
+                // ...
+                return
+            }
+            Task {
+                do {
+                    try await context.evaluatePolicy(.deviceOwnerAuthentication, localizedReason: "Log in to your account")
+                    state = .authenticated
+                } catch let error {
+                    print(error.localizedDescription)
+
+                    // Fall back to a asking for username and password.
+                    // ...
+                }
+            }
+        }
+    }
+    
+    private func didChangeEditMode() {
+        if inEditMode {
+            saveButton.isHidden = false
+            usernameDineTextField.textfield.isUserInteractionEnabled = true
+            usernameDineTextField.textfield.becomeFirstResponder()
+            usernameDineTextField.textfield.rightView?.isHidden = false
+            passwordDineTextField.textfield.rightView?.isHidden = false
+            passwordDineTextField.textfield.isUserInteractionEnabled = true
+            dinePicker.trailingPickerButton.isHidden = false
+            editButton.title = "Cancel"
+        } else {
+            saveButton.isHidden = true
+            usernameDineTextField.textfield.isUserInteractionEnabled = false
+            usernameDineTextField.textfield.rightView?.isHidden = true
+            passwordDineTextField.textfield.rightView?.isHidden = true
+            passwordDineTextField.textfield.isUserInteractionEnabled = false
+            dinePicker.trailingPickerButton.isHidden = true
+            editButton.title = "Edit"
+        }
+    }
+    
+    private func setupPicker() {
+        var actions = [UIAction]()
+        for role in UserRole.allCases {
+            let action = UIAction(title: role.rawValue) { [weak self] _ in
+                self?.selectedUserRole = role
+            }
+            actions.append(action)
+        }
+        
+        let menu = UIMenu(children: actions)
+        dinePicker.menu = menu
+    }
+
     private func setupScrollView() {
         scrollView = UIScrollView()
         scrollContentView = UIView()
@@ -172,102 +246,50 @@ class LoginViewController: UIViewController {
         view.endEditing(true)
     }
     
-    @objc private func loginButtonAction(_ sender: UIButton) {
+    @objc private func saveButtonAction(_ sender: UIButton) {
         print(#function)
         guard let username = usernameDineTextField.inputText,
               let password = passwordDineTextField.inputText,
-            !password.isEmpty,
+              let userRole = selectedUserRole,
+              !password.isEmpty,
               !username.isEmpty else {
-            showToast(message: "Missing Credentials")
+            print("Missing Credentials")
             return
         }
+        
+        account.updateUsername(username)
+        account.updatePassword(password)
+        account.updateRole(userRole)
+        
         do {
             let databaseAccess = try SQLiteDataAccess.openDatabase()
-            let authController = AuthController(databaseAccess: databaseAccess)
-            guard let account = try authController.login(username: username, password: password) else {
-                throw AuthenticationError.noUserFound
-            }
-            RootViewManager.didSignInSuccessfully(with: account)
-        }  catch let error as AuthenticationError {
-            handleLoginError(error)
+            let accountService = AccountServiceImpl(databaseAccess: databaseAccess)
+            try accountService.update(account)
+            onDidEditUser?(account)
+            state = .unauthenticated
         } catch {
-            handleLoginError(.other(error))
+            fatalError("Failed to update credentials: \(error.localizedDescription)")
         }
-    }
-    
-    func handleLoginError(_ error: AuthenticationError) {
-        switch error {
-        case .invalidUsername:
-            showToast(message: "Invalid username.")
-        case .invalidPassword:
-            showToast(message: "Invalid password.")
-        case .userAlreadyExists:
-            showToast(message: "Username taken.")
-        case .inactiveAccount:
-            showToast(message: "Account inactive.")
-        case .noUserFound:
-            showToast(message: "User not found.")
-        case .other:
-            showToast(message: "An error occurred.")
-        case .incorrectPassword:
-            showToast(message: "Incorrect password")
-        case .notStrongPassword:
-            showToast(message: "Provide a strong password")
-        }
-    }
-
-    func showToast(message: String) {
-        if let toast {
-            toast.close(animated: false)
-        }
-        toast = Toast.default(image: UIImage(systemName: "exclamationmark.triangle.fill")!, title: message)
-        toast.show(haptic: .error)
-    }
-    
-    private func createTrackingConstraints() {
-        let keyboardToVerticalStackView = view.keyboardLayoutGuide.topAnchor.constraint(equalToSystemSpacingBelow: verticalStackView.bottomAnchor, multiplier: 1.0)
-        keyboardToVerticalStackView.identifier = "keyboardToVerticalStackView"
-        
-        let nearBottomConstraints = [keyboardToVerticalStackView]
-        view.keyboardLayoutGuide.setConstraints(nearBottomConstraints, activeWhenNearEdge: .bottom)
     }
     
     private func setupSubviews() {
         scrollContentView.addSubview(verticalStackView)
-        //scrollContentView.addSubview(signUpLabel)
-        verticalStackView.addArrangedSubview(introLabel)
         verticalStackView.addArrangedSubview(usernameDineTextField)
         verticalStackView.addArrangedSubview(passwordDineTextField)
-        verticalStackView.addArrangedSubview(forgotPasswordLabel)
-        verticalStackView.addArrangedSubview(loginButton)
+        verticalStackView.addArrangedSubview(dinePicker)
+        verticalStackView.addArrangedSubview(saveButton)
         
         // Custom spacing
-        verticalStackView.setCustomSpacing(34, after: introLabel)
         verticalStackView.setCustomSpacing(20, after: forgotPasswordLabel)
         
         
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
             verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
-            verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 100),
+            verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 20),
             verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor, constant: -20),
-            loginButton.heightAnchor.constraint(equalToConstant: 55),
-            /*signUpLabel.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
-            signUpLabel.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor, constant: 20),
-            signUpLabel.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor, constant: -20),*/
+            saveButton.heightAnchor.constraint(equalToConstant: 55),
         ])
-    }
-    
-    /*private func setupSignUpLabelGesture() {
-        signUpLabel.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(signUpLabelAction(_:)))
-        signUpLabel.addGestureRecognizer(tapGesture)
-    }*/
-    
-    @objc private func signUpLabelAction(_ sender: UILabel) {
-        print(#function)
-        let signUpViewController = SignUpViewController()
-        navigationController?.pushViewController(signUpViewController, animated: true)
     }
     
     private func setupForgetLabelGesture() {
@@ -307,6 +329,7 @@ class LoginViewController: UIViewController {
         let field = DineTextField()
         field.keyboardType = .emailAddress
         field.titleText = "Username"
+        field.textfield.isUserInteractionEnabled = false
         field.placeholder = "e.g. John Dean"
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
@@ -315,10 +338,17 @@ class LoginViewController: UIViewController {
     let passwordDineTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Password"
+        field.textfield.isUserInteractionEnabled = false
         field.textfield.isSecureTextEntry = true
-        field.placeholder = "Your secure password"
+        field.placeholder = "Set New Password"
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
+    }()
+    
+    let dinePicker: DineUserSelector = {
+        let picker = DineUserSelector()
+        picker.translatesAutoresizingMaskIntoConstraints = false
+        return picker
     }()
     
     func onEditingChanged(_ textfield: DineTextField) {
@@ -337,5 +367,5 @@ class LoginViewController: UIViewController {
 }
 
 #Preview {
-    UINavigationController(rootViewController: LoginViewController())
+    UINavigationController(rootViewController: EditUserFormViewController(account: .default))
 }

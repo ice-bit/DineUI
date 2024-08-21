@@ -10,8 +10,11 @@ import Toast
 
 struct RootViewManager {
     static func didSignInSuccessfully(with account: Account) {
+        UserSessionManager.shared.saveAccount(account)
         // Create the new root view controller
-        let mainAppController = TabBarHostingController()
+        let mainAppController: UIViewController? = YardController().requestBaseScene()
+        
+        guard let mainAppController else { return }
         
         // Optionally add a transition animation
         let window = UIApplication.shared.windows.first
@@ -33,8 +36,11 @@ struct RootViewManager {
         
         
         // Set isUserLoggedIn -> true
-        // UserDefaults.standard.set(true, forKey: "isUserLoggedIn")
-        UserSessionManager.shared.saveAccount(account)
+        UserDefaultsManager.shared.isUserLoggedIn = true
+        // set the 'isManagerAccountSet' to true
+        if account.userRole == .manager {
+            UserDefaultsManager.shared.isManagerAccountSet = true
+        }
         let toast = Toast.default(image: UIImage(systemName: "person.fill.checkmark")!, title: "Logged In")
         toast.show(haptic: .success)
     }
@@ -60,7 +66,7 @@ struct RootViewManager {
         },
                           completion: nil)
         // Set isUserLoggedIn -> false
-        UserDefaults.standard.set(false, forKey: "isUserLoggedIn")
+        UserDefaultsManager.shared.isUserLoggedIn = false
         let toast = Toast.default(image: UIImage(systemName: "checkmark")!, title: "Logged out")
         toast.show(haptic: .success)
     }

@@ -13,6 +13,7 @@ class AddTablesViewController: UIViewController {
     private var toast: Toast!
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
+    private var activeTextField: DineTextField?
     
     private func validateForm() {
         guard locationIdDineTextField.assitiveText != nil else { return }
@@ -69,26 +70,65 @@ class AddTablesViewController: UIViewController {
         setupSubviews()
         locationIdDineTextField.onEditingChanged = onEditingChanged
         capacityDineTextField.onEditingChanged = onEditingChanged
+        locationIdDineTextField.onDidBeginEditing = onDidBeginEditing
+        locationIdDineTextField.onDidEndEditing = onDidEndEditing
+        capacityDineTextField.onDidBeginEditing = onDidBeginEditing
+        capacityDineTextField.onDidEndEditing = onDidEndEditing
+        
+        // Register for keyboard notifications
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let keyboardHeight = keyboardSize.height
+            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
+            
+            /*scrollView.contentInset = contentInsets
+            scrollView.scrollIndicatorInsets = contentInsets*/
+            
+            var visibleRect = self.view.frame
+            visibleRect.size.height -= keyboardHeight
+
+            if let activeTextField = self.activeTextField {
+                // Convert the text field's frame to the scroll view's coordinate system
+                let textFieldFrameInScrollView = activeTextField.convert(activeTextField.bounds, to: scrollView)
+                // Check if the active text field is not visible
+                if !visibleRect.contains(textFieldFrameInScrollView.origin) {
+                    scrollView.scrollRectToVisible(textFieldFrameInScrollView, animated: true)
+                }
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        let contentInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
     }
     
     private func setupScrollView() {
         scrollView = UIScrollView()
         scrollContentView = UIView()
+        
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         scrollContentView.translatesAutoresizingMaskIntoConstraints = false
+        
         view.addSubview(scrollView)
         scrollView.addSubview(scrollContentView)
         
         NSLayoutConstraint.activate([
-            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
             
-            scrollContentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            scrollContentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            scrollContentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             scrollContentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             scrollContentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            scrollContentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
         ])
     }
 
@@ -217,6 +257,16 @@ class AddTablesViewController: UIViewController {
     func onEditingChanged(_ textfield: DineTextField) {
         textfield.error = validataInput(textfield)
         animateErrorMessage(for: textfield)
+    }
+}
+
+extension AddTablesViewController {
+    private func onDidBeginEditing(_ textField: DineTextField) {
+        activeTextField = textField
+    }
+    
+    private func onDidEndEditing(_ textField: DineTextField) {
+        activeTextField = nil
     }
 }
 

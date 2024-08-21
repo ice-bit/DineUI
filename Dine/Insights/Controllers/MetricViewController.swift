@@ -51,7 +51,6 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         
         // Poppulate data
         populateCollectionViewData()
-        setupBarButton()
         
         NotificationCenter.default.addObserver(self, selector: #selector(metricDataDidChange(_:)), name: .metricDataDidChangeNotification, object: nil)
     }
@@ -76,27 +75,6 @@ class MetricViewController: UIViewController, UICollectionViewDataSource {
         // chartData = MetricCollectionViewModel().generateChartData()
         // chartData = [ChartViewModal.generateRandomChartViewModal()]
         salesData = MetricRecord().generateChartData()
-    }
-    
-    private func setupBarButton() {
-        let settingsButton = UIBarButtonItem(
-            image: UIImage(systemName: "gear"),
-            style: .done,
-            target: self,
-            action: #selector(settingsButtonAction(_ :))
-        )
-        navigationItem.rightBarButtonItem = settingsButton
-    }
-    
-    @objc private func settingsButtonAction(_ sender: UIBarButtonItem) {
-        print(#function)
-        guard let account = UserSessionManager.shared.loadAccount() else {
-            fatalError("Invalid User session")
-        }
-        let settingsHostingController = UIHostingController(
-            rootView: SettingsView(account: account)
-        )
-        self.present(settingsHostingController, animated: true)
     }
     
     private func setUpCollectionView() {

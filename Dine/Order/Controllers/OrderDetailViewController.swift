@@ -18,7 +18,6 @@ class OrderDetailViewController: UIViewController {
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
     private var billButton: UIButton!
-    private var editButton: UIButton!
     private var verticalStackView: UIStackView!
     private var horizontalButtonStackView: UIStackView!
     
@@ -157,13 +156,13 @@ class OrderDetailViewController: UIViewController {
         let billAction = UIAction { [weak self] _ in
             self?.initiateBilling()
         }
-        let editAction = UIAction { [weak self] _ in
-            self?.editBarButtonAction()
-        }
         
         billButton = createCustomButton(title: "Bill", type: .normal, primaryAction: billAction)
-        editButton = createCustomButton(title: "Edit", type: .normal, primaryAction: editAction)
-        
+        if let account = UserSessionManager.shared.loadAccount() {
+            if account.userRole == .waitStaff {
+                billButton.isEnabled = UserDefaultsManager.shared.isBillingEnabled
+            }
+        }
         stackView.addArrangedSubview(billButton)
         
         return stackView

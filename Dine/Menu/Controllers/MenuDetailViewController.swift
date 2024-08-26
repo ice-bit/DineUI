@@ -90,7 +90,9 @@ class MenuDetailViewController: UIViewController {
     
     private func setupMenuImage() {
         itemImageView = UIImageView()
-        itemImageView.image = menu.image ?? UIImage(named: "burger")
+        Task {
+            itemImageView.image = await menu.renderedImage
+        }
         itemImageView.layer.cornerRadius = 14
         itemImageView.clipsToBounds = true
         itemImageView.translatesAutoresizingMaskIntoConstraints = false

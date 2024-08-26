@@ -18,6 +18,12 @@ class MenuItem: ObservableObject {
     
     var image: UIImage?
     
+    var renderedImage: UIImage? {
+        get async {
+            await loadImage()
+        }
+    }
+    
     init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String) {
         self.itemId = itemId
         self.name = name
@@ -66,6 +72,48 @@ class MenuItem: ObservableObject {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
     }
+}
+
+extension MenuItem {
+    private func loadImage() async -> UIImage? {
+        let cache = ImageCacheManager.shared.cache
+        
+        if let imageFromCache = cache.object(forKey: self.itemId.uuidString as NSString) {
+            print("Image rendered from cache")
+            return imageFromCache
+        }
+        
+        guard var fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            print("Failed to construct URL")
+            return nil
+        }
+        fileURL.appendPathComponent("\(self.itemId.uuidString).png")
+        print("FileURL: \(fileURL)")
+        
+        do {
+            // Load the data asynchronously
+            let data = try await withCheckedThrowingContinuation { continuation in
+                DispatchQueue.global(qos: .background).async {
+                    do {
+                        let data = try Data(contentsOf: fileURL)
+                        continuation.resume(returning: data)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+            
+            guard let imageToCache = UIImage(data: data) else {
+                fatalError("Failed to create UIImage")
+            }
+            cache.setObject(imageToCache, forKey: self.itemId.uuidString as NSString)
+            return imageToCache
+            
+        } catch {
+            fatalError("🔨 Failed to load assets from files: \(error)")
+        }
+    }
+
 }
 
 extension MenuItem: Hashable {

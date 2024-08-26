@@ -2,7 +2,7 @@
 //  SignUpViewController.swift
 //  Dine
 //
-//  Created by doss-zstch1212 on 18/06/24.
+//  Created by ice-bit on 18/06/24.
 //
 
 import UIKit

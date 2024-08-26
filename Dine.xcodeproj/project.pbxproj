@@ -107,7 +107,7 @@
 		557B5CAC2C21522F004E5C49 /* LoginViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CAB2C21522F004E5C49 /* LoginViewController.swift */; };
 		557B5CAE2C2191CC004E5C49 /* UIWindow+setRootViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CAD2C2191CC004E5C49 /* UIWindow+setRootViewController.swift */; };
 		557B5CB02C21B633004E5C49 /* RootViewManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557B5CAF2C21B633004E5C49 /* RootViewManager.swift */; };
-		557F066B2C76064D0023BEE1 /* MenuViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557F066A2C76064D0023BEE1 /* MenuViewModal.swift */; };
+		557F066B2C76064D0023BEE1 /* MenuListViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557F066A2C76064D0023BEE1 /* MenuListViewModal.swift */; };
 		558350B72C2D908400DDA458 /* MenuCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350B62C2D908400DDA458 /* MenuCategory.swift */; };
 		558350B92C2DAA2F00DDA458 /* CategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350B82C2DAA2F00DDA458 /* CategoryService.swift */; };
 		558350BC2C2DB3C100DDA458 /* AddSectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */; };
@@ -275,7 +275,7 @@
 		557B5CAB2C21522F004E5C49 /* LoginViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginViewController.swift; sourceTree = "<group>"; };
 		557B5CAD2C2191CC004E5C49 /* UIWindow+setRootViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIWindow+setRootViewController.swift"; sourceTree = "<group>"; };
 		557B5CAF2C21B633004E5C49 /* RootViewManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewManager.swift; sourceTree = "<group>"; };
-		557F066A2C76064D0023BEE1 /* MenuViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuViewModal.swift; sourceTree = "<group>"; };
+		557F066A2C76064D0023BEE1 /* MenuListViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuListViewModal.swift; sourceTree = "<group>"; };
 		558350B62C2D908400DDA458 /* MenuCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCategory.swift; sourceTree = "<group>"; };
 		558350B82C2DAA2F00DDA458 /* CategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryService.swift; sourceTree = "<group>"; };
 		558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSectionViewController.swift; sourceTree = "<group>"; };
@@ -424,7 +424,7 @@
 			children = (
 				551AAE442BFF7EEE00E50FE7 /* MenuData.swift */,
 				55C132052C23F81600351F96 /* Menu.swift */,
-				557F066A2C76064D0023BEE1 /* MenuViewModal.swift */,
+				557F066A2C76064D0023BEE1 /* MenuListViewModal.swift */,
 			);
 			path = Modal;
 			sourceTree = "<group>";
@@ -1054,7 +1054,7 @@
 				5524F5502BE9E836003F500C /* TabBarHostingController.swift in Sources */,
 				552D38022BF1F5A0005B1D19 /* AuthController.swift in Sources */,
 				55217A612C6C913900589307 /* YardViewController.swift in Sources */,
-				557F066B2C76064D0023BEE1 /* MenuViewModal.swift in Sources */,
+				557F066B2C76064D0023BEE1 /* MenuListViewModal.swift in Sources */,
 				55C1320F2C23FD2A00351F96 /* MetricCard.swift in Sources */,
 				55C1320B2C23FCB100351F96 /* Insight.swift in Sources */,
 				552D38012BF1F5A0005B1D19 /* MenuController.swift in Sources */,

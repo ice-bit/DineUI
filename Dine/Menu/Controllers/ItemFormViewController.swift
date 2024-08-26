@@ -322,11 +322,11 @@ class ItemFormViewController: UIViewController {
                 try updateMenuItem(existingMenuItem, with: menuItem, using: menuService)
             } else {
                 try menuService.add(menuItem)
-                menuItemDelegate?.menuDidChange(menuItem)
             }
             
             self.showToast(message: "Item Added", haptic: .success)
             self.dismiss(animated: true)
+            NotificationCenter.default.post(name: .menuItemDidChangeNotification, object: nil)
         } catch {
             self.handleDatabaseError(error)
         }
@@ -338,7 +338,6 @@ class ItemFormViewController: UIViewController {
         existingMenuItem.price = newItem.price
         existingMenuItem.description = newItem.description
         try menuService.update(existingMenuItem)
-        menuItemDelegate?.menuDidChange(existingMenuItem)
     }
 
     private func handleDatabaseError(_ error: Error) {

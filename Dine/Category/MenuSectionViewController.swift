@@ -210,6 +210,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
             do {
                 let categoryService = try CategoryServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
                 try categoryService.delete(item)
+                NotificationCenter.default.post(name: .categoryDataDidChangeNotification, object: nil)
                 if let index = categories.firstIndex(where: { $0.id == item.id }) {
                     categories.remove(at: index)
                     collectionView.reloadData()

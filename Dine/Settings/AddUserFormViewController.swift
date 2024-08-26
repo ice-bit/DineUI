@@ -5,9 +5,12 @@
 //  Created by ice on 07/08/24.
 //
 import UIKit
+import Toast
 
 class AddUserFormViewController: UIViewController {
+    
     private var scrollView: UIScrollView!
+    private var toast: Toast!
     private var contentView: UIView!
     private var toggleButton: UIButton!
     private var confirmPasswordToggleButton: UIButton!
@@ -71,15 +74,6 @@ class AddUserFormViewController: UIViewController {
         picker.translatesAutoresizingMaskIntoConstraints = false
         return picker
     }()
-    
-    private var isFormValid: Bool {
-        guard let usernameAssitiveText = usernameDineTextField.assitiveText,
-              let passwordAssitiveText = passwordDineTextField.assitiveText,
-              let confirmPasswordAssitveText = confirmPasswordDineTextField.assitiveText else {
-            return true
-        }
-        return false
-    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -206,24 +200,32 @@ class AddUserFormViewController: UIViewController {
     }
 
     @objc private func handleSignUpButtonTapped(_ sender: UIButton) {
-        createAccountAndSignIn()
+        createAccount()
+    }
+    
+    private func showToast(message: String) {
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text(message)
+        toast.show(haptic: .warning)
     }
 
-    private func createAccountAndSignIn() {
+    private func createAccount() {
         guard let username = usernameDineTextField.inputText,
               let password = passwordDineTextField.inputText,
               let confirmPassword = confirmPasswordDineTextField.inputText else {
-            // showToast(message: "Please fill all fields.")
+             showToast(message: "Please fill all fields.")
             return
         }
 
         guard !username.isEmpty, !password.isEmpty, !confirmPassword.isEmpty else {
-            // showToast(message: "Please fill all fields.")
+             showToast(message: "Please fill all fields.")
             return
         }
 
         guard password == confirmPassword else {
-            // showToast(message: "Password Doesn't Match")
+             showToast(message: "Password Doesn't Match")
             return
         }
         
@@ -232,6 +234,13 @@ class AddUserFormViewController: UIViewController {
         do {
             let databaseAccess = try SQLiteDataAccess.openDatabase()
             let accountService = AccountServiceImpl(databaseAccess: databaseAccess)
+            let resultAccounts = try accountService.fetch()
+            if let resultAccounts {
+                if let _ = resultAccounts.first(where: { $0.username == username }) {
+                    showToast(message: "User already exists")
+                    return
+                }
+            }
             try accountService.add(account)
             onDidAddUser?(account)
             dismiss(animated: true)

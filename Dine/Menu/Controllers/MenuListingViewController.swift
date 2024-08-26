@@ -2,7 +2,7 @@
 //  MenuListingViewController.swift
 //  Dine
 //
-//  Created by doss-zstch1212 on 23/05/24.
+//  Created by ice on 23/05/24.
 //
 
 import UIKit
@@ -12,7 +12,7 @@ import Combine
 
 class MenuListingViewController: UIViewController {
     
-    var viewModal: MenuViewModal = MenuViewModal()
+    var viewModal: MenuListViewModal = MenuListViewModal()
     private var cancellables = Set<AnyCancellable>()
     
     private var tableView: UITableView!
@@ -47,12 +47,14 @@ class MenuListingViewController: UIViewController {
     private func setupBindings() {
         // Bind the filtered menu items to the table view reload
         viewModal.$selectedCategory
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.tableView.reloadData()
             }
             .store(in: &cancellables)
         
         viewModal.$menuItems
+            .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.tableView.reloadData()
             }
@@ -340,7 +342,7 @@ extension MenuListingViewController: UITableViewDataSource, UITableViewDelegate 
         guard let selectedCategory = viewModal.selectedCategory else { return nil }
         let headerView = MenuListHeader()
         headerView.title.text = selectedCategory.categoryName
-         headerView.onHeaderTapped = onCategoryHeaderTapped
+        headerView.onHeaderTapped = onCategoryHeaderTapped
         return headerView
     }
     

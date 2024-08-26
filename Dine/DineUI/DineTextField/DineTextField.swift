@@ -4,8 +4,9 @@
 //
 //  Created by doss-zstch1212 on 24/07/24.
 //
-// Credits to Team Microsoft
-// https://github.com/microsoft/fluentui-apple
+
+/// https://github.com/microsoft/fluentui-apple
+///     - credits to microsoft
 
 import UIKit
 

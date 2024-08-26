@@ -7,9 +7,13 @@
 
 import UIKit
 import LocalAuthentication
+import Toast
 
 class EditUserFormViewController: UIViewController {
+    
     private let account: Account
+    private var toast: Toast!
+    private var activeTextField: DineTextField?
     private var toggleButton: UIButton!
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
@@ -57,6 +61,7 @@ class EditUserFormViewController: UIViewController {
         button.setTitle("Save", for: .normal)
         button.layer.cornerRadius = 10
         button.backgroundColor = .app
+        button.isEnabled = false
         button.addTarget(self, action: #selector(saveButtonAction(_:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isHidden = true
@@ -110,6 +115,11 @@ class EditUserFormViewController: UIViewController {
         view.addGestureRecognizer(tap)
         setupPicker()
         setupNavigationBar()
+        
+        usernameDineTextField.onEditingChanged = onEditingChanged
+        passwordDineTextField.onEditingChanged = onEditingChanged
+        usernameDineTextField.onDidEndEditing = onDidEndEditingUsernameTF
+        passwordDineTextField.onDidEndEditing = onDidEndEditing
     }
     
     private func setupNavigationBar() {
@@ -166,6 +176,8 @@ class EditUserFormViewController: UIViewController {
             passwordDineTextField.textfield.isUserInteractionEnabled = false
             dinePicker.trailingPickerButton.isHidden = true
             editButton.title = "Edit"
+            usernameDineTextField.inputText = account.username
+            passwordDineTextField.inputText = account.password
         }
     }
     
@@ -246,6 +258,14 @@ class EditUserFormViewController: UIViewController {
         view.endEditing(true)
     }
     
+    private func showToast(_ message: String) {
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text(message)
+        toast.show(haptic: .warning)
+    }
+    
     @objc private func saveButtonAction(_ sender: UIButton) {
         print(#function)
         guard let username = usernameDineTextField.inputText,
@@ -253,22 +273,73 @@ class EditUserFormViewController: UIViewController {
               let userRole = selectedUserRole,
               !password.isEmpty,
               !username.isEmpty else {
-            print("Missing Credentials")
+            showToast("Missing Credentials")
             return
         }
-        
-        account.updateUsername(username)
-        account.updatePassword(password)
-        account.updateRole(userRole)
         
         do {
             let databaseAccess = try SQLiteDataAccess.openDatabase()
             let accountService = AccountServiceImpl(databaseAccess: databaseAccess)
+            let resultAccounts = try accountService.fetch()
+            if let resultAccounts {
+                if let _ = resultAccounts.first(where: { $0.username == username }) {
+                    showToast("User already exists")
+                    return
+                }
+            }
+            account.updateUsername(username)
+            account.updatePassword(password)
+            account.updateRole(userRole)
             try accountService.update(account)
             onDidEditUser?(account)
             state = .unauthenticated
         } catch {
             fatalError("Failed to update credentials: \(error.localizedDescription)")
+        }
+    }
+    
+    private func isUserAvaialable(_ username: String) -> Bool {
+        guard !(username == account.username) else {
+            return false
+        }
+        do {
+            let dbAccess = try SQLiteDataAccess.openDatabase()
+            let accountService = AccountServiceImpl(databaseAccess: dbAccess)
+            let account = try accountService.fetch()
+            if let account {
+                if account.first(where: { $0.username == username }) != nil {
+                    return true
+                } else {
+                    return false
+                }
+            } else {
+                print("no account found")
+                return false
+            }
+        } catch {
+            fatalError("accessing db failed with error: \(error)")
+        }
+    }
+    
+    private func validateUsername(_ textField: DineTextField) -> DineTextInputError? {
+        guard let text = textField.inputText else { return nil }
+        
+        if isUserAvaialable(text) {
+            return DineTextInputError(localizedDescription: "Username not available")
+        }
+        
+        return nil
+    }
+    
+    private func onDidEndEditingUsernameTF(_ textField: DineTextField) {
+        textField.error = validateUsername(textField)
+        animateErrorMessage(for: textField)
+        activeTextField = nil
+    }
+    
+    private func animateErrorMessage(for textField: DineTextField) {
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -356,6 +427,12 @@ class EditUserFormViewController: UIViewController {
     }
     
     func validateUsername(_ username: String) -> Bool {
+        guard !(username == account.username) else {
+            return false
+        }
+        guard AuthenticationValidator.isValidUsername(username) else {
+            return false
+        }
         do {
             let databaseAccess = try SQLiteDataAccess.openDatabase()
             let authController = AuthController(databaseAccess: databaseAccess)
@@ -363,6 +440,27 @@ class EditUserFormViewController: UIViewController {
         } catch {
             return false
         }
+    }
+    
+    private func validateForm() {
+        guard let username = usernameDineTextField.inputText,
+              let password = passwordDineTextField.inputText else {
+            return
+        }
+        guard validateUsername(username) else { return }
+        guard AuthenticationValidator.isStrongPassword(password) else { return }
+        saveButton.isEnabled = true
+    }
+}
+
+extension EditUserFormViewController {
+    private func onDidBeginEditing(_ textField: DineTextField) {
+        activeTextField = textField
+    }
+    
+    private func onDidEndEditing(_ textField: DineTextField) {
+        activeTextField = nil
+        validateForm()
     }
 }
 

@@ -58,10 +58,10 @@ class MenuListViewModal: ObservableObject {
             if let resultCategory {
                 categories = resultCategory
                 if let activeCategory = selectedCategory {
-                    if let category = categories.first(where: { $0.id == activeCategory.id }) {
+                    if categories.first(where: { $0.id == activeCategory.id }) != nil {
                         return
                     } else {
-                        selectedCategory = nil
+                        selectedCategory = categories.first
                     }
                 } else {
                     selectedCategory = categories.first

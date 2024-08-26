@@ -53,5 +53,6 @@ struct MenuServiceImpl: MenuService {
     
     func delete(_ menuItem: MenuItem) throws {
         try databaseAccess.delete(item: menuItem)
+        NotificationCenter.default.post(name: .menuItemDidChangeNotification, object: nil)
     }
 }

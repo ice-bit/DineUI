@@ -59,9 +59,10 @@ class EditUserFormViewController: UIViewController {
     private lazy var saveButton: UIButton = {
         let button = UIButton()
         button.setTitle("Save", for: .normal)
+        button.setTitleColor(.lightGray, for: .disabled)
         button.layer.cornerRadius = 10
         button.backgroundColor = .app
-        button.isEnabled = false
+//        button.isEnabled = false
         button.addTarget(self, action: #selector(saveButtonAction(_:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isHidden = true
@@ -293,6 +294,7 @@ class EditUserFormViewController: UIViewController {
             try accountService.update(account)
             onDidEditUser?(account)
             state = .unauthenticated
+//            navigationController?.popViewController(animated: true)
         } catch {
             fatalError("Failed to update credentials: \(error.localizedDescription)")
         }
@@ -418,6 +420,7 @@ class EditUserFormViewController: UIViewController {
     
     let dinePicker: DineUserSelector = {
         let picker = DineUserSelector()
+        picker.trailingPickerButton.isHidden = true
         picker.translatesAutoresizingMaskIntoConstraints = false
         return picker
     }()
@@ -449,7 +452,7 @@ class EditUserFormViewController: UIViewController {
         }
         guard validateUsername(username) else { return }
         guard AuthenticationValidator.isStrongPassword(password) else { return }
-        saveButton.isEnabled = true
+//        saveButton.isEnabled = true
     }
 }
 

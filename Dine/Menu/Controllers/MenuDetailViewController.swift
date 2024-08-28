@@ -2,17 +2,18 @@
 //  MenuDetailViewController.swift
 //  Dine
 //
-//  Created by doss-zstch1212 on 10/05/24.
+//  Created by ice on 10/05/24.
 //
 
 import UIKit
+import Combine
 
 class MenuDetailViewController: UIViewController {
     
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
     
-    private var menu: MenuItem
+    @Published private var menu: MenuItem
     
     private var itemImageView: UIImageView!
     private var nameTag: UILabel!
@@ -53,6 +54,13 @@ class MenuDetailViewController: UIViewController {
         configureContents()
     }
     
+    private func menuItemDidChange(_ item: MenuItem) {
+        itemImageView.image = item.image
+        nameTag.text = item.name
+        priceTag.text = "$\(item.price)"
+        descriptionTag.text = item.description
+    }
+    
     private func setupScrollView() {
         scrollView = UIScrollView()
         scrollContentView = UIView()
@@ -82,8 +90,8 @@ class MenuDetailViewController: UIViewController {
     }
     
     @objc private func editButtonAction(_ sender: UIBarButtonItem) {
-        let editViewController = ItemFormViewController(menuItem: menu)
-        editViewController.menuItemDelegate = self
+        let editViewController = AddItemFormViewController(menuItem: menu)
+        editViewController.onEndEditingMenuItem = menuItemDidChange
         self.present(UINavigationController(rootViewController: editViewController), animated: true)
         
     }
@@ -163,15 +171,6 @@ class MenuDetailViewController: UIViewController {
         return horizontalStackView
     }()
     
-}
-
-extension MenuDetailViewController: MenuItemDelegate {
-    func menuDidChange(_ item: MenuItem) {
-        itemImageView.image = item.image
-        nameTag.text = item.name
-        priceTag.text = String(item.price)
-        descriptionTag.text = item.description
-    }
 }
 
 #Preview {

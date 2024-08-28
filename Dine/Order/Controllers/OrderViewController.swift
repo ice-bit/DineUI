@@ -61,7 +61,7 @@ class OrderViewController: UIViewController {
         setupTableView()
         setupPlaceholderLabel()
         loadOrderData()
-        setupToolbar()
+//        setupToolbar()
         
         NotificationCenter.default.addObserver(
             self,
@@ -88,7 +88,7 @@ class OrderViewController: UIViewController {
         addBarButton = UIBarButtonItem(image: UIImage(systemName: "plus"), style: .done, target: self, action: #selector(addOrder))
         doneBarButton = UIBarButtonItem(title: "Done", style: .done, target: self, action: #selector(doneBarButtonAction(_:)))
         createMenuBarButton()
-        navigationItem.rightBarButtonItems = [addBarButton, quickMenuBarButton]
+         navigationItem.rightBarButtonItems = [addBarButton/*, quickMenuBarButton*/]
     }
     
     private func setupTableView() {

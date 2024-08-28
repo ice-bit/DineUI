@@ -71,7 +71,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
     /// Action method for the add table button.
     @objc private func addTableButtonTapped(sender: UIBarButtonItem) {
         print("Add table button tapped")
-        let addTableController = AddTablesViewController()
+        let addTableController = AddTableFormViewController()
         let navigationController = UINavigationController(rootViewController: addTableController)
         if let sheet = navigationController.sheetPresentationController {
             sheet.detents = [.medium(), .large()]

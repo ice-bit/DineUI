@@ -1,5 +1,5 @@
 //
-//  AddSectionViewController.swift
+//  AddCategoryFormViewController.swift
 //  Dine
 //
 //  Created by doss-zstch1212 on 27/06/24.
@@ -8,11 +8,13 @@
 import UIKit
 import Toast
 
-class AddSectionViewController: UIViewController {
+class AddCategoryFormViewController: UIViewController {
     
     private var toast: Toast!
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
+    
+    private var activeTextField: DineTextField?
     
     private lazy var verticalStackView: UIStackView = {
         let stackView = UIStackView()
@@ -22,18 +24,11 @@ class AddSectionViewController: UIViewController {
         return stackView
     }()
     
-    /*private lazy var titleLabel: UILabel = {
-        let label = UILabel()
-        label.text = "Add Section"
-        label.font = .preferredFont(forTextStyle: .largeTitle)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()*/
-    
-    let categoryDineTextField: DineTextField = {
+    let categoryTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Category"
         field.placeholder = "e.g. Appetizers"
+        field.textfield.returnKeyType = .done
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -50,16 +45,50 @@ class AddSectionViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.backgroundColor = .systemGroupedBackground
         title = "Add Section"
+        view.backgroundColor = .systemGroupedBackground
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
         setupScrollView()
         navigationController?.navigationBar.prefersLargeTitles = true
+        // Register for keyboard notifications
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
         // tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
         setupSubviews()
+        configureTextFieldDelegates()
+    }
+    
+    private func configureTextFieldDelegates() {
+        categoryTextField.onDidBeginEditing = onDidBeginEditing
+        categoryTextField.onDidEndEditing = onDidEndEditing
+        categoryTextField.onReturn = textFieldShouldReturn
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let keyboardHeight = keyboardSize.height
+            
+            var visibleRect = self.view.frame
+            visibleRect.size.height -= keyboardHeight
+
+            if let activeTextField = self.activeTextField {
+                // Convert the text field's frame to the scroll view's coordinate system
+                let textFieldFrameInScrollView = activeTextField.convert(activeTextField.bounds, to: scrollView)
+                // Check if the active text field is not visible
+                if !visibleRect.contains(textFieldFrameInScrollView.origin) {
+                    scrollView.scrollRectToVisible(textFieldFrameInScrollView, animated: true)
+                }
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        let contentInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
     }
     
     private func showErrorToast() {
@@ -72,7 +101,7 @@ class AddSectionViewController: UIViewController {
     
     @objc private func addButtonAction(_ sender: UIButton) {
         print(#function)
-        guard let categoryName = categoryDineTextField.inputText,
+        guard let categoryName = categoryTextField.inputText,
               !categoryName.isEmpty else {
             showErrorToast()
             return
@@ -89,8 +118,6 @@ class AddSectionViewController: UIViewController {
             print("Failed to perform \(#function): \(error)")
         }
     }
-    
-    
     
     @objc private func dismissKeyboard() {
         view.endEditing(true)
@@ -128,9 +155,9 @@ class AddSectionViewController: UIViewController {
     
     private func setupSubviews() {
         scrollContentView.addSubview(verticalStackView)
-        verticalStackView.addArrangedSubview(categoryDineTextField)
+        verticalStackView.addArrangedSubview(categoryTextField)
         verticalStackView.addArrangedSubview(addButton)
-        verticalStackView.setCustomSpacing(34, after: categoryDineTextField)
+        verticalStackView.setCustomSpacing(34, after: categoryTextField)
         
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
@@ -142,6 +169,21 @@ class AddSectionViewController: UIViewController {
     }
 }
 
+extension AddCategoryFormViewController {
+    private func onDidBeginEditing(_ textField: DineTextField) {
+        activeTextField = textField
+    }
+    
+    private func onDidEndEditing(_ textField: DineTextField) {
+        activeTextField = nil
+    }
+    
+    private func textFieldShouldReturn(_ textField: DineTextField) -> Bool {
+        textField.textfield.resignFirstResponder()
+        return true
+    }
+}
+
 #Preview {
-    UINavigationController(rootViewController: AddSectionViewController())
+    UINavigationController(rootViewController: AddCategoryFormViewController())
 }

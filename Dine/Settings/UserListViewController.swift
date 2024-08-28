@@ -61,14 +61,15 @@ class UserListViewController: UIViewController {
         // Present a view controller to add a new user
         let addUserFormViewController = AddUserFormViewController()
         addUserFormViewController.onDidAddUser = didAddUser
-        if let sheet = addUserFormViewController.sheetPresentationController {
+        let navCon = UINavigationController(rootViewController: addUserFormViewController)
+        if let sheet = navCon.sheetPresentationController {
             sheet.detents = [.large()]
             sheet.preferredCornerRadius = 16
             sheet.prefersScrollingExpandsWhenScrolledToEdge = false
             sheet.prefersEdgeAttachedInCompactHeight = true
             sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
         }
-        self.present(/*UINavigationController(rootViewController: addUserFormViewController)*/addUserFormViewController, animated: true)
+        self.present(navCon, animated: true)
     }
     
     private func setupSearchController() {

@@ -1,5 +1,5 @@
 //
-//  AddTablesViewController.swift
+//  AddTableFormViewController.swift
 //  Dine
 //
 //  Created by doss-zstch1212 on 16/05/24.
@@ -8,7 +8,7 @@
 import UIKit
 import Toast
 
-class AddTablesViewController: UIViewController {
+class AddTableFormViewController: UIViewController {
     
     private var toast: Toast!
     private var scrollView: UIScrollView!
@@ -16,8 +16,8 @@ class AddTablesViewController: UIViewController {
     private var activeTextField: DineTextField?
     
     private func validateForm() {
-        guard locationIdDineTextField.assitiveText != nil else { return }
-        guard capacityDineTextField.assitiveText != nil else { return }
+        guard locIdTextField.assitiveText != nil else { return }
+        guard capacityTextField.assitiveText != nil else { return }
         addButton.isEnabled = true
     }
     
@@ -30,18 +30,20 @@ class AddTablesViewController: UIViewController {
         return stackView
     }()
     
-    let locationIdDineTextField: DineTextField = {
+    let locIdTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Location Identifier"
         field.placeholder = "Enter Location ID"
+        field.textfield.returnKeyType = .next
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
 
-    let capacityDineTextField: DineTextField = {
+    let capacityTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Capacity"
         field.placeholder = "Max Capacity"
+        field.textfield.returnKeyType = .done
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -68,26 +70,41 @@ class AddTablesViewController: UIViewController {
         // tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
         setupSubviews()
-        locationIdDineTextField.onEditingChanged = onEditingChanged
-        capacityDineTextField.onEditingChanged = onEditingChanged
-        locationIdDineTextField.onDidBeginEditing = onDidBeginEditing
-        locationIdDineTextField.onDidEndEditing = onDidEndEditing
-        capacityDineTextField.onDidBeginEditing = onDidBeginEditing
-        capacityDineTextField.onDidEndEditing = onDidEndEditing
+        
         
         // Register for keyboard notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+        configureTextFieldDelegates()
+    }
+    
+    private func configureTextFieldDelegates() {
+        locIdTextField.onReturn = textFieldShouldReturn
+        locIdTextField.onShouldEndEditing = textFieldShouldEndEditing
+        locIdTextField.onDidBeginEditing = onDidBeginEditing
+        locIdTextField.onDidEndEditing = onDidEndEditing
+        locIdTextField.onEditingChanged = didChangeEditing
+        capacityTextField.onReturn = textFieldShouldReturn
+        capacityTextField.onDidBeginEditing = onDidBeginEditing
+        capacityTextField.onDidEndEditing = onDidEndEditing
+        capacityTextField.onShouldEndEditing = textFieldShouldEndEditing
+        capacityTextField.onEditingChanged = didChangeEditing
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let keyboardHeight = keyboardSize.height
-            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
-            
-            /*scrollView.contentInset = contentInsets
-            scrollView.scrollIndicatorInsets = contentInsets*/
-            
+  
             var visibleRect = self.view.frame
             visibleRect.size.height -= keyboardHeight
 
@@ -135,8 +152,8 @@ class AddTablesViewController: UIViewController {
     
     @objc private func addButtonAction(_ sender: UIButton) {
         print(#function)
-        guard let locationIdText = locationIdDineTextField.inputText,
-              let maxCapacityText = capacityDineTextField.inputText else {
+        guard let locationIdText = locIdTextField.inputText,
+              let maxCapacityText = capacityTextField.inputText else {
             return
         }
         
@@ -181,12 +198,12 @@ class AddTablesViewController: UIViewController {
     
     private func setupSubviews() {
         scrollContentView.addSubview(verticalStackView)
-        verticalStackView.addArrangedSubview(locationIdDineTextField)
-        verticalStackView.addArrangedSubview(capacityDineTextField)
+        verticalStackView.addArrangedSubview(locIdTextField)
+        verticalStackView.addArrangedSubview(capacityTextField)
         verticalStackView.addArrangedSubview(addButton)
         
         // Set custom spacing
-        verticalStackView.setCustomSpacing(30, after: capacityDineTextField)
+        verticalStackView.setCustomSpacing(30, after: capacityTextField)
 
         NSLayoutConstraint.activate([
             verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
@@ -222,15 +239,15 @@ class AddTablesViewController: UIViewController {
         toast.show(haptic: .warning)
     }
     
-    private func validataInput(_ textField: DineTextField) -> DineTextInputError? {
+    private func validateInput(_ textField: DineTextField) -> DineTextInputError? {
         guard let text = textField.inputText else { return nil }
         
         if Int(text) == nil {
             guard !text.isEmpty else { return nil }
-            if textField == locationIdDineTextField {
+            if textField == locIdTextField {
                 return DineTextInputError(localizedDescription: "Location ID must contain only numbers (0-9).")
             }
-            if textField == capacityDineTextField {
+            if textField == capacityTextField {
                 return DineTextInputError(localizedDescription: "Capacity must contain only numbers (0-9).")
             }
         }
@@ -253,14 +270,9 @@ class AddTablesViewController: UIViewController {
             self.view.layoutIfNeeded()
         }
     }
-    
-    func onEditingChanged(_ textfield: DineTextField) {
-        textfield.error = validataInput(textfield)
-        animateErrorMessage(for: textfield)
-    }
 }
 
-extension AddTablesViewController {
+extension AddTableFormViewController {
     private func onDidBeginEditing(_ textField: DineTextField) {
         activeTextField = textField
     }
@@ -268,8 +280,32 @@ extension AddTablesViewController {
     private func onDidEndEditing(_ textField: DineTextField) {
         activeTextField = nil
     }
+    
+    private func didChangeEditing(_ textField: DineTextField) {
+        textField.error = nil
+        animateErrorMessage(for: textField)
+    }
+    
+    private func textFieldShouldEndEditing(_ textField: DineTextField) -> Bool {
+        if let validator = validateInput(textField) {
+            textField.error = validator
+            animateErrorMessage(for: textField)
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    private func textFieldShouldReturn(_ textField: DineTextField) -> Bool {
+        if textField == locIdTextField {
+            capacityTextField.textfield.becomeFirstResponder()
+        } else if textField == capacityTextField {
+            capacityTextField.textfield.resignFirstResponder()
+        }
+        return true
+    }
 }
 
 #Preview {
-    UINavigationController(rootViewController: AddTablesViewController())
+    UINavigationController(rootViewController: AddTableFormViewController())
 }

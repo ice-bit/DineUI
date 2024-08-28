@@ -144,7 +144,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     
     @objc private func addButtonAction(_ sender: UIBarButtonItem) {
         print(#function)
-        let addSectionViewController = AddSectionViewController()
+        let addSectionViewController = AddCategoryFormViewController()
         let navCon = UINavigationController(rootViewController: addSectionViewController)
         if let sheet = navCon.sheetPresentationController {
             sheet.detents = [.medium(), .large()]

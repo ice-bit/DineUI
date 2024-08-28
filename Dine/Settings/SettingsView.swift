@@ -70,7 +70,6 @@ struct SettingsView: View {
                     }
                     .onChange(of: isMockDataEnabled, initial: false) { oldValue, newValue in
                         if newValue {
-                            
                             print("🔨 Mock data is enabled")
                             var mockDataManager = MockDataManager()
                             mockDataManager.generateData()

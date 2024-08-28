@@ -173,11 +173,11 @@ class OrderDetailViewController: UIViewController {
         config.cornerStyle = .large
         config.buttonSize = .large
         config.title = title
-        config.baseBackgroundColor = .secondarySystemGroupedBackground
+        config.baseBackgroundColor = .app
         
         switch type {
         case .normal:
-            config.baseForegroundColor = .tintColor
+            config.baseForegroundColor = .systemBackground
         case .destructive:
             config.baseForegroundColor = .red
         }

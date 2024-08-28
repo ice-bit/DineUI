@@ -1,5 +1,5 @@
 //
-//  ItemFormViewController.swift
+//  AddItemFormViewController.swift
 //  Dine
 //
 //  Created by doss-zstch1212 on 08/05/24.
@@ -9,14 +9,10 @@ import UIKit
 import Toast
 import PhotosUI
 
-protocol MenuItemDelegate: AnyObject {
-    func menuDidChange(_ item: MenuItem)
-}
-
-class ItemFormViewController: UIViewController {
-    weak var menuItemDelegate: MenuItemDelegate?
+class AddItemFormViewController: UIViewController {
     
     // MARK: - Properties
+    var onEndEditingMenuItem: ((MenuItem) -> Void)?
     private let category: MenuCategory
     private var menuItem: MenuItem?
     
@@ -90,8 +86,18 @@ class ItemFormViewController: UIViewController {
         setupSubviews()
         
         // Register for keyboard notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
         
         bindTextFieldEvents()
         configureForEditing()
@@ -125,17 +131,22 @@ class ItemFormViewController: UIViewController {
         scrollView.scrollIndicatorInsets = contentInsets
     }
 
-    
     private func bindTextFieldEvents() {
-        nameTextField.onEditingChanged = onEditingChanged
-        priceTextField.onEditingChanged = onEditingChanged
-        descTextField.onEditingChanged = onEditingChanged
-        nameTextField.onDidBeginEditing = onDidBeginEditing
-        priceTextField.onDidBeginEditing = onDidBeginEditing
-        descTextField.onDidBeginEditing = onDidBeginEditing
-        nameTextField.onDidEndEditing = onDidEndEditing
-        priceTextField.onDidEndEditing = onDidEndEditing
-        descTextField.onDidEndEditing = onDidEndEditing
+        nameTextField.onEditingChanged = textFieldDidChangeEditing
+        priceTextField.onEditingChanged = textFieldDidChangeEditing
+        descTextField.onEditingChanged = textFieldDidChangeEditing
+        nameTextField.onReturn = textFieldShouldReturn
+        priceTextField.onReturn = textFieldShouldReturn
+        descTextField.onReturn = textFieldShouldReturn
+        nameTextField.onShouldEndEditing = textFieldShouldEndEditing
+        priceTextField.onShouldEndEditing = textFieldShouldEndEditing
+        descTextField.onShouldEndEditing = textFieldShouldEndEditing
+        nameTextField.onDidBeginEditing = textFieldDidBeginEditing
+        priceTextField.onDidBeginEditing = textFieldDidBeginEditing
+        descTextField.onDidBeginEditing = textFieldDidBeginEditing
+        nameTextField.onDidEndEditing = textFieldDidEndEditing
+        priceTextField.onDidEndEditing = textFieldDidEndEditing
+        descTextField.onDidEndEditing = textFieldDidEndEditing
     }
     
     @objc private func imagePickerButtonAction(_ sender: UIButton) {
@@ -291,7 +302,7 @@ class ItemFormViewController: UIViewController {
             return
         }
         
-        guard let image = imagePickerButton.backgroundImage(for: .normal) else {
+        guard let image = imagePickerButton.image(for: .normal) else {
             showToast(message: "No Image Selected", haptic: .warning)
             return
         }
@@ -326,7 +337,6 @@ class ItemFormViewController: UIViewController {
             
             self.showToast(message: "Item Added", haptic: .success)
             self.dismiss(animated: true)
-            NotificationCenter.default.post(name: .menuItemDidChangeNotification, object: nil)
         } catch {
             self.handleDatabaseError(error)
         }
@@ -338,21 +348,18 @@ class ItemFormViewController: UIViewController {
         existingMenuItem.price = newItem.price
         existingMenuItem.description = newItem.description
         try menuService.update(existingMenuItem)
+        onEndEditingMenuItem?(existingMenuItem)
     }
 
     private func handleDatabaseError(_ error: Error) {
         print("Unable to add MenuItem - \(error)")
         self.showToast(message: "Failed to add menu item!", haptic: .warning)
     }
-
-    
-    private func addItem(_ menuItem: MenuItem) async {
-        
-    }
     
     let nameTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Item Name"
+        field.textfield.returnKeyType = .next
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -361,6 +368,7 @@ class ItemFormViewController: UIViewController {
         let field = DineTextField()
         field.titleText = "Price Tag"
         field.keyboardType = .decimalPad
+        field.textfield.returnKeyType = .next
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -368,6 +376,7 @@ class ItemFormViewController: UIViewController {
     let descTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Description"
+        field.textfield.returnKeyType = .done
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -378,7 +387,10 @@ class ItemFormViewController: UIViewController {
             priceTextField.inputText = String(menuItem.price)
             descTextField.inputText = menuItem.description
             imagePickerButton.setTitle(nil, for: .normal)
-            imagePickerButton.setImage(menuItem.image, for: .normal)
+            Task {
+                let renderedImage = await menuItem.renderedImage
+                imagePickerButton.setImage(renderedImage, for: .normal)
+            }
         } else {
             nameTextField.placeholder = "e.g. McWings"
             priceTextField.placeholder = "Enter Price"
@@ -406,11 +418,6 @@ class ItemFormViewController: UIViewController {
         }
     }
     
-    func onEditingChanged(_ textfield: DineTextField) {
-        textfield.error = validateInputText(textfield)
-        animateErrorMessage(for: textfield)
-    }
-    
     deinit {
         // Remove observers
         NotificationCenter.default.removeObserver(self, name: UIResponder.keyboardWillShowNotification, object: nil)
@@ -418,7 +425,7 @@ class ItemFormViewController: UIViewController {
     }
 }
 
-extension ItemFormViewController: PHPickerViewControllerDelegate {
+extension AddItemFormViewController: PHPickerViewControllerDelegate {
     func picker(_ picker: PHPickerViewController, didFinishPicking results: [PHPickerResult]) {
         picker.dismiss(animated: true)
         guard let itemProvider = results.first?.itemProvider else { return }
@@ -428,7 +435,7 @@ extension ItemFormViewController: PHPickerViewControllerDelegate {
                 if let selectedImage = image as? UIImage {
                     DispatchQueue.main.async {
                         // Update UI
-                        self.imagePickerButton.setBackgroundImage(selectedImage, for: .normal)
+                        self.imagePickerButton.setImage(selectedImage, for: .normal)
                         self.imagePickerButton.setTitle("", for: .normal)
                         self.view.layoutIfNeeded()
                     }
@@ -438,17 +445,43 @@ extension ItemFormViewController: PHPickerViewControllerDelegate {
     }
 }
 
-extension ItemFormViewController {
-    private func onDidBeginEditing(_ textField: DineTextField) {
+extension AddItemFormViewController {
+    private func textFieldDidBeginEditing(_ textField: DineTextField) {
         activeTextField = textField
     }
     
-    private func onDidEndEditing(_ textField: DineTextField) {
+    private func textFieldDidEndEditing(_ textField: DineTextField) {
         activeTextField = nil
+    }
+    
+    private func textFieldDidChangeEditing(_ textField: DineTextField) {
+        textField.error = nil
+        animateErrorMessage(for: textField)
+    }
+    
+    private func textFieldShouldEndEditing(_ textField: DineTextField) -> Bool {
+        if let validator = validateInputText(textField) {
+            textField.error = validator
+            animateErrorMessage(for: textField)
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    private func textFieldShouldReturn(_ textField: DineTextField) -> Bool {
+        if textField == nameTextField {
+            priceTextField.textfield.becomeFirstResponder()
+        } else if textField == priceTextField {
+            descTextField.textfield.becomeFirstResponder()
+        } else if textField == descTextField {
+            descTextField.textfield.resignFirstResponder()
+        }
+        return true
     }
 }
 
 #Preview {
-    UINavigationController(rootViewController: ItemFormViewController(category: MenuCategory(id: UUID(), categoryName: "Starter")))
+    UINavigationController(rootViewController: AddItemFormViewController(category: MenuCategory(id: UUID(), categoryName: "Starter")))
 }
 

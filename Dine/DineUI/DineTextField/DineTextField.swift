@@ -87,7 +87,13 @@ final class DineTextField: UIView, UITextFieldDelegate {
 
     /// The closure for the action to be called in `textFieldShouldReturn`. The return value of `onReturn`
     /// will be returned in `textFieldShouldReturn`.
+    /// - Note: Asks the delegate whether to process the pressing of the Return button for the text field.
     @objc public var onReturn: ((DineTextField) -> Bool)?
+    
+    /// The closure for the action to be called in `textFieldShouldEndEditing(_:)`.
+    /// - Note: Before resigning as first responder, the text field calls its delegate’s `textFieldShouldEndEditing` method.
+    /// Use that method to validate the current text.
+    @objc public var onShouldEndEditing: ((DineTextField) -> Bool)?
     
     /// The `FluentTextInputError` containing the `localizedDescription` that will be
     /// displayed in the assistive text label.
@@ -191,6 +197,13 @@ final class DineTextField: UIView, UITextFieldDelegate {
         } else {
             textField.rightViewMode = .always
         }
+    }
+    
+    public func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
+        if let onShouldEndEditing {
+            return onShouldEndEditing(self)
+        }
+        return true
     }
     
     public func textFieldShouldReturn(_ textField: UITextField) -> Bool {

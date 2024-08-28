@@ -71,7 +71,7 @@ struct CreateManagerBaseApp: RequestViewControllerProtocol {
       menuListingViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "menucard"), selectedImage: UIImage(systemName: "menucard.fill"))
       
       let controlViewController = ManagerSettingsViewController()
-      controlViewController.tabBarItem = UITabBarItem(title: "Controls", image: UIImage(systemName: "gear"), selectedImage: UIImage(systemName: "gear.circle"))
+      controlViewController.tabBarItem = UITabBarItem(title: "Settings", image: UIImage(systemName: "gear"), selectedImage: UIImage(systemName: "gear"))
       
       let metricViewController = MetricViewController()
       metricViewController.tabBarItem = UITabBarItem(title: "Home", image: UIImage(systemName: "house"), selectedImage: UIImage(systemName: "house.fill"))
@@ -80,7 +80,7 @@ struct CreateManagerBaseApp: RequestViewControllerProtocol {
       let editViewController = EditViewController()
       editViewController.tabBarItem = UITabBarItem(title: "Edit", image: UIImage(systemName: "pencil"), selectedImage: UIImage(systemName: "pencil.and.scribble"))
       
-      let orderNavigationController = UINavigationController(rootViewController: orderViewController)
+//      let orderNavigationController = UINavigationController(rootViewController: orderViewController)
       let billNavigationController = UINavigationController(rootViewController: billViewController)
       let tableNavigationController = UINavigationController(rootViewController: tableViewController)
       let menuNavigationController = UINavigationController(rootViewController: menuListingViewController)

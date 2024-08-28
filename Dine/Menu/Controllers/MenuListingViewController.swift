@@ -36,12 +36,14 @@ class MenuListingViewController: UIViewController {
         super.viewDidLoad()
         setupSearchBar()
         setupNoResultsLabel() // Setup noResultsLabel
+        setupPlaceholderLabel()
         title = "Menu List"
         navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .systemGroupedBackground
         setupTableView()
         setupNavbar()
         setupBindings()
+        //updateUIForMenuItemData()
     }
     
     private func setupBindings() {
@@ -50,6 +52,7 @@ class MenuListingViewController: UIViewController {
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.tableView.reloadData()
+//                self?.updateUIForMenuItemData()
             }
             .store(in: &cancellables)
         
@@ -57,6 +60,7 @@ class MenuListingViewController: UIViewController {
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.tableView.reloadData()
+//                self?.updateUIForMenuItemData()
             }
             .store(in: &cancellables)
     }
@@ -64,7 +68,7 @@ class MenuListingViewController: UIViewController {
     @objc private func addMenuItemButtonTapped(_ sender: UIBarButtonItem) {
         print("Add menu button tapped")
         guard let activeCategory = viewModal.selectedCategory else {
-            let addCategoryVC = AddSectionViewController()
+            let addCategoryVC = AddCategoryFormViewController()
             let navController = UINavigationController(rootViewController: addCategoryVC)
             if let sheet = navController.sheetPresentationController {
                 sheet.detents = [.medium(), .large()]
@@ -77,7 +81,7 @@ class MenuListingViewController: UIViewController {
             self.present(navController, animated: true, completion: nil)
             return
         }
-        let addMenuVC = ItemFormViewController(category: activeCategory) // Unwrapper the option
+        let addMenuVC = AddItemFormViewController(category: activeCategory) // Unwrapper the option
         let navController = UINavigationController(rootViewController: addMenuVC)
         if let sheet = navController.sheetPresentationController {
             sheet.detents = [.large()]
@@ -92,7 +96,7 @@ class MenuListingViewController: UIViewController {
     
     private func setupPlaceholderLabel() {
         placeholderLabel = UILabel()
-        placeholderLabel.text = "Add Menu Items to Continue"
+        placeholderLabel.text = "Add Category to Continue"
         placeholderLabel.textColor = .systemGray3
         placeholderLabel.font = .preferredFont(forTextStyle: .title1)
         placeholderLabel.textAlignment = .center
@@ -129,9 +133,15 @@ class MenuListingViewController: UIViewController {
     private func updateUIForMenuItemData() {
         let menuData = viewModal.filteredMenuItems
         let hasMenuItems = !menuData.isEmpty
-        let hasFilteredItems = !filteredItems.isEmpty
-        tableView.isHidden = !(hasMenuItems || isFiltering)
-        placeholderLabel.isHidden = hasMenuItems || isFiltering
+        let hasFilteredItems = !filteredItems.isEmpty && isFiltering
+        
+        // Handle tableView visibility
+        tableView.isHidden = !hasMenuItems && !hasFilteredItems
+        
+        // Handle placeholder label visibility
+        placeholderLabel.isHidden = hasMenuItems || hasFilteredItems
+        
+        // Handle no results label visibility
         noResultsLabel.isHidden = hasFilteredItems || !isFiltering
     }
     
@@ -311,6 +321,7 @@ extension MenuListingViewController: UISearchResultsUpdating {
     func updateSearchResults(for searchController: UISearchController) {
         let searchBar = searchController.searchBar
         filterContentForSearch(searchBar.text!)
+//        updateUIForMenuItemData()
     }
     
 }

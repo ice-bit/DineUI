@@ -16,12 +16,20 @@ class MenuItem: ObservableObject {
     let category: MenuCategory
     @Published var description: String
     
-    var image: UIImage?
+    var image: UIImage? {
+        didSet {
+            saveImage()
+        }
+    }
     
     var renderedImage: UIImage? {
         get async {
             await loadImage()
         }
+    }
+    
+    var imageURL: URL? {
+        getImageURL()
     }
     
     init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String) {
@@ -46,6 +54,12 @@ class MenuItem: ObservableObject {
         self.init(itemId: itemId, name: name, price: price, category: category, description: description)
         self.image = image
         saveImage()
+    }
+    
+    private func getImageURL() -> URL? {
+        let fileName = itemId.uuidString
+        let fileURL = getDocumentsDirectory().appending(path: "\(fileName).png")
+        return fileURL
     }
     
     func saveImage() {
@@ -75,7 +89,7 @@ class MenuItem: ObservableObject {
 }
 
 extension MenuItem {
-    private func loadImage() async -> UIImage? {
+    func loadImage() async -> UIImage? {
         let cache = ImageCacheManager.shared.cache
         
         if let imageFromCache = cache.object(forKey: self.itemId.uuidString as NSString) {
@@ -107,13 +121,23 @@ extension MenuItem {
                 fatalError("Failed to create UIImage")
             }
             cache.setObject(imageToCache, forKey: self.itemId.uuidString as NSString)
+            image = imageToCache // set the image
             return imageToCache
             
         } catch {
             fatalError("🔨 Failed to load assets from files: \(error)")
         }
     }
+}
 
+extension UIImageView {
+    func loadImageFromCache(for itemId: UUID) {
+        let cache = ImageCacheManager.shared.cache
+        if let imageFromCache = cache.object(forKey: itemId.uuidString as NSString) {
+            print("Image rendered from cache")
+            self.image = imageFromCache
+        }
+    }
 }
 
 extension MenuItem: Hashable {

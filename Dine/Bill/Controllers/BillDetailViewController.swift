@@ -139,11 +139,32 @@ class BillDetailViewController: UIViewController {
         ])
     }
     
+    private func updatedPaymentStatus() {
+        do {
+            let dbAsseccor = try SQLiteDataAccess.openDatabase()
+            let billService = BillServiceImpl(databaseAccess: dbAsseccor)
+            try billService.update(bill)
+        } catch {
+            fatalError("Failed to update bill: \(error)")
+        }
+    }
+    
+    private func showSuccessToast(_ message: String) {
+        if let toast {
+            toast.close(animated: true)
+        }
+        toast = Toast.text(message)
+        toast.show(haptic: .success)
+    }
+    
     private func setupHorizontalStackView() {
         horizontalStackView = createHorizontalStackView()
         
         let paymentAction = UIAction { [weak self] _ in
-            self?.showErrorToast()
+            self?.bill.isPaid = true
+            self?.paymentButton.isHidden = true
+            self?.updatedPaymentStatus()
+            self?.showSuccessToast("Bill Paid")
         }
         
         paymentButton = createCustomButton(title: "Checkout", type: .normal, primaryAction: paymentAction)
@@ -221,7 +242,9 @@ class BillDetailViewController: UIViewController {
             config.baseForegroundColor = .red
         }
         
-        return UIButton(configuration: config, primaryAction: primaryAction)
+        let button = UIButton(configuration: config, primaryAction: primaryAction)
+        button.isHidden = bill.isPaid
+        return button
     }
     
     private func showErrorToast() {

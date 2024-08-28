@@ -79,12 +79,12 @@ class ManagerSettingsViewController: UIViewController {
             print("🔨 enabling mock data.")
             var mockDataManager = MockDataManager()
             mockDataManager.generateData()
-            NotificationCenter.default.post(name: .mockDataDidChangeNotification, object: nil)
+            UserDefaultsManager.shared.isMockDataEnabled = true
         } else {
             print("🔨 disabling mock data.")
             var mockDataManager = MockDataManager()
             mockDataManager.deleteGeneratedData()
-            NotificationCenter.default.post(name: .mockDataDidChangeNotification, object: nil)
+            UserDefaultsManager.shared.isMockDataEnabled = false
         }
     }
 }

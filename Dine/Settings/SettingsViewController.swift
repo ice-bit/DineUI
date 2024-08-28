@@ -105,6 +105,10 @@ extension SettingsViewController: UITableViewDataSource, UITableViewDelegate {
             content.textProperties.color = .systemRed
         }
         
+        if !(indexPath.last == settingsViewModal.sections.count - 1) {
+            cell.selectionStyle = .none
+        }
+        
         return content
     }
     
@@ -151,18 +155,25 @@ class SettingsViewModal {
     }
     
     private func setupSections() {
-        let accountSection = SettingSection(header: "Accounts", items: [
-            .init(title: "Profile", subtitle: nil, image: UIImage(systemName: "person.fill"), action: pushProfileViewController),
+        let currentUser = UserSessionManager.shared.loadAccount()
+        let accountSection = SettingSection(header: "Profile", items: [
+            .init(title: currentUser?.username ?? "No Username Found", subtitle: "Username", image: UIImage(systemName: "person.fill"), action: nil),
         ], footer: nil)
-            
+        
+        let currencySection = SettingSection(header: nil, items: [
+            .init(title: "Currency", subtitle: nil, image: nil, action: nil)
+        ], footer: "Change the currency across the app.")
+        
         let preferencesSection = SettingSection(header: "Preferences", items: [
             .init(title: "Notifications", subtitle: "Allow notifications", image: UIImage(systemName: "app.badge"), action: nil),
             .init(title: "Language", subtitle: "Select your language", image: UIImage(systemName: "globe"), action: nil),
             .init(title: "Theme", subtitle: "Select your theme", image: UIImage(systemName: "moon"), action: nil),
         ], footer: nil)
+        
         let logoutSection = SettingSection(header: nil, items: [
             .init(title: "Logout", subtitle: nil, image: nil, action: logout),
         ], footer: nil)
+        
         let appLockSection = SettingSection(header: nil, items: [
             .init(title: "App lock", subtitle: nil, image: nil, action: nil)
         ], footer: "Require Face ID to unlock Dine.")

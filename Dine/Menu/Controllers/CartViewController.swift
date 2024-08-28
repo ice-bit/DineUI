@@ -9,7 +9,7 @@ import UIKit
 import SwiftUI
 import Toast
 
-struct MenuItemTableViewViewModal {
+struct CartSection {
     let sectionHeader: String
     let items: [MenuItem]
 }
@@ -47,7 +47,7 @@ class CartViewController: UIViewController {
     
     private var searchBarStateDidChange: (() -> Void)?
     
-    private var tableViewViewModal: [MenuItemTableViewViewModal] = []
+    private var tableViewData: [CartSection] = []
     private var menuCategories: [MenuCategory] = []
     
     private var menuItems: [MenuItem] = [] {
@@ -71,7 +71,7 @@ class CartViewController: UIViewController {
         setupTableView()
         loadMenu()
         populateCategories()
-        populateTableViewVM()
+        populateCartTableView()
         setupNavBar()
         configureView()
         setupSearchBar()
@@ -120,15 +120,17 @@ class CartViewController: UIViewController {
         }
     }
     
-    private func populateTableViewVM() {
-        var tableViewViewModals = [MenuItemTableViewViewModal]()
+    private func populateCartTableView() {
+        var cartSections = [CartSection]()
         for category in menuCategories {
             let filteredItems = menuItems.filter { $0.category.id == category.id }
-            let tableViewVM = MenuItemTableViewViewModal(sectionHeader: category.categoryName, items: filteredItems)
-            tableViewViewModals.append(tableViewVM)
+            let cartSection = CartSection(sectionHeader: category.categoryName, items: filteredItems)
+            if !(cartSection.items.isEmpty) {
+                cartSections.append(cartSection)
+            }
         }
         
-        tableViewViewModal = tableViewViewModals
+        tableViewData = cartSections
     }
     
     private func setupNavBar() {
@@ -155,11 +157,6 @@ class CartViewController: UIViewController {
         if chooseTableVC.isTablesAvailable() {
             navigationController?.pushViewController(chooseTableVC, animated: true)
         } else {
-            /*let alert = UIAlertController(title: "Cannot Proceed", message: "No available tables.", preferredStyle: .alert)
-            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: "Default action"), style: .default, handler: { _ in
-            NSLog("The \"OK\" alert occured.")
-            }))
-            self.present(alert, animated: true, completion: nil)*/
             showErrorToast(with: "No Available Tables")
             proceedbutton.isEnabled = false
         }
@@ -321,7 +318,7 @@ class CartViewController: UIViewController {
     var showCatalogMenu: UIMenu {
         var children = [UIMenuElement]()
         print("Show catalog")
-        for vm in self.tableViewViewModal {
+        for vm in self.tableViewData {
             let menuElement = UIAction(title: vm.sectionHeader) { [weak self] _ in
                 guard let self else { return }
                 print("\(vm.sectionHeader) selected")
@@ -360,10 +357,10 @@ class CartViewController: UIViewController {
 // MARK: - TableView built-in methods
 extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     func numberOfSections(in tableView: UITableView) -> Int {
-        isFiltering ? filteredItems.count : tableViewViewModal.count
+        isFiltering ? filteredItems.count : tableViewData.count
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        isFiltering ? filteredItems.count : tableViewViewModal[section].items.count
+        isFiltering ? filteredItems.count : tableViewData[section].items.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -373,7 +370,7 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
         cell.selectionStyle = .none
         cell.backgroundColor = .systemGroupedBackground
         
-        let menuItem = isFiltering ? filteredItems[indexPath.row] : tableViewViewModal[indexPath.section].items[indexPath.row]
+        let menuItem = isFiltering ? filteredItems[indexPath.row] : tableViewData[indexPath.section].items[indexPath.row]
         cell.configure(menuItem: menuItem)
         cell.delegate = self
         return cell
@@ -384,7 +381,7 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
         if isFiltering {
             menuItem = filteredItems[indexPath.row]
         } else {
-            menuItem = tableViewViewModal[indexPath.section].items[indexPath.row]
+            menuItem = tableViewData[indexPath.section].items[indexPath.row]
         }
         let detailVC = MenuDetailViewController(menu: menuItem)
         navigationController?.pushViewController(detailVC, animated: true)
@@ -394,7 +391,7 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
         if isFiltering {
             return ""
         }
-        return tableViewViewModal[section].sectionHeader
+        return tableViewData[section].sectionHeader
     }
 }
 

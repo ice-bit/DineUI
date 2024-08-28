@@ -2,7 +2,7 @@
 //  SignUpViewController.swift
 //  Dine
 //
-//  Created by doss-zstch1212 on 18/06/24.
+//  Created by ice-bit on 18/06/24.
 //
 
 import UIKit
@@ -16,6 +16,10 @@ class SignUpViewController: UIViewController {
     private var toggleButton: UIButton!
     private var confirmPasswordToggleButton: UIButton!
     private var activeTextField: DineTextField?
+    
+    private var textFields: [DineTextField] {
+        return [usernameTextField, passwordTextField, verifyPasswordTextField]
+    }
     
     private lazy var introLabel: UILabel = {
         let label = UILabel()
@@ -45,66 +49,64 @@ class SignUpViewController: UIViewController {
         return button
     }()
     
-    /*private lazy var loginLabel: UILabel = {
-     let label = UILabel()
-     // Full string
-     let fullString = "Already have an account? Login"
-
-     // Underline range
-     let underlineRange = (fullString as NSString).range(of: "Login")
-
-     // Create an attributed string
-     let attributedString = NSMutableAttributedString(string: fullString)
-
-     // Add underline attribute to the specific range
-     attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: underlineRange)
-     
-     // Set attributed string
-     label.attributedText = attributedString
-     label.font = .preferredFont(forTextStyle: .footnote)
-     label.translatesAutoresizingMaskIntoConstraints = false
-     return label
- }()*/
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        view.keyboardLayoutGuide.followsUndockedKeyboard = true
-        /*if isInitialScreen {
-            loginLabel.isHidden = true
-        }*/
-        setupPasswordVisibiltyToggle()
-        setupConfirmPasswordVisibiltyToggle()
-//        setupLoginLabelGesture()
-        setupSubviews()
-        view.backgroundColor = .systemGroupedBackground
         title = "Sign Up"
+        view.backgroundColor = .systemGroupedBackground
+        view.keyboardLayoutGuide.followsUndockedKeyboard = true
         
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         view.addGestureRecognizer(tap)
-        usernameDineTextField.onEditingChanged = onEditingChanged
-        passwordDineTextField.onEditingChanged = onEditingChanged
-        confirmPasswordDineTextField.onEditingChanged = onEditingChanged
+        
+        setupPasswordVisibiltyToggle()
+        setupConfirmPasswordVisibiltyToggle()
+        setupSubviews()
+        configureTextFieldDelegates()
         
         // Register for keyboard notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
-        usernameDineTextField.onDidEndEditing = onDidEndEditing
-        usernameDineTextField.onDidBeginEditing = onDidBeginEditing
-        passwordDineTextField.onEditingChanged = onEditingChanged
-        passwordDineTextField.onDidBeginEditing = onDidBeginEditing
-        passwordDineTextField.onDidEndEditing = onDidEndEditing
-        confirmPasswordDineTextField.onEditingChanged = onEditingChanged
-        confirmPasswordDineTextField.onDidBeginEditing = onDidBeginEditing
-        confirmPasswordDineTextField.onDidEndEditing = onDidEndEditing
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc private func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    private func configureTextFieldDelegates() {
+        usernameTextField.onShouldEndEditing = textFieldShouldEndEditing
+        passwordTextField.onShouldEndEditing = textFieldShouldEndEditing
+        verifyPasswordTextField.onShouldEndEditing = textFieldShouldEndEditing
+        
+        usernameTextField.onDidBeginEditing = onDidBeginEditing
+        passwordTextField.onDidBeginEditing = onDidBeginEditing
+        verifyPasswordTextField.onDidBeginEditing = onDidBeginEditing
+        
+        verifyPasswordTextField.onDidEndEditing = onDidEndEditing
+        usernameTextField.onDidEndEditing = onDidEndEditing
+        passwordTextField.onDidEndEditing = onDidEndEditing
+        
+        usernameTextField.onReturn = textFieldShouldReturn
+        passwordTextField.onReturn = textFieldShouldReturn
+        verifyPasswordTextField.onReturn = textFieldShouldReturn
+        
+        usernameTextField.onEditingChanged = textFieldDidChangeEditing
+        passwordTextField.onEditingChanged = textFieldDidChangeEditing
+        verifyPasswordTextField.onEditingChanged = textFieldDidChangeEditing
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let keyboardHeight = keyboardSize.height
-            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
-            
-            /*scrollView.contentInset = contentInsets
-            scrollView.scrollIndicatorInsets = contentInsets*/
             
             var visibleRect = self.view.frame
             visibleRect.size.height -= keyboardHeight
@@ -138,16 +140,16 @@ class SignUpViewController: UIViewController {
         toggleButton.center = containerView.center
         containerView.addSubview(toggleButton)
         
-        passwordDineTextField.textfield.rightView = containerView
+        passwordTextField.textfield.rightView = containerView
     }
     
     @objc func togglePasswordVisibility() {
-        passwordDineTextField.textfield.isSecureTextEntry.toggle()
-        let buttonImageName = passwordDineTextField.textfield.isSecureTextEntry ? "eye" : "eye.slash"
+        passwordTextField.textfield.isSecureTextEntry.toggle()
+        let buttonImageName = passwordTextField.textfield.isSecureTextEntry ? "eye" : "eye.slash"
         toggleButton.setImage(UIImage(systemName: buttonImageName), for: .normal)
-        if let existingText = passwordDineTextField.inputText, passwordDineTextField.textfield.isSecureTextEntry {
-            passwordDineTextField.textfield.deleteBackward()
-            passwordDineTextField.textfield.insertText(existingText)
+        if let existingText = passwordTextField.inputText, passwordTextField.textfield.isSecureTextEntry {
+            passwordTextField.textfield.deleteBackward()
+            passwordTextField.textfield.insertText(existingText)
         }
     }
     
@@ -163,31 +165,21 @@ class SignUpViewController: UIViewController {
         confirmPasswordToggleButton.center = containerView.center
         containerView.addSubview(confirmPasswordToggleButton)
         
-        confirmPasswordDineTextField.textfield.rightView = containerView
+        verifyPasswordTextField.textfield.rightView = containerView
     }
     
     @objc func toggleConfirmPasswordVisibility() {
-        confirmPasswordDineTextField.textfield.isSecureTextEntry.toggle()
-        let buttonImageName = confirmPasswordDineTextField.textfield.isSecureTextEntry ? "eye" : "eye.slash"
+        verifyPasswordTextField.textfield.isSecureTextEntry.toggle()
+        let buttonImageName = verifyPasswordTextField.textfield.isSecureTextEntry ? "eye" : "eye.slash"
         confirmPasswordToggleButton.setImage(UIImage(systemName: buttonImageName), for: .normal)
-        if let existingText = confirmPasswordDineTextField.inputText, confirmPasswordDineTextField.textfield.isSecureTextEntry {
-            confirmPasswordDineTextField.textfield.deleteBackward()
-            confirmPasswordDineTextField.textfield.insertText(existingText)
+        if let existingText = verifyPasswordTextField.inputText, verifyPasswordTextField.textfield.isSecureTextEntry {
+            verifyPasswordTextField.textfield.deleteBackward()
+            verifyPasswordTextField.textfield.insertText(existingText)
         }
     }
     
-    /*private func setupLoginLabelGesture() {
-        loginLabel.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(loginLabelAction(_:)))
-        loginLabel.addGestureRecognizer(tapGesture)
-    }*/
-    
     @objc private func loginLabelAction(_ sender: UILabel) {
         navigationController?.popViewController(animated: true)
-    }
-    
-    @objc private func dismissKeyboard() {
-        view.endEditing(true)
     }
     
     @objc private func signUpButtonAction(_ sender: UIButton) {
@@ -195,9 +187,9 @@ class SignUpViewController: UIViewController {
     }
     
     private func createAccountAndSignIn() {
-        guard let username = usernameDineTextField.inputText,
-              let password = passwordDineTextField.inputText,
-              let confirmPassword = confirmPasswordDineTextField.inputText else {
+        guard let username = usernameTextField.inputText,
+              let password = passwordTextField.inputText,
+              let confirmPassword = verifyPasswordTextField.inputText else {
             showToast(message: "Please fill all fields.")
             return
         }
@@ -274,17 +266,16 @@ class SignUpViewController: UIViewController {
         view.addSubview(scrollView)
         scrollView.addSubview(scrollContentView)
         scrollContentView.addSubview(verticalStackView)
-//        contentView.addSubview(loginLabel)
         
         verticalStackView.addArrangedSubview(introLabel)
-        verticalStackView.addArrangedSubview(usernameDineTextField)
-        verticalStackView.addArrangedSubview(passwordDineTextField)
-        verticalStackView.addArrangedSubview(confirmPasswordDineTextField)
+        verticalStackView.addArrangedSubview(usernameTextField)
+        verticalStackView.addArrangedSubview(passwordTextField)
+        verticalStackView.addArrangedSubview(verifyPasswordTextField)
         verticalStackView.addArrangedSubview(signUpButton)
         
         // Set custom spacing
         verticalStackView.setCustomSpacing(34, after: introLabel)
-        verticalStackView.setCustomSpacing(34, after: confirmPasswordDineTextField)
+        verticalStackView.setCustomSpacing(34, after: verifyPasswordTextField)
         
         NSLayoutConstraint.activate([
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
@@ -303,16 +294,13 @@ class SignUpViewController: UIViewController {
             verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 65),
             verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor, constant: -20),
             signUpButton.heightAnchor.constraint(equalToConstant: 55),
-            /*loginLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
-            loginLabel.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor, constant: 20),
-            loginLabel.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -20),*/
         ])
     }
     
     func validateText(_ textfield: DineTextField) -> DineTextInputError? {
         guard let text = textfield.inputText else { return nil }
         
-        if textfield == usernameDineTextField {
+        if textfield == usernameTextField {
             guard !text.isEmpty else { return nil }
             
             if !AuthenticationValidator.isValidUsername(text) {
@@ -320,7 +308,7 @@ class SignUpViewController: UIViewController {
             }
         }
         
-        if textfield == passwordDineTextField {
+        if textfield == passwordTextField {
             guard !text.isEmpty else { return nil }
             
             if !AuthenticationValidator.isStrongPassword(text) {
@@ -328,13 +316,13 @@ class SignUpViewController: UIViewController {
             }
         }
         
-        if textfield == confirmPasswordDineTextField {
+        if textfield == verifyPasswordTextField {
             guard !text.isEmpty else { return nil }
             
             if !AuthenticationValidator.isStrongPassword(text) {
                 return DineTextInputError(localizedDescription: "Password must be 8+ characters, with letters, numbers, and special characters.")
             }
-            if !(passwordDineTextField.inputText == confirmPasswordDineTextField.inputText) {
+            if !(passwordTextField.inputText == verifyPasswordTextField.inputText) {
                 return DineTextInputError(localizedDescription: "Passwords doesn't match.")
             }
         }
@@ -342,45 +330,35 @@ class SignUpViewController: UIViewController {
         return nil
     }
     
-    let usernameDineTextField: DineTextField = {
+    let usernameTextField: DineTextField = {
         let field = DineTextField()
         field.keyboardType = .emailAddress
         field.titleText = "Username"
         field.placeholder = "Username (e.g., johndoe)"
+        field.textfield.returnKeyType = .next
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
     
-    let passwordDineTextField: DineTextField = {
+    let passwordTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Create a Password"
         field.textfield.isSecureTextEntry = true
         field.placeholder = "Set Password"
+        field.textfield.returnKeyType = .next
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
     
-    let confirmPasswordDineTextField: DineTextField = {
+    let verifyPasswordTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Confirm Password"
         field.textfield.isSecureTextEntry = true
         field.placeholder = "Verify Password"
+        field.textfield.returnKeyType = .done
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
-    
-    /*func onEditingChanged(_ textfield: DineTextField) {
-        // Perform validation asynchronously on a background queue
-        DispatchQueue.global(qos: .userInitiated).async {
-            // Perform the validation
-            let error = self.validateText(textfield)
-            
-            // Update the textfield.error on the main thread
-            DispatchQueue.main.async {
-                textfield.error = error
-            }
-        }
-    }*/
     
     private func animateErrorMessage(for textfield: DineTextField) {
         UIView.animate(withDuration: 0.3) {
@@ -402,6 +380,32 @@ extension SignUpViewController {
     
     private func onDidEndEditing(_ textField: DineTextField) {
         activeTextField = nil
+    }
+    
+    private func textFieldDidChangeEditing(_ textField: DineTextField) {
+        textField.error = nil
+        animateErrorMessage(for: textField)
+    }
+    
+    private func textFieldShouldEndEditing(_ textField: DineTextField) -> Bool {
+        if let validator = validateText(textField) {
+            textField.error = validator
+            animateErrorMessage(for: textField)
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    private func textFieldShouldReturn(_ textField: DineTextField) -> Bool {
+        if textField == usernameTextField {
+            passwordTextField.textfield.becomeFirstResponder()
+        } else if textField == passwordTextField {
+            verifyPasswordTextField.textfield.becomeFirstResponder()
+        } else if textField == verifyPasswordTextField {
+            verifyPasswordTextField.textfield.resignFirstResponder()
+        }
+        return true
     }
 }
 

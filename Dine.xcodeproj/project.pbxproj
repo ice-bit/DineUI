@@ -37,7 +37,7 @@
 		5524F56A2BEA3E3B003F500C /* MenuSectionTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F5692BEA3E3B003F500C /* MenuSectionTableViewCell.swift */; };
 		5524F56E2BEB3FFC003F500C /* MenuItemCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F56D2BEB3FFC003F500C /* MenuItemCell.swift */; };
 		5524F5732BEB418D003F500C /* CartViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F5722BEB418D003F500C /* CartViewController.swift */; };
-		5524F5772BEB4BE4003F500C /* ItemFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F5762BEB4BE4003F500C /* ItemFormViewController.swift */; };
+		5524F5772BEB4BE4003F500C /* AddItemFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F5762BEB4BE4003F500C /* AddItemFormViewController.swift */; };
 		5524F62B2BECD422003F500C /* MenuItemDummy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F62A2BECD422003F500C /* MenuItemDummy.swift */; };
 		5524F62E2BEDE57C003F500C /* OrderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F62D2BEDE57C003F500C /* OrderCell.swift */; };
 		5524F6372BEE688D003F500C /* MenuDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F6362BEE688D003F500C /* MenuDetailViewController.swift */; };
@@ -110,7 +110,7 @@
 		557F066B2C76064D0023BEE1 /* MenuListViewModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 557F066A2C76064D0023BEE1 /* MenuListViewModal.swift */; };
 		558350B72C2D908400DDA458 /* MenuCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350B62C2D908400DDA458 /* MenuCategory.swift */; };
 		558350B92C2DAA2F00DDA458 /* CategoryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350B82C2DAA2F00DDA458 /* CategoryService.swift */; };
-		558350BC2C2DB3C100DDA458 /* AddSectionViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */; };
+		558350BC2C2DB3C100DDA458 /* AddCategoryFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BB2C2DB3C100DDA458 /* AddCategoryFormViewController.swift */; };
 		558350BE2C2E81B500DDA458 /* Date+Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558350BD2C2E81B500DDA458 /* Date+Random.swift */; };
 		55854E6D2C52235800C88733 /* DineTextFieldInternal.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55854E6C2C52235800C88733 /* DineTextFieldInternal.swift */; };
 		55854E6F2C522D5500C88733 /* DineTextInputError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55854E6E2C522D5500C88733 /* DineTextInputError.swift */; };
@@ -164,7 +164,7 @@
 		55F966702BF3708100557C92 /* UIAlertController+DefaultStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9666F2BF3708100557C92 /* UIAlertController+DefaultStyle.swift */; };
 		55F966722BF378E400557C92 /* DTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966712BF378E400557C92 /* DTextField.swift */; };
 		55F966772BF4C44300557C92 /* TableCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966762BF4C44300557C92 /* TableCollectionViewCell.swift */; };
-		55F966792BF6059C00557C92 /* AddTablesViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966782BF6059C00557C92 /* AddTablesViewController.swift */; };
+		55F966792BF6059C00557C92 /* AddTableFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F966782BF6059C00557C92 /* AddTableFormViewController.swift */; };
 		55F9667B2BF610F700557C92 /* AddTableFormView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9667A2BF610F700557C92 /* AddTableFormView.swift */; };
 		55F9667D2BF725ED00557C92 /* CustomSectionCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55F9667C2BF725ED00557C92 /* CustomSectionCell.swift */; };
 		55F966C32BFB64E700557C92 /* TableData.json in Resources */ = {isa = PBXBuildFile; fileRef = 55F966C22BFB64E700557C92 /* TableData.json */; };
@@ -206,7 +206,7 @@
 		5524F5692BEA3E3B003F500C /* MenuSectionTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuSectionTableViewCell.swift; sourceTree = "<group>"; };
 		5524F56D2BEB3FFC003F500C /* MenuItemCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MenuItemCell.swift; sourceTree = "<group>"; };
 		5524F5722BEB418D003F500C /* CartViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CartViewController.swift; sourceTree = "<group>"; };
-		5524F5762BEB4BE4003F500C /* ItemFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemFormViewController.swift; sourceTree = "<group>"; };
+		5524F5762BEB4BE4003F500C /* AddItemFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddItemFormViewController.swift; sourceTree = "<group>"; };
 		5524F62A2BECD422003F500C /* MenuItemDummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemDummy.swift; sourceTree = "<group>"; };
 		5524F62D2BEDE57C003F500C /* OrderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderCell.swift; sourceTree = "<group>"; };
 		5524F6362BEE688D003F500C /* MenuDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDetailViewController.swift; sourceTree = "<group>"; };
@@ -278,7 +278,7 @@
 		557F066A2C76064D0023BEE1 /* MenuListViewModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuListViewModal.swift; sourceTree = "<group>"; };
 		558350B62C2D908400DDA458 /* MenuCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuCategory.swift; sourceTree = "<group>"; };
 		558350B82C2DAA2F00DDA458 /* CategoryService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryService.swift; sourceTree = "<group>"; };
-		558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddSectionViewController.swift; sourceTree = "<group>"; };
+		558350BB2C2DB3C100DDA458 /* AddCategoryFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCategoryFormViewController.swift; sourceTree = "<group>"; };
 		558350BD2C2E81B500DDA458 /* Date+Random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Random.swift"; sourceTree = "<group>"; };
 		55854E6C2C52235800C88733 /* DineTextFieldInternal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineTextFieldInternal.swift; sourceTree = "<group>"; };
 		55854E6E2C522D5500C88733 /* DineTextInputError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DineTextInputError.swift; sourceTree = "<group>"; };
@@ -333,7 +333,7 @@
 		55F9666F2BF3708100557C92 /* UIAlertController+DefaultStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIAlertController+DefaultStyle.swift"; sourceTree = "<group>"; };
 		55F966712BF378E400557C92 /* DTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DTextField.swift; sourceTree = "<group>"; };
 		55F966762BF4C44300557C92 /* TableCollectionViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableCollectionViewCell.swift; sourceTree = "<group>"; };
-		55F966782BF6059C00557C92 /* AddTablesViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTablesViewController.swift; sourceTree = "<group>"; };
+		55F966782BF6059C00557C92 /* AddTableFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTableFormViewController.swift; sourceTree = "<group>"; };
 		55F9667A2BF610F700557C92 /* AddTableFormView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddTableFormView.swift; sourceTree = "<group>"; };
 		55F9667C2BF725ED00557C92 /* CustomSectionCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomSectionCell.swift; sourceTree = "<group>"; };
 		55F966C22BFB64E700557C92 /* TableData.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = TableData.json; sourceTree = "<group>"; };
@@ -394,7 +394,7 @@
 		551AAE3F2BFF7C4A00E50FE7 /* Controllers */ = {
 			isa = PBXGroup;
 			children = (
-				5524F5762BEB4BE4003F500C /* ItemFormViewController.swift */,
+				5524F5762BEB4BE4003F500C /* AddItemFormViewController.swift */,
 				5524F5662BEA1F61003F500C /* MenuViewController.swift */,
 				5524F6362BEE688D003F500C /* MenuDetailViewController.swift */,
 				5524F5722BEB418D003F500C /* CartViewController.swift */,
@@ -682,7 +682,7 @@
 			isa = PBXGroup;
 			children = (
 				5524F5642BEA1F59003F500C /* TablesViewController.swift */,
-				55F966782BF6059C00557C92 /* AddTablesViewController.swift */,
+				55F966782BF6059C00557C92 /* AddTableFormViewController.swift */,
 				55F966CC2BFC716100557C92 /* ChooseTableViewController.swift */,
 			);
 			path = Controllers;
@@ -794,7 +794,7 @@
 				558350B62C2D908400DDA458 /* MenuCategory.swift */,
 				551AAE292BFDEDD900E50FE7 /* SectionView.swift */,
 				551AAE2B2BFDEF7700E50FE7 /* MenuSectionViewController.swift */,
-				558350BB2C2DB3C100DDA458 /* AddSectionViewController.swift */,
+				558350BB2C2DB3C100DDA458 /* AddCategoryFormViewController.swift */,
 			);
 			path = Category;
 			sourceTree = "<group>";
@@ -1047,7 +1047,7 @@
 				5524F6372BEE688D003F500C /* MenuDetailViewController.swift in Sources */,
 				558350B92C2DAA2F00DDA458 /* CategoryService.swift in Sources */,
 				55A4E1282C32C940001C4562 /* OnboardingViewController.swift in Sources */,
-				55F966792BF6059C00557C92 /* AddTablesViewController.swift in Sources */,
+				55F966792BF6059C00557C92 /* AddTableFormViewController.swift in Sources */,
 				55F9667D2BF725ED00557C92 /* CustomSectionCell.swift in Sources */,
 				552D37EA2BF1F4F0005B1D19 /* MealItem.swift in Sources */,
 				55C132062C23F81600351F96 /* Menu.swift in Sources */,
@@ -1103,7 +1103,7 @@
 				552D37A02BF1F00D005B1D19 /* Date+Formatting.swift in Sources */,
 				5524F62B2BECD422003F500C /* MenuItemDummy.swift in Sources */,
 				552D37E72BF1F4F0005B1D19 /* UserStatus.swift in Sources */,
-				558350BC2C2DB3C100DDA458 /* AddSectionViewController.swift in Sources */,
+				558350BC2C2DB3C100DDA458 /* AddCategoryFormViewController.swift in Sources */,
 				551AAE342BFDFDCB00E50FE7 /* OGModelData.swift in Sources */,
 				552D380D2BF1F5C0005B1D19 /* UserStore.swift in Sources */,
 				552D380E2BF1F5C0005B1D19 /* AssociationManager.swift in Sources */,
@@ -1184,7 +1184,7 @@
 				552D37BB2BF1F13A005B1D19 /* AuthenticationError.swift in Sources */,
 				55B61C062C511F4300A3FF94 /* DineTextField.swift in Sources */,
 				55F966702BF3708100557C92 /* UIAlertController+DefaultStyle.swift in Sources */,
-				5524F5772BEB4BE4003F500C /* ItemFormViewController.swift in Sources */,
+				5524F5772BEB4BE4003F500C /* AddItemFormViewController.swift in Sources */,
 				558350BE2C2E81B500DDA458 /* Date+Random.swift in Sources */,
 				55A4E2F72C649D4B00AC2692 /* EditUserFormViewController.swift in Sources */,
 				55D46FB82C2ACAC300F06657 /* EditCartViewController.swift in Sources */,

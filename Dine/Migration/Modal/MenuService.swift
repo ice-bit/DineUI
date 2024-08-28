@@ -23,6 +23,7 @@ struct MenuServiceImpl: MenuService {
     
     func add(_ menuItem: MenuItem) throws {
         try databaseAccess.insert(menuItem)
+        publishNotification()
     }
     
     func fetch() throws -> [MenuItem]? {
@@ -49,10 +50,15 @@ struct MenuServiceImpl: MenuService {
     
     func update(_ menuItem: MenuItem) throws {
         try databaseAccess.update(menuItem)
+        publishNotification()
     }
     
     func delete(_ menuItem: MenuItem) throws {
         try databaseAccess.delete(item: menuItem)
+        publishNotification()
+    }
+    
+    private func publishNotification() {
         NotificationCenter.default.post(name: .menuItemDidChangeNotification, object: nil)
     }
 }

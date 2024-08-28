@@ -23,6 +23,7 @@ struct CategoryServiceImpl: CategoryService {
     
     func add(_ category: MenuCategory) throws {
         try databaseAccess.insert(category)
+        publishNotification()
     }
     
     func fetch() throws -> [MenuCategory]? {
@@ -33,11 +34,17 @@ struct CategoryServiceImpl: CategoryService {
     
     func update(_ category: MenuCategory) throws {
         try databaseAccess.update(category)
+        publishNotification()
     }
     
     func delete(_ category: MenuCategory) throws {
         // let query = "DELETE FROM \(DatabaseTables.menuItem.rawValue) WHERE category_id = '\(category.id)';"
         try databaseAccess.delete(from: DatabaseTables.menuItem.rawValue, where: "category_id = '\(category.id)'")
         try databaseAccess.delete(item: category)
+        publishNotification()
+    }
+    
+    private func publishNotification() {
+        NotificationCenter.default.post(name: .categoryDataDidChangeNotification, object: nil)
     }
 }

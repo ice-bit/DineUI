@@ -57,46 +57,28 @@ class LoginViewController: UIViewController {
         return label
     }()
     
-        /*private lazy var signUpLabel: UILabel = {
-        let label = UILabel()
-        // Full string
-        let fullString = "Don't have an account? Sign Up"
-
-        // Underline range
-        let underlineRange = (fullString as NSString).range(of: "Sign Up")
-
-        // Create an attributed string
-        let attributedString = NSMutableAttributedString(string: fullString)
-
-        // Add underline attribute to the specific range
-        attributedString.addAttribute(.underlineStyle, value: NSUnderlineStyle.single.rawValue, range: underlineRange)
-
-        // Set the attributed string to the label
-        label.attributedText = attributedString
-        label.font = .preferredFont(forTextStyle: .footnote)
-        label.textAlignment = .center
-        label.translatesAutoresizingMaskIntoConstraints = false
-        return label
-    }()*/
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        setupScrollView()
+        title = "Login"
+        view.backgroundColor = .systemGroupedBackground
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
+        
+        setupScrollView()
         setupSubviews()
-        //createTrackingConstraints()
-        //setupSignUpLabelGesture()
+        configureTextFieldDelegates()
         setupPasswordVisibiltyToggle()
         setupForgetLabelGesture()
-        view.backgroundColor = .systemGroupedBackground
-        title = "Login"
+        fetchAccounts()
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
         //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
         // tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
-        fetchAccounts()
-        //usernameDineTextField.onEditingChanged = onEditingChanged
-        //passwordDineTextField.onEditingChanged = onEditingChanged
+    }
+    
+    private func configureTextFieldDelegates() {
+        usernameTextField.onReturn = textFieldShouldReturn
+        passwordTextField.onReturn = textFieldShouldReturn
     }
     
     private func createTextFieldHeaderLabel(with title: String) -> UILabel {
@@ -146,12 +128,12 @@ class LoginViewController: UIViewController {
         containerView.addSubview(toggleButton)
         
         // Add the button to the right view of the text field
-        passwordDineTextField.textfield.rightView = containerView
+        passwordTextField.textfield.rightView = containerView
     }
     
     @objc func togglePasswordVisibility() {
-        passwordDineTextField.textfield.isSecureTextEntry.toggle()
-        let buttonImageName = passwordDineTextField.textfield.isSecureTextEntry ? "eye" : "eye.slash"
+        passwordTextField.textfield.isSecureTextEntry.toggle()
+        let buttonImageName = passwordTextField.textfield.isSecureTextEntry ? "eye" : "eye.slash"
         toggleButton.setImage(UIImage(systemName: buttonImageName), for: .normal)
     }
     
@@ -174,8 +156,8 @@ class LoginViewController: UIViewController {
     
     @objc private func loginButtonAction(_ sender: UIButton) {
         print(#function)
-        guard let username = usernameDineTextField.inputText,
-              let password = passwordDineTextField.inputText,
+        guard let username = usernameTextField.inputText,
+              let password = passwordTextField.inputText,
             !password.isEmpty,
               !username.isEmpty else {
             showToast(message: "Missing Credentials")
@@ -224,20 +206,12 @@ class LoginViewController: UIViewController {
         toast.show(haptic: .error)
     }
     
-    private func createTrackingConstraints() {
-        let keyboardToVerticalStackView = view.keyboardLayoutGuide.topAnchor.constraint(equalToSystemSpacingBelow: verticalStackView.bottomAnchor, multiplier: 1.0)
-        keyboardToVerticalStackView.identifier = "keyboardToVerticalStackView"
-        
-        let nearBottomConstraints = [keyboardToVerticalStackView]
-        view.keyboardLayoutGuide.setConstraints(nearBottomConstraints, activeWhenNearEdge: .bottom)
-    }
-    
     private func setupSubviews() {
         scrollContentView.addSubview(verticalStackView)
         //scrollContentView.addSubview(signUpLabel)
         verticalStackView.addArrangedSubview(introLabel)
-        verticalStackView.addArrangedSubview(usernameDineTextField)
-        verticalStackView.addArrangedSubview(passwordDineTextField)
+        verticalStackView.addArrangedSubview(usernameTextField)
+        verticalStackView.addArrangedSubview(passwordTextField)
         verticalStackView.addArrangedSubview(forgotPasswordLabel)
         verticalStackView.addArrangedSubview(loginButton)
         
@@ -252,17 +226,8 @@ class LoginViewController: UIViewController {
             verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 100),
             verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor, constant: -20),
             loginButton.heightAnchor.constraint(equalToConstant: 55),
-            /*signUpLabel.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
-            signUpLabel.topAnchor.constraint(equalTo: verticalStackView.bottomAnchor, constant: 20),
-            signUpLabel.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor, constant: -20),*/
         ])
     }
-    
-    /*private func setupSignUpLabelGesture() {
-        signUpLabel.isUserInteractionEnabled = true
-        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(signUpLabelAction(_:)))
-        signUpLabel.addGestureRecognizer(tapGesture)
-    }*/
     
     @objc private func signUpLabelAction(_ sender: UILabel) {
         print(#function)
@@ -278,21 +243,29 @@ class LoginViewController: UIViewController {
     
     @objc private func forgotLabelLabelAction(_ sender: UILabel) {
         print(#function)
-        let recoverPasswordViewController = RecoverPasswordViewController()
-        self.present(UINavigationController(rootViewController: recoverPasswordViewController), animated: true)
+        /*let recoverPasswordViewController = RecoverPasswordViewController()
+        self.present(UINavigationController(rootViewController: recoverPasswordViewController), animated: true)*/
+        let alert = UIAlertController(
+            title: "Password Change Restricted",
+            message: "Your password can only be changed by an administrator. Please reach out to your admin or manager for assistance.",
+            preferredStyle: .alert
+        )
+        
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        self.present(alert, animated: true)
     }
     
     func validateText(_ textfield: DineTextField) -> DineTextInputError? {
         guard let text = textfield.inputText else { return nil }
         
-        if textfield == usernameDineTextField {
+        if textfield == usernameTextField {
             guard !text.isEmpty else { return nil }
             if !AuthenticationValidator.isValidUsername(text) {
                 return DineTextInputError(localizedDescription: "Username must be 3-20 characters, only letters, numbers, and underscores.")
             }
         }
         
-        if textfield == passwordDineTextField {
+        if textfield == passwordTextField {
             guard !text.isEmpty else { return nil }
             
             if !AuthenticationValidator.isStrongPassword(text) {
@@ -303,37 +276,37 @@ class LoginViewController: UIViewController {
         return nil
     }
     
-    let usernameDineTextField: DineTextField = {
+    let usernameTextField: DineTextField = {
         let field = DineTextField()
         field.keyboardType = .emailAddress
         field.titleText = "Username"
         field.placeholder = "e.g. John Dean"
+        field.textfield.returnKeyType = .next
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
     
-    let passwordDineTextField: DineTextField = {
+    let passwordTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Password"
         field.textfield.isSecureTextEntry = true
         field.placeholder = "Your secure password"
+        field.textfield.returnKeyType = .done
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
-    
-    func onEditingChanged(_ textfield: DineTextField) {
-        textfield.error = validateText(textfield)
-    }
-    
-    func validateUsername(_ username: String) -> Bool {
-        do {
-            let databaseAccess = try SQLiteDataAccess.openDatabase()
-            let authController = AuthController(databaseAccess: databaseAccess)
-            return authController.isUserPresent(username: username)
-        } catch {
-            return false
+}
+
+extension LoginViewController {
+    private func textFieldShouldReturn(_ textField: DineTextField) -> Bool {
+        if textField == usernameTextField {
+            passwordTextField.textfield.becomeFirstResponder()
+        } else if textField == passwordTextField {
+            passwordTextField.textfield.resignFirstResponder()
         }
+        return true
     }
+
 }
 
 #Preview {

@@ -16,7 +16,21 @@ class MenuItem: ObservableObject {
     let category: MenuCategory
     @Published var description: String
     
-    var image: UIImage?
+    var image: UIImage? {
+        didSet {
+            saveImage()
+        }
+    }
+    
+    var renderedImage: UIImage? {
+        get async {
+            await loadImage()
+        }
+    }
+    
+    var imageURL: URL? {
+        getImageURL()
+    }
     
     init(itemId: UUID, name: String, price: Double, category: MenuCategory, description: String) {
         self.itemId = itemId
@@ -42,6 +56,12 @@ class MenuItem: ObservableObject {
         saveImage()
     }
     
+    private func getImageURL() -> URL? {
+        let fileName = itemId.uuidString
+        let fileURL = getDocumentsDirectory().appending(path: "\(fileName).png")
+        return fileURL
+    }
+    
     func saveImage() {
         guard let image else {
             fatalError("Unexpectedily found nil while unwrapping")
@@ -65,6 +85,58 @@ class MenuItem: ObservableObject {
     func getDocumentsDirectory() -> URL {
         let paths = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return paths[0]
+    }
+}
+
+extension MenuItem {
+    func loadImage() async -> UIImage? {
+        let cache = ImageCacheManager.shared.cache
+        
+        if let imageFromCache = cache.object(forKey: self.itemId.uuidString as NSString) {
+            print("Image rendered from cache")
+            return imageFromCache
+        }
+        
+        guard var fileURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+            print("Failed to construct URL")
+            return nil
+        }
+        fileURL.appendPathComponent("\(self.itemId.uuidString).png")
+        print("FileURL: \(fileURL)")
+        
+        do {
+            // Load the data asynchronously
+            let data = try await withCheckedThrowingContinuation { continuation in
+                DispatchQueue.global(qos: .background).async {
+                    do {
+                        let data = try Data(contentsOf: fileURL)
+                        continuation.resume(returning: data)
+                    } catch {
+                        continuation.resume(throwing: error)
+                    }
+                }
+            }
+            
+            guard let imageToCache = UIImage(data: data) else {
+                fatalError("Failed to create UIImage")
+            }
+            cache.setObject(imageToCache, forKey: self.itemId.uuidString as NSString)
+            image = imageToCache // set the image
+            return imageToCache
+            
+        } catch {
+            fatalError("🔨 Failed to load assets from files: \(error)")
+        }
+    }
+}
+
+extension UIImageView {
+    func loadImageFromCache(for itemId: UUID) {
+        let cache = ImageCacheManager.shared.cache
+        if let imageFromCache = cache.object(forKey: itemId.uuidString as NSString) {
+            print("Image rendered from cache")
+            self.image = imageFromCache
+        }
     }
 }
 

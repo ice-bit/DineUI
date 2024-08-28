@@ -116,10 +116,4 @@ class MenuListViewModal: ObservableObject {
         let menuService = MenuServiceImpl(databaseAccess: dbAccessor)
         try menuService.add(menuItem)
     }
-    
-    func updateMenuItems(_ menuItem: MenuItem) {
-        guard let index = menuItems.firstIndex(of: menuItem) else { return }
-        let oldMenuItem = menuItems[index]
-        // ...
-    }
 }

@@ -12,8 +12,12 @@ import PhotosUI
 class AddItemFormViewController: UIViewController {
     
     // MARK: - Properties
-    var onEndEditingMenuItem: ((MenuItem) -> Void)?
-    private let category: MenuCategory
+    var didUpdateMenuItem: ((MenuItem) -> Void)?
+    private var selectedCategory: MenuCategory? {
+        didSet {
+            categoryTFPicker.text = selectedCategory?.categoryName
+        }
+    }
     private var menuItem: MenuItem?
     
     private var scrollView: UIScrollView!
@@ -47,23 +51,13 @@ class AddItemFormViewController: UIViewController {
         return button
     }()
     
-    /*private lazy var titleLabel: UILabel = {
-     let label = UILabel()
-     label.text = "Add Menu Item"
-     label.font = .preferredFont(forTextStyle: .largeTitle)
-     label.translatesAutoresizingMaskIntoConstraints = false
-     return label
-     }()*/
-    
     // MARK: - Initializer
-    init(category: MenuCategory) {
-        self.category = category
+    init() {
         super.init(nibName: nil, bundle: nil)
     }
     
     init(menuItem: MenuItem) {
         self.menuItem = menuItem
-        self.category = menuItem.category
         super.init(nibName: nil, bundle: nil)
     }
     
@@ -106,11 +100,6 @@ class AddItemFormViewController: UIViewController {
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let keyboardHeight = keyboardSize.height
-            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
-            
-            /*scrollView.contentInset = contentInsets
-            scrollView.scrollIndicatorInsets = contentInsets*/
-            
             var visibleRect = self.view.frame
             visibleRect.size.height -= keyboardHeight
 
@@ -213,24 +202,7 @@ class AddItemFormViewController: UIViewController {
         setupAddButton()
         addSubviews()
         setupConstraints()
-        setupPickerView()
     }
-    
-    private func setupPickerView() {
-        pickerView = UIPickerView()
-        // pickerView.delegate = self
-        // pickerView.dataSource = self
-    }
-    
-    /*private func setupSectionSelectionButton() {
-     sectionSelectionButton = UIButton()
-     sectionSelectionButton.setTitle("Select Section", for: .normal)
-     sectionSelectionButton.translatesAutoresizingMaskIntoConstraints = false
-     sectionSelectionButton.setTitleColor(.label, for: .normal)
-     sectionSelectionButton.backgroundColor = .systemGray5
-     sectionSelectionButton.layer.cornerRadius = 10
-     sectionSelectionButton.addTarget(self, action: #selector(selectMenuSectionButtonTapped(_:)), for: .touchUpInside)
-     }*/
     
     private func setupStackView() {
         stackView = UIStackView()
@@ -256,6 +228,17 @@ class AddItemFormViewController: UIViewController {
         return wrapperStackView
     }
     
+    private func didTapPicker() {
+        print(#function)
+        let categoryListingVC = MenuSectionViewController(isSelectable: true)
+        categoryListingVC.didSelectCategory = didSelectCategory
+        navigationController?.present(UINavigationController(rootViewController: categoryListingVC), animated: true)
+    }
+    
+    private func didSelectCategory(_ category: MenuCategory) {
+        selectedCategory = category
+    }
+    
     private func addSubviews() {
         scrollContentView.addSubview(stackView)
         wrapperStackView = createWrapperStackView()
@@ -264,13 +247,16 @@ class AddItemFormViewController: UIViewController {
         stackView.addArrangedSubview(nameTextField)
         stackView.addArrangedSubview(priceTextField)
         stackView.addArrangedSubview(descTextField)
+        stackView.addArrangedSubview(categoryTFPicker)
         stackView.addArrangedSubview(addButton)
+        categoryTFPicker.onDidTapPicker = didTapPicker
         
         // Custom spacing
         stackView.setCustomSpacing(25, after: imagePickerButton)
         stackView.setCustomSpacing(10, after: nameTextField)
         stackView.setCustomSpacing(10, after: priceTextField)
-        stackView.setCustomSpacing(34, after: descTextField)
+        stackView.setCustomSpacing(10, after: descTextField)
+        stackView.setCustomSpacing(34, after: categoryTFPicker)
     }
     
     private func setupConstraints() {
@@ -309,7 +295,9 @@ class AddItemFormViewController: UIViewController {
         
         guard let name = nameTextField.inputText else { return }
         
-        let newItem = MenuItem(name: name, price: price, category: category, description: description, image: image)
+        guard let selectedCategory else { return }
+        
+        let newItem = MenuItem(name: name, price: price, category: selectedCategory, description: description, image: image)
         
         saveMenuItem(newItem)
     }
@@ -334,7 +322,7 @@ class AddItemFormViewController: UIViewController {
             } else {
                 try menuService.add(menuItem)
             }
-            
+            didUpdateMenuItem?(menuItem)
             self.showToast(message: "Item Added", haptic: .success)
             self.dismiss(animated: true)
         } catch {
@@ -347,8 +335,8 @@ class AddItemFormViewController: UIViewController {
         existingMenuItem.name = newItem.name
         existingMenuItem.price = newItem.price
         existingMenuItem.description = newItem.description
+        existingMenuItem.category = newItem.category
         try menuService.update(existingMenuItem)
-        onEndEditingMenuItem?(existingMenuItem)
     }
 
     private func handleDatabaseError(_ error: Error) {
@@ -381,14 +369,23 @@ class AddItemFormViewController: UIViewController {
         return field
     }()
     
+    let categoryTFPicker: DineUserSelector = {
+        let selector = DineUserSelector()
+        selector.title = "Choose Category"
+        selector.text = "No Categories Selected"
+        selector.translatesAutoresizingMaskIntoConstraints = false
+        return selector
+    }()
+    
     private func configureForEditing() {
         if let menuItem {
             nameTextField.inputText = menuItem.name
             priceTextField.inputText = String(menuItem.price)
             descTextField.inputText = menuItem.description
+            categoryTFPicker.text = menuItem.category.categoryName
             imagePickerButton.setTitle(nil, for: .normal)
             Task {
-                let renderedImage = await menuItem.renderedImage
+                let renderedImage = menuItem.renderedImage
                 imagePickerButton.setImage(renderedImage, for: .normal)
             }
         } else {
@@ -482,6 +479,6 @@ extension AddItemFormViewController {
 }
 
 #Preview {
-    UINavigationController(rootViewController: AddItemFormViewController(category: MenuCategory(id: UUID(), categoryName: "Starter")))
+    UINavigationController(rootViewController: AddItemFormViewController())
 }
 

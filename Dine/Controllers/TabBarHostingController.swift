@@ -92,7 +92,7 @@ struct ViewControllerFactory {
         
         let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
         
-        return MenuSectionViewController()
+        return MenuSectionViewController(isSelectable: true)
     }
 }
 

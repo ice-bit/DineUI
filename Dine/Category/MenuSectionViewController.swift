@@ -20,7 +20,7 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
             updateUIForData()
         }
     }
-    
+    private let isSelectable: Bool
     // Search Components
     private var filteredCategories: [MenuCategory] = []
     private var searchController: UISearchController!
@@ -32,6 +32,15 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     }
     
     var didSelectCategory: ((MenuCategory) -> Void)?
+    
+    init(isSelectable: Bool) {
+        self.isSelectable = isSelectable
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
     
     // MARK: - View lifecycle methods
     override func viewDidLoad() {
@@ -239,9 +248,11 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let item = isFiltering ? filteredCategories[indexPath.item] : categories[indexPath.item]
         let cell =  collectionView.dequeueConfiguredReusableCell(using: sectionViewRegistration, for: indexPath, item: item)
-        let selectedBackgroundView = UIView()
-        selectedBackgroundView.backgroundColor = .systemGray4
-        cell.selectedBackgroundView = selectedBackgroundView
+        if isSelectable {
+            let selectedBackgroundView = UIView()
+            selectedBackgroundView.backgroundColor = .systemGray4
+            cell.selectedBackgroundView = selectedBackgroundView
+        }
         return cell
     }
     
@@ -257,12 +268,11 @@ class MenuSectionViewController: UIViewController, UICollectionViewDataSource, U
     
     // MARK: - UICollectionViewDelegate
     func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        guard isSelectable else { return }
         collectionView.deselectItem(at: indexPath, animated: true)
         let item = isFiltering ? filteredCategories[indexPath.item] : categories[indexPath.item]
         didSelectCategory?(item)
         self.dismiss(animated: true)
-        /*let sectionDetailVC = MenuListingViewController(category: item)
-        navigationController?.pushViewController(sectionDetailVC, animated: true)*/
     }
 }
 

@@ -31,7 +31,7 @@ struct MenuItemRow: View {
                         .foregroundColor(.red)
                 }
             }
-            .clipShape(.rect(cornerRadius: 10))
+            .clipShape(.rect(cornerRadius: 6))
             .frame(width: 75, height: 75)
             
             VStack(alignment: .leading) {

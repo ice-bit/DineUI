@@ -13,17 +13,17 @@ class UserListViewController: UIViewController {
     private let cellReuseIdentifier = "cell"
     
     private var users: [Account] = [
-        .init(username: "John Cena", password: "fwhbh#f5wdfg65", accountStatus: .active, userRole: .employee),
-        .init(username: "JaneDoe123", password: "hgd7&^g3Hsdf", accountStatus: .active, userRole: .admin),
+        .init(username: "John Cena", password: "fwhbh#f5wdfg65", accountStatus: .active, userRole: .manager),
+        .init(username: "JaneDoe123", password: "hgd7&^g3Hsdf", accountStatus: .active, userRole: .manager),
         .init(username: "Sam_Smith", password: "j@D3s8c#lsh", accountStatus: .cancelled, userRole: .waitStaff),
-        .init(username: "Alice.Wonder", password: "q#2nd9Hsdfk2", accountStatus: .closed, userRole: .employee),
+        .init(username: "Alice.Wonder", password: "q#2nd9Hsdfk2", accountStatus: .closed, userRole: .manager),
         .init(username: "BobBuilder", password: "Xy75@#hds7", accountStatus: .active, userRole: .waitStaff),
-        .init(username: "Charlie.Brown", password: "9&fjD3@#s6k", accountStatus: .closed, userRole: .employee),
+        .init(username: "Charlie.Brown", password: "9&fjD3@#s6k", accountStatus: .closed, userRole: .manager),
         .init(username: "EmilyDavis", password: "p@5Jk3^9Shd", accountStatus: .active, userRole: .manager),
         .init(username: "MikeTyson", password: "fjD7@&3klFj", accountStatus: .active, userRole: .waitStaff),
-        .init(username: "Laura.Palmer", password: "m@3kF6#j8dP", accountStatus: .active, userRole: .employee),
-        .init(username: "TonyStark", password: "5^6fHjs@f2D", accountStatus: .closed, userRole: .admin),
-        .init(username: "BruceWayne", password: "j^k3@9Jd2sl", accountStatus: .cancelled, userRole: .admin),
+        .init(username: "Laura.Palmer", password: "m@3kF6#j8dP", accountStatus: .active, userRole: .waitStaff),
+        .init(username: "TonyStark", password: "5^6fHjs@f2D", accountStatus: .closed, userRole: .waitStaff),
+        .init(username: "BruceWayne", password: "j^k3@9Jd2sl", accountStatus: .cancelled, userRole: .waitStaff),
     ]
     
     private var filteredUsers: [Account] = []
@@ -62,13 +62,6 @@ class UserListViewController: UIViewController {
         let addUserFormViewController = AddUserFormViewController()
         addUserFormViewController.onDidAddUser = didAddUser
         let navCon = UINavigationController(rootViewController: addUserFormViewController)
-        if let sheet = navCon.sheetPresentationController {
-            sheet.detents = [.large()]
-            sheet.preferredCornerRadius = 16
-            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
-            sheet.prefersEdgeAttachedInCompactHeight = true
-            sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
-        }
         self.present(navCon, animated: true)
     }
     

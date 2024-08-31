@@ -18,10 +18,6 @@ struct SectionView: View {
                 .padding()
             
             Spacer()
-            
-            Image(systemName: "chevron.right")
-                .font(.caption)
-                .padding()
         }
         .background(Color(.secondarySystemGroupedBackground))
         .clipShape(.rect(cornerRadius: 10))

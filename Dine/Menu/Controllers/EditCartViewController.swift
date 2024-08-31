@@ -155,7 +155,7 @@ class EditCartViewController: UIViewController {
         tableView = UITableView(frame: .zero)
         tableView.separatorStyle = .none
         tableView.dataSource = self
-        tableView.register(MenuItemTableViewCell.self, forCellReuseIdentifier: MenuItemTableViewCell.reuseIdentifier)
+        tableView.register(MenuItemCell.self, forCellReuseIdentifier: MenuItemCell.reuseIdentifier)
     }
     
     // MARK: - SearchBar Methods
@@ -183,7 +183,7 @@ extension EditCartViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemTableViewCell.reuseIdentifier, for: indexPath) as? MenuItemTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemCell.reuseIdentifier, for: indexPath) as? MenuItemCell else {
             return UITableViewCell()
         }
         cell.selectionStyle = .none
@@ -213,7 +213,7 @@ extension EditCartViewController: UISearchResultsUpdating {
 }
 
 extension EditCartViewController: MenuItemTableViewCellDelegate {
-    func menuTableViewCell(_ cell: MenuItemTableViewCell, didChangeItemCount count: Int, for menuItem: MenuItem) {
+    func menuTableViewCell(_ cell: MenuItemCell, didChangeItemCount count: Int, for menuItem: MenuItem) {
         // Remove the key if the count is zero.
         if count > 0 {
             cart[menuItem] = count

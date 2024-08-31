@@ -17,15 +17,9 @@ class YardController {
         let waitstaffBaseScene = CreateWaitStaffBaseApp()
         
         switch account.userRole {
-        case .admin:
-            return managerBaseScene.requestViewController()
         case .manager:
             return managerBaseScene.requestViewController()
         case .waitStaff:
-            return waitstaffBaseScene.requestViewController()
-        case .kitchenStaff:
-            return waitstaffBaseScene.requestViewController()
-        case .employee:
             return waitstaffBaseScene.requestViewController()
         }
     }
@@ -67,7 +61,7 @@ struct CreateManagerBaseApp: RequestViewControllerProtocol {
       let tableViewController = TablesViewController(tableService: services.tableService)
       tableViewController.tabBarItem = UITabBarItem(title: "Tables", image: UIImage(systemName: "table.furniture"), selectedImage: UIImage(systemName: "table.furniture.fill"))
       
-      let menuListingViewController = MenuListingViewController()
+        let menuListingViewController = MenuListingViewController()
       menuListingViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "menucard"), selectedImage: UIImage(systemName: "menucard.fill"))
       
       let controlViewController = ManagerSettingsViewController()

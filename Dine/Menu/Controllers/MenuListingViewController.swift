@@ -12,76 +12,64 @@ import Combine
 
 class MenuListingViewController: UIViewController {
     
-    var viewModal: MenuListViewModal = MenuListViewModal()
+    var viewModal: MenuViewModal = MenuViewModal()
     private var cancellables = Set<AnyCancellable>()
     
     private var tableView: UITableView!
     private var placeholderLabel: UILabel!
     private var noResultsLabel: UILabel! // Added noResultsLabel
     private let cellReuseID = "MenuItemRow"
-    
-    // Search essentials
-    private var filteredItems: [MenuItem] = []
     private var searchController: UISearchController!
-    var isFiltering: Bool {
-        searchController.isActive && !isSearchBarEmpty
-    }
-    
-    var isSearchBarEmpty: Bool {
-        searchController.searchBar.text?.isEmpty ?? true
-    }
+    private var lastChangedMenuItem: MenuItem?
     
     // MARK: - View LifeCycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Menu"
+        navigationController?.navigationBar.prefersLargeTitles = true
+        view.backgroundColor = .systemGroupedBackground
         setupSearchBar()
         setupNoResultsLabel() // Setup noResultsLabel
         setupPlaceholderLabel()
-        title = "Menu List"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        view.backgroundColor = .systemGroupedBackground
         setupTableView()
-        setupNavbar()
+        setupNavBarButton()
         setupBindings()
         //updateUIForMenuItemData()
     }
     
+    private func setupNavBarButton() {
+        // Create actions for the menu items
+        let categoryFilter = UIAction(title: "View Categories") { action in
+            print("view categories selected")
+            let categoryListingVC = MenuSectionViewController(isSelectable: false)
+            self.navigationController?.present(UINavigationController(rootViewController: categoryListingVC), animated: true)
+        }
+
+        // Create the menu
+        let menu = UIMenu(children: [categoryFilter])
+
+        let menuBarButtonItem = UIBarButtonItem(image: UIImage(systemName: "line.3.horizontal.decrease"), menu: menu)
+        // Set it as the right bar button item
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addMenuItemButtonTapped(_:)))
+        
+        navigationItem.rightBarButtonItems = [addButton, menuBarButtonItem]
+    }
+    
     private func setupBindings() {
         // Bind the filtered menu items to the table view reload
-        viewModal.$selectedCategory
+        viewModal.$menuSections
             .receive(on: RunLoop.main)
             .sink { [weak self] _ in
                 self?.tableView.reloadData()
-//                self?.updateUIForMenuItemData()
-            }
-            .store(in: &cancellables)
-        
-        viewModal.$menuItems
-            .receive(on: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.tableView.reloadData()
-//                self?.updateUIForMenuItemData()
+                self?.scrollToUpdatedMenuItem()
             }
             .store(in: &cancellables)
     }
     
     @objc private func addMenuItemButtonTapped(_ sender: UIBarButtonItem) {
         print("Add menu button tapped")
-        guard let activeCategory = viewModal.selectedCategory else {
-            let addCategoryVC = AddCategoryFormViewController()
-            let navController = UINavigationController(rootViewController: addCategoryVC)
-            if let sheet = navController.sheetPresentationController {
-                sheet.detents = [.medium(), .large()]
-                sheet.largestUndimmedDetentIdentifier = nil
-                sheet.prefersGrabberVisible = true
-                sheet.prefersScrollingExpandsWhenScrolledToEdge = true
-                sheet.prefersEdgeAttachedInCompactHeight = true
-                sheet.widthFollowsPreferredContentSizeWhenEdgeAttached = true
-            }
-            self.present(navController, animated: true, completion: nil)
-            return
-        }
-        let addMenuVC = AddItemFormViewController(category: activeCategory) // Unwrapper the option
+        let addMenuVC = AddItemFormViewController() // Unwrapper the option
+        addMenuVC.didUpdateMenuItem = didUpdateMenuItem
         let navController = UINavigationController(rootViewController: addMenuVC)
         if let sheet = navController.sheetPresentationController {
             sheet.detents = [.large()]
@@ -93,6 +81,33 @@ class MenuListingViewController: UIViewController {
         }
         self.present(navController, animated: true, completion: nil)
     }
+    
+    private func didUpdateMenuItem(_ menuItem: MenuItem) {
+        print(#function)
+        lastChangedMenuItem = menuItem
+    }
+    
+    private func scrollToUpdatedMenuItem() {
+        guard let menuItem = lastChangedMenuItem else { return }
+        // Find the section where the item was added
+        guard let sectionIndex = viewModal.menuSections.firstIndex(where: { $0.header == menuItem.category.categoryName }) else {
+            print("Section not found")
+            return
+        }
+        
+        // Find the index of the newly added item within that section
+        guard let rowIndex = viewModal.menuSections[sectionIndex].items.firstIndex(where: { $0.itemId == menuItem.itemId }) else {
+            print("Item not found in the section")
+            return
+        }
+        
+        // Create an IndexPath for the new item
+        let indexPath = IndexPath(row: rowIndex, section: sectionIndex)
+        
+        // Scroll to the newly added item
+        tableView.scrollToRow(at: indexPath, at: .middle, animated: true)
+    }
+
     
     private func setupPlaceholderLabel() {
         placeholderLabel = UILabel()
@@ -131,18 +146,14 @@ class MenuListingViewController: UIViewController {
     }
     
     private func updateUIForMenuItemData() {
-        let menuData = viewModal.filteredMenuItems
+        let menuData = viewModal.menuItems
         let hasMenuItems = !menuData.isEmpty
-        let hasFilteredItems = !filteredItems.isEmpty && isFiltering
         
         // Handle tableView visibility
-        tableView.isHidden = !hasMenuItems && !hasFilteredItems
+        tableView.isHidden = !hasMenuItems
         
         // Handle placeholder label visibility
-        placeholderLabel.isHidden = hasMenuItems || hasFilteredItems
-        
-        // Handle no results label visibility
-        noResultsLabel.isHidden = hasFilteredItems || !isFiltering
+        placeholderLabel.isHidden = hasMenuItems
     }
     
     // MARK: - Setup
@@ -164,12 +175,6 @@ class MenuListingViewController: UIViewController {
         ])
     }
     
-    private func setupNavbar() {
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addMenuItemButtonTapped(_:)))
-        navigationItem.rightBarButtonItem = addButton
-    }
-    
-    
     private func setupSearchBar() {
         searchController = UISearchController()
         searchController.searchResultsUpdater = self
@@ -177,14 +182,6 @@ class MenuListingViewController: UIViewController {
         searchController.searchBar.placeholder = "Search Items"
         navigationItem.searchController = searchController
         definesPresentationContext = true
-    }
-    
-    private func filterContentForSearch(_ searchText: String) {
-        let menuData = viewModal.filteredMenuItems
-        filteredItems = menuData.filter { (menuData: MenuItem) -> Bool in
-            menuData.name.lowercased().contains(searchText.lowercased())
-        }
-        tableView.reloadData()
     }
     
     // MARK: - Destructive actions
@@ -293,7 +290,7 @@ class MenuListingViewController: UIViewController {
     }
     
     private func editItem(_ item: MenuItem) {
-        let menuData = viewModal.filteredMenuItems
+        let menuData = viewModal.menuItems
         do {
             let menuService = try MenuServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
             try menuService.update(item)
@@ -319,25 +316,8 @@ class MenuListingViewController: UIViewController {
 extension MenuListingViewController: UISearchResultsUpdating {
     
     func updateSearchResults(for searchController: UISearchController) {
-        let searchBar = searchController.searchBar
-        filterContentForSearch(searchBar.text!)
+        viewModal.filterContentForSearch(searchController)
 //        updateUIForMenuItemData()
-    }
-    
-}
-
-extension MenuListingViewController {
-    
-    private func onCategoryHeaderTapped() {
-        print(#function)
-        let menuSectionViewcontroller = MenuSectionViewController()
-        menuSectionViewcontroller.didSelectCategory = didSelectedCategory
-        self.present(UINavigationController(rootViewController: menuSectionViewcontroller), animated: true)
-    }
-    
-    private func didSelectedCategory(_ category: MenuCategory) {
-        print(#function)
-        viewModal.selectedCategory = category
     }
     
 }
@@ -346,28 +326,19 @@ extension MenuListingViewController: UITableViewDataSource, UITableViewDelegate 
     
     // MARK: - TableView
     func numberOfSections(in tableView: UITableView) -> Int {
-        1
+        viewModal.numberOfSections()
     }
     
-    func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
-        guard let selectedCategory = viewModal.selectedCategory else { return nil }
-        let headerView = MenuListHeader()
-        headerView.title.text = selectedCategory.categoryName
-        headerView.onHeaderTapped = onCategoryHeaderTapped
-        return headerView
-    }
-    
-    func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
-        55
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        viewModal.menuSections[section].header
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let menuItems = viewModal.filteredMenuItems
-        return isFiltering ? filteredItems.count : menuItems.count
+        viewModal.numberOfItems(in: section)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let menuItems = viewModal.filteredMenuItems
+        let menuItems = viewModal.items(in: indexPath.section)
         let cell = tableView.dequeueReusableCell(withIdentifier: cellReuseID, for: indexPath)
         if menuItems.isEmpty {
             let leadingMargin = tableView.frame.width / 5
@@ -377,7 +348,7 @@ extension MenuListingViewController: UITableViewDataSource, UITableViewDelegate 
             .margins(.leading, leadingMargin)
             return cell
         }
-        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuItems[indexPath.row]
+        let menuItem = menuItems[indexPath.row]
         cell.contentConfiguration = UIHostingConfiguration {
             MenuItemRow(menuItem: menuItem)
         }
@@ -389,16 +360,16 @@ extension MenuListingViewController: UITableViewDataSource, UITableViewDelegate 
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let menuItems = viewModal.filteredMenuItems
+        let menuItems = viewModal.items(in: indexPath.section)
         guard !menuItems.isEmpty else { return }
         tableView.deselectRow(at: indexPath, animated: true)
-        let menuItem = isFiltering ? filteredItems[indexPath.row] : menuItems[indexPath.row]
+        let menuItem = menuItems[indexPath.row]
         let menuDetailViewController = MenuDetailViewController(menu: menuItem)
         navigationController?.pushViewController(menuDetailViewController, animated: true)
     }
     
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let menuItems = viewModal.filteredMenuItems
+        let menuItems = viewModal.items(in: indexPath.section)
         let item = menuItems[indexPath.row]
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completionHandler in
             guard let self else { return }
@@ -413,7 +384,7 @@ extension MenuListingViewController: UITableViewDataSource, UITableViewDelegate 
     }
     
     func tableView(_ tableView: UITableView, contextMenuConfigurationForRowAt indexPath: IndexPath, point: CGPoint) -> UIContextMenuConfiguration? {
-        let menuItems = viewModal.filteredMenuItems
+        let menuItems = viewModal.items(in: indexPath.section)
         let item = menuItems[indexPath.row]
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [weak self] action in

@@ -268,7 +268,11 @@ class AddUserFormViewController: UIViewController {
             }
             try accountService.add(account)
             onDidAddUser?(account)
-            dismiss(animated: true)
+            dismiss(animated: true) { [weak self] in
+                guard let self else { return }
+                toast = Toast.text("User Added")
+                toast.show(haptic: .success)
+            }
         } catch let error as AuthenticationError {
             fatalError("Auth error: \(error)")
         } catch {

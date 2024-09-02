@@ -126,8 +126,8 @@ class BillDetailViewController: UIViewController {
         verticalStackView.addArrangedSubview(tipInfoView)
         verticalStackView.addArrangedSubview(taxInfoView)
         verticalStackView.addArrangedSubview(dateInfoView)
-        verticalStackView.addArrangedSubview(billIdInfoView)
-        verticalStackView.addArrangedSubview(orderIdInfoView)
+        //verticalStackView.addArrangedSubview(billIdInfoView)
+        //verticalStackView.addArrangedSubview(orderIdInfoView)
         verticalStackView.addArrangedSubview(paymentStatusInfoView)
         
         scrollContentView.addSubview(verticalStackView)

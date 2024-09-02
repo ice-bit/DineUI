@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-struct BillItem: View {
+struct BillItemView: View {
     var billData: Bill
     
     var body: some View {
@@ -56,5 +56,5 @@ struct BillItem: View {
 #Preview {
     let billData = Bill(amount: 30, tip: 9, tax: 89, orderId: UUID(), isPaid: true)
     
-    return BillItem(billData: billData)
+    return BillItemView(billData: billData)
 }

@@ -20,6 +20,7 @@ class OrderViewController: UIViewController {
     // UI Elements
     private var tableView: UITableView!
     private var placeholderLabel: UILabel!
+    private var toast: Toast!
     
     // Bar Buttons
     private var addBarButton: UIBarButtonItem!
@@ -54,7 +55,6 @@ class OrderViewController: UIViewController {
     
     // MARK: - View LifeCycle Methods
     override func viewDidLoad() {
-        print(UUID())
         super.viewDidLoad()
         setupAppearance()
         setupNavigationBar()
@@ -193,8 +193,7 @@ class OrderViewController: UIViewController {
                 try orderService.delete(order)
                 orderData.remove(at: orderIndex)
                 
-                let toastView = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "Bills Deleted")
-                toastView.show(haptic: .success)
+                showSuccessToast("Orders deleted")
             }
             
             setSelection(false, animated: true)
@@ -247,11 +246,18 @@ class OrderViewController: UIViewController {
             tableView.reloadData()
             setSelection(false, animated: true)
             
-            let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Bill Added")
-            toast.show(haptic: .success)
+            showSuccessToast("Order has been processed")
         } catch {
             print("Unable to bill the order - \(error)")
         }
+    }
+    
+    private func showSuccessToast(_ message: String) {
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text(message)
+        toast.show(haptic: .success)
     }
     
     private func billOrder(_ order: Order) {
@@ -387,6 +393,9 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
         guard tableView.isEditing else {
             // Not in editing mode...push to detail vc
             let detailVC = OrderDetailViewController(order: selectedOrder)
+            detailVC.didPopToRoot = {
+                self.showSuccessToast("Order has been processed")
+            }
             navigationController?.pushViewController(detailVC, animated: true)
             return
         }
@@ -411,8 +420,7 @@ extension OrderViewController: UITableViewDelegate, UITableViewDataSource {
             guard let self else { return }
             print("Bill")
             self.billOrder(selectedOrder)
-            let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Bill Added")
-            toast.show(haptic: .success)
+            showSuccessToast("Order has been processed")
             completionHandler(true)
         }
         

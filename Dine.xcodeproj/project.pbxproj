@@ -42,6 +42,9 @@
 		5524F6372BEE688D003F500C /* MenuDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F6362BEE688D003F500C /* MenuDetailViewController.swift */; };
 		552866BC2C2EE23000258C79 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 552866BB2C2EE23000258C79 /* SQLite */; };
 		552CA0862C86E92A0081DC52 /* EditCartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552CA0852C86E92A0081DC52 /* EditCartViewModel.swift */; };
+		552CA0882C87229E0081DC52 /* EditTableFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552CA0872C87229E0081DC52 /* EditTableFormViewController.swift */; };
+		552CA08A2C8732B70081DC52 /* TableListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552CA0892C8732B70081DC52 /* TableListViewController.swift */; };
+		552CA08D2C8732F30081DC52 /* TableListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552CA08C2C8732F30081DC52 /* TableListViewModel.swift */; };
 		552D37A02BF1F00D005B1D19 /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D379F2BF1F00D005B1D19 /* Date+Formatting.swift */; };
 		552D37AC2BF1F09F005B1D19 /* DatabaseError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D37A32BF1F09F005B1D19 /* DatabaseError.swift */; };
 		552D37AD2BF1F09F005B1D19 /* SQLiteError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D37A42BF1F09F005B1D19 /* SQLiteError.swift */; };
@@ -217,6 +220,9 @@
 		5524F62D2BEDE57C003F500C /* OrderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderCell.swift; sourceTree = "<group>"; };
 		5524F6362BEE688D003F500C /* MenuDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDetailViewController.swift; sourceTree = "<group>"; };
 		552CA0852C86E92A0081DC52 /* EditCartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCartViewModel.swift; sourceTree = "<group>"; };
+		552CA0872C87229E0081DC52 /* EditTableFormViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditTableFormViewController.swift; sourceTree = "<group>"; };
+		552CA0892C8732B70081DC52 /* TableListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableListViewController.swift; sourceTree = "<group>"; };
+		552CA08C2C8732F30081DC52 /* TableListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TableListViewModel.swift; sourceTree = "<group>"; };
 		552D379F2BF1F00D005B1D19 /* Date+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Formatting.swift"; sourceTree = "<group>"; };
 		552D37A32BF1F09F005B1D19 /* DatabaseError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseError.swift; sourceTree = "<group>"; };
 		552D37A42BF1F09F005B1D19 /* SQLiteError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLiteError.swift; sourceTree = "<group>"; };
@@ -568,6 +574,14 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		552CA08B2C8732E10081DC52 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				552CA08C2C8732F30081DC52 /* TableListViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		552D37A12BF1F01F005B1D19 /* Migration */ = {
 			isa = PBXGroup;
 			children = (
@@ -690,6 +704,7 @@
 		5548B69C2C0456B0000E99C8 /* Table */ = {
 			isa = PBXGroup;
 			children = (
+				552CA08B2C8732E10081DC52 /* ViewModel */,
 				5548B6A22C046379000E99C8 /* Model */,
 				5548B6A12C04634F000E99C8 /* View */,
 				5548B69D2C0456BF000E99C8 /* Controllers */,
@@ -702,8 +717,10 @@
 			children = (
 				5524F5642BEA1F59003F500C /* TablesViewController.swift */,
 				55F966782BF6059C00557C92 /* AddTableFormViewController.swift */,
+				552CA0872C87229E0081DC52 /* EditTableFormViewController.swift */,
 				55F966CC2BFC716100557C92 /* ChooseTableViewController.swift */,
 				55878DC72C80AD680005F72E /* TableConfirmationBottomSheetViewController.swift */,
+				552CA0892C8732B70081DC52 /* TableListViewController.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1095,6 +1112,7 @@
 				552D37DD2BF1F4F0005B1D19 /* RestaurantTable.swift in Sources */,
 				552D37DF2BF1F4F0005B1D19 /* Meal.swift in Sources */,
 				55C1321F2C2579C700351F96 /* Date+Weekday.swift in Sources */,
+				552CA0882C87229E0081DC52 /* EditTableFormViewController.swift in Sources */,
 				55F966772BF4C44300557C92 /* TableCollectionViewCell.swift in Sources */,
 				552D37C12BF1F17F005B1D19 /* String+DateExtension.swift in Sources */,
 				552D37DE2BF1F4F0005B1D19 /* TableService.swift in Sources */,
@@ -1128,6 +1146,8 @@
 				55C05A582C2ED22300FE3AB1 /* AddItem.swift in Sources */,
 				55F966CA2BFB650200557C92 /* TableRow.swift in Sources */,
 				5524F62E2BEDE57C003F500C /* OrderCell.swift in Sources */,
+				552CA08D2C8732F30081DC52 /* TableListViewModel.swift in Sources */,
+				552CA08A2C8732B70081DC52 /* TableListViewController.swift in Sources */,
 				55A0BED42C383BB800CED892 /* CustomButtonType.swift in Sources */,
 				55A4E2ED2C6101C200AC2692 /* NoResultCellView.swift in Sources */,
 				552D37AD2BF1F09F005B1D19 /* SQLiteError.swift in Sources */,

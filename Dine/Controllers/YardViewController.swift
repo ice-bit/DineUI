@@ -58,9 +58,13 @@ struct CreateManagerBaseApp: RequestViewControllerProtocol {
       let billViewController = BillViewController()
       billViewController.tabBarItem = UITabBarItem(title: "Bills", image: UIImage(systemName: "newspaper"), selectedImage: UIImage(systemName: "newspaper.fill"))
       
-      let tableViewController = TablesViewController(tableService: services.tableService)
-      tableViewController.tabBarItem = UITabBarItem(title: "Tables", image: UIImage(systemName: "table.furniture"), selectedImage: UIImage(systemName: "table.furniture.fill"))
+      /*let tableViewController = TablesViewController(tableService: services.tableService)
+      tableViewController.tabBarItem = UITabBarItem(title: "Tables", image: UIImage(systemName: "table.furniture"), selectedImage: UIImage(systemName: "table.furniture.fill"))*/
       
+        let tableViewModel = TableListViewModel()
+        let tableListViewController = TableListViewController(viewModel: tableViewModel)
+        tableListViewController.tabBarItem = UITabBarItem(title: "Tables", image: UIImage(systemName: "table.furniture"), selectedImage: UIImage(systemName: "table.furniture.fill"))
+        
         let menuListingViewController = MenuListingViewController()
       menuListingViewController.tabBarItem = UITabBarItem(title: "Menu", image: UIImage(systemName: "menucard"), selectedImage: UIImage(systemName: "menucard.fill"))
       
@@ -74,9 +78,9 @@ struct CreateManagerBaseApp: RequestViewControllerProtocol {
       let editViewController = EditViewController()
       editViewController.tabBarItem = UITabBarItem(title: "Edit", image: UIImage(systemName: "pencil"), selectedImage: UIImage(systemName: "pencil.and.scribble"))
       
-//      let orderNavigationController = UINavigationController(rootViewController: orderViewController)
+      /*let orderNavigationController = UINavigationController(rootViewController: orderViewController)*/
       let billNavigationController = UINavigationController(rootViewController: billViewController)
-      let tableNavigationController = UINavigationController(rootViewController: tableViewController)
+        let tableNavigationController = UINavigationController(rootViewController: tableListViewController)
       let menuNavigationController = UINavigationController(rootViewController: menuListingViewController)
       let controlNavigationController = UINavigationController(rootViewController: controlViewController)
       

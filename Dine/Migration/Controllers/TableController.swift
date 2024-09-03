@@ -61,6 +61,10 @@ class TableController: TableServicable {
         }
         return resultTables
     }
+    
+    func updateTable(_ table: RestaurantTable) throws {
+        try tableService.update(table)
+    }
 }
 
 enum TableError: Error {

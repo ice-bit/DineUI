@@ -1,24 +1,25 @@
 //
-//  AddTableFormViewController.swift
+//  EditTableFormViewController.swift
 //  Dine
 //
-//  Created by doss-zstch1212 on 16/05/24.
+//  Created by doss-zstch1212 on 03/09/24.
 //
 
 import UIKit
 import Toast
 
-class AddTableFormViewController: UIViewController {
-    
+class EditTableFormViewController: UIViewController {
+
     private var toast: Toast!
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
     private var activeTextField: DineTextField?
+    private let selectedTable: RestaurantTable
     
     private func validateForm() {
         guard locIdTextField.assitiveText != nil else { return }
         guard capacityTextField.assitiveText != nil else { return }
-        addButton.isEnabled = true
+        saveButton.isEnabled = true
     }
     
     private lazy var verticalStackView: UIStackView = {
@@ -48,16 +49,25 @@ class AddTableFormViewController: UIViewController {
         return field
     }()
     
-    private lazy var addButton: UIButton = {
+    private lazy var saveButton: UIButton = {
         let button = UIButton()
-        button.setTitle("Add Table", for: .normal)
+        button.setTitle("Save", for: .normal)
         button.layer.cornerRadius = 10
         button.backgroundColor = .app
-        button.addTarget(self, action: #selector(addButtonAction(_:)), for: .touchUpInside)
+        button.addTarget(self, action: #selector(saveButtonAction(_:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         return button
     }()
-
+    
+    init(table: RestaurantTable) {
+        self.selectedTable = table
+        super.init(nibName: nil, bundle: nil)
+    }
+    
+    required init?(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGroupedBackground
@@ -86,6 +96,12 @@ class AddTableFormViewController: UIViewController {
             object: nil
         )
         configureTextFieldDelegates()
+        prepareForEditing()
+    }
+    
+    private func prepareForEditing() {
+        locIdTextField.inputText = String(selectedTable.locationIdentifier)
+        capacityTextField.inputText = String(selectedTable.capacity)
     }
     
     private func configureTextFieldDelegates() {
@@ -150,7 +166,7 @@ class AddTableFormViewController: UIViewController {
     }
 
     
-    @objc private func addButtonAction(_ sender: UIButton) {
+    @objc private func saveButtonAction(_ sender: UIButton) {
         print(#function)
         guard let locationIdText = locIdTextField.inputText,
               let maxCapacityText = capacityTextField.inputText else {
@@ -171,15 +187,14 @@ class AddTableFormViewController: UIViewController {
             handleTableError(.locationIdAlreadyTaken)
             return
         }
+        
+        selectedTable.locationIdentifier = locationId
+        selectedTable.capacity = maxCapacity
                 
         do {
             let tableService = try TableServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
             let tableController = TableController(tableService: tableService)
-            try tableController.addTable(maxCapacity: maxCapacity, locationIdentifier: locationId)
-            
-            // Notify
-            NotificationCenter.default.post(name: .didAddTable, object: nil)
-            
+            try tableController.updateTable(selectedTable)
             self.dismiss(animated: true)
         } catch let error as TableError {
             handleTableError(error)
@@ -205,7 +220,7 @@ class AddTableFormViewController: UIViewController {
         scrollContentView.addSubview(verticalStackView)
         verticalStackView.addArrangedSubview(locIdTextField)
         verticalStackView.addArrangedSubview(capacityTextField)
-        verticalStackView.addArrangedSubview(addButton)
+        verticalStackView.addArrangedSubview(saveButton)
         
         // Set custom spacing
         verticalStackView.setCustomSpacing(30, after: capacityTextField)
@@ -215,7 +230,7 @@ class AddTableFormViewController: UIViewController {
             verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
             verticalStackView.topAnchor.constraint(equalTo: scrollContentView.topAnchor, constant: 20),
             verticalStackView.bottomAnchor.constraint(equalTo: scrollContentView.bottomAnchor),
-            addButton.heightAnchor.constraint(equalToConstant: 55),
+            saveButton.heightAnchor.constraint(equalToConstant: 55),
         ])
     }
     
@@ -245,6 +260,9 @@ class AddTableFormViewController: UIViewController {
     }
     
     private func isLocationIdAvailable(_ locationId: Int) -> Bool {
+        guard selectedTable.locationIdentifier != locationId else {
+            return true
+        }
         do {
             let dbAccessor = try SQLiteDataAccess.openDatabase()
             let tableService = TableServiceImpl(databaseAccess: dbAccessor)
@@ -302,7 +320,7 @@ class AddTableFormViewController: UIViewController {
     }
 }
 
-extension AddTableFormViewController {
+extension EditTableFormViewController {
     private func onDidBeginEditing(_ textField: DineTextField) {
         activeTextField = textField
     }

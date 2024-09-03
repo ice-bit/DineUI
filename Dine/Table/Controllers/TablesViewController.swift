@@ -198,7 +198,13 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
             let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [weak self] action in
                 guard let self else { return }
                 print("Edit context menu action")
-                self.presentEditAlertController(for: item)
+                 self.presentEditAlertController(for: item)
+                let addTableVC = AddTableFormViewController()
+                if let sheet = addTableVC.sheetPresentationController {
+                    sheet.detents = [.medium(), .large()]
+                    sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+                }
+                self.present(addTableVC, animated: true)
             }
             
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash")) { action in

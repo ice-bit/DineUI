@@ -27,6 +27,7 @@ struct TableServiceImpl: TableService {
     
     func add(_ table: RestaurantTable) throws {
         try databaseAccess.insert(table)
+        publishNotification()
     }
     
     func fetch() throws -> [RestaurantTable]? {
@@ -37,10 +38,16 @@ struct TableServiceImpl: TableService {
     
     func update(_ table: RestaurantTable) throws {
         try databaseAccess.update(table)
+        publishNotification()
     }
     
     func delete(_ table: RestaurantTable) throws {
         try databaseAccess.delete(item: table)
+        publishNotification()
+    }
+    
+    private func publishNotification() {
+        NotificationCenter.default.post(name: .tablesDidChangeNotification, object: nil)
     }
 }
 

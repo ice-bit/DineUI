@@ -93,6 +93,8 @@ class MenuItemCell: UITableViewCell {
     private lazy var stepper: UIStepper = {
         let stepper = UIStepper()
         stepper.addTarget(self, action: #selector(stepperAction(_:)), for: .touchUpInside)
+        stepper.setBackgroundImage(UIImage(color: UIColor.clear), for: .normal)
+        stepper.setDividerImage(UIImage(color: UIColor.clear), forLeftSegmentState: .normal, rightSegmentState: .normal)
         stepper.translatesAutoresizingMaskIntoConstraints = false
         return stepper
     }()

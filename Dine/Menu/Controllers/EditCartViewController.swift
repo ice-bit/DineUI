@@ -41,7 +41,7 @@ class EditCartViewController: UIViewController {
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
+        isModalInPresentation = true
         prepareForEditing()
         setupTableView()
         setupNavBar()
@@ -70,12 +70,15 @@ class EditCartViewController: UIViewController {
     }
     
     @objc func cancelButtonTapped(sender: UIBarButtonItem) {
-        self.dismiss(animated: true)
+        self.dismiss(animated: true) { [weak self] in
+            guard let self else { return }
+            doneAction(sender)
+        }
     }
     
     @objc func doneAction(_ sender: UIBarButtonItem) {
         viewModel.addItems { [weak self] success in
-            guard let self = self else { return }
+            guard let self else { return }
             if success {
                 NotificationCenter.default.post(name: .cartDidChangeNotification, object: nil, userInfo: ["MenuItems": self.viewModel.cart])
                 NotificationCenter.default.post(name: .metricDataDidChangeNotification, object: nil)

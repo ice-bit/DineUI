@@ -140,8 +140,8 @@ class OrderDetailViewController: UIViewController {
         tableIDView.configureView(title: "Table", description: order.tableIDValue.uuidString)
         orderIDView.configureView(title: "Order", description: order.orderIdValue.uuidString)
         
-//        stackView.addArrangedSubview(orderIDView)
-//        stackView.addArrangedSubview(tableIDView)
+        /*stackView.addArrangedSubview(orderIDView)
+        stackView.addArrangedSubview(tableIDView)*/
         stackView.addArrangedSubview(statusView)
         stackView.addArrangedSubview(dateView)
         
@@ -249,7 +249,7 @@ class OrderDetailViewController: UIViewController {
             navigationController?.popViewController(animated: true)
             didPopToRoot?()
             
-//            showSuccessToast("Order has been processed")
+            /*showSuccessToast("Order has been processed")*/
         } catch {
             print("Unable to bill the order - \(error)")
         }
@@ -313,7 +313,7 @@ class OrderDetailViewController: UIViewController {
             navigationController?.popViewController(animated: true)
             NotificationCenter.default.post(name: .cartDidChangeNotification, object: nil)
             
-//            showSuccessToast("Order deleted")
+            /*showSuccessToast("Order deleted")*/
         } catch {
             print("Failed to delete order - \(error)")
         }

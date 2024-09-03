@@ -113,8 +113,8 @@ class BillDetailViewController: UIViewController {
         let tipInfoView = createInfoView(title: "Tip", description: "$\(bill.getTip.rounded())")
         let taxInfoView = createInfoView(title: "Tax", description: "$\(bill.getTax.rounded())")
         let dateInfoView = createInfoView(title: "Date", description: bill.date.formattedDateString())
-        let billIdInfoView = createInfoView(title: "Bill ID", description: bill.billId.uuidString)
-        let orderIdInfoView = createInfoView(title: "Order ID", description: bill.getOrderId.uuidString)
+        /*let billIdInfoView = createInfoView(title: "Bill ID", description: bill.billId.uuidString)
+        let orderIdInfoView = createInfoView(title: "Order ID", description: bill.getOrderId.uuidString)*/
         let paymentStatusInfoView = createInfoView(title: "Payment Status", description: bill.paymentStatus.rawValue)
         
         if let order = bill.getOrder, let table = order.getTable {
@@ -271,9 +271,9 @@ class BillDetailViewController: UIViewController {
     }
 
     private func createMenu() {
-        let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { _ in
+        /*let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { _ in
             print("Edit action")
-        }
+        }*/
         
         let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash")) { [weak self] _ in
             print("Delete action")

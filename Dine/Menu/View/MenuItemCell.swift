@@ -16,7 +16,7 @@ class MenuItemCell: UITableViewCell {
     static let reuseIdentifier = "MenuItemTableViewCell"
     weak var delegate: MenuItemTableViewCellDelegate?
     var menuItem: MenuItem?
-    // For tracking the count
+    
     private var itemCount: Int = 0 {
         didSet {
             itemCountLabel.text = String(itemCount)
@@ -193,6 +193,7 @@ class MenuItemCell: UITableViewCell {
         priceLabel.text = "$ \(priceString)"
         secTitleLabel.text = menuItem.description
         itemCount = menuItem.count
+        stepper.value = Double(menuItem.count)
     }
     
     private func configureMenuItem() {

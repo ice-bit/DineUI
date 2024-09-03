@@ -160,9 +160,9 @@ class SettingsViewModal {
             .init(title: currentUser?.username ?? "No Username Found", subtitle: "Username", image: UIImage(systemName: "person.fill"), action: nil),
         ], footer: nil)
         
-        let currencySection = SettingSection(header: nil, items: [
+        /*let currencySection = SettingSection(header: nil, items: [
             .init(title: "Currency", subtitle: nil, image: nil, action: nil)
-        ], footer: "Change the currency across the app.")
+        ], footer: "Change the currency across the app.")*/
         
         let preferencesSection = SettingSection(header: "Preferences", items: [
             .init(title: "Notifications", subtitle: "Allow notifications", image: UIImage(systemName: "app.badge"), action: nil),

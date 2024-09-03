@@ -25,7 +25,7 @@ class BillViewController: UIViewController {
         }
     }
     
-    private var currentFilter: BillFilter = .all
+    private var currentFilter: BillFilter = .unpaid
     
     private var filteredBills: [Bill] = [] {
         didSet {

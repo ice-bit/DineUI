@@ -191,6 +191,7 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     // MARK: - UICollectionViewDelegate methods
+#warning("index out of range occurs, cannot reproduce!")
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         let item = tables[indexPaths[0].item]
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in

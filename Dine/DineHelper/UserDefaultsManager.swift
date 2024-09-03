@@ -36,6 +36,8 @@ class UserDefaultsManager {
         static let isPaymentEnabled = "isPaymentEnabled"
         /// Key to check if mock data is enabled.
         static let isMockDataEnabled = "isMockDataEnabled"
+        /// Key to check if app lock is enabled.
+        static let isAppLockEnabled = "isAppLockEnabled"
     }
     
     /// A Boolean value indicating whether the user is logged in.
@@ -76,6 +78,14 @@ class UserDefaultsManager {
     var isMockDataEnabled: Bool {
         get { defaults.bool(forKey: Keys.isMockDataEnabled) }
         set { defaults.setValue(newValue, forKey: Keys.isMockDataEnabled) }
+    }
+    
+    /// A Boolean value indicating whether app lock is enabled.
+    ///
+    /// - Returns: `true` if app lock is enabled, otherwise `false`.
+    var isAppLockEnabled: Bool {
+        get { defaults.bool(forKey: Keys.isAppLockEnabled) }
+        set { defaults.setValue(newValue, forKey: Keys.isAppLockEnabled) }
     }
     
 }

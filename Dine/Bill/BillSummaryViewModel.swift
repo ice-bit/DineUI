@@ -6,6 +6,8 @@
 //
 
 import Foundation
+import UIKit
+import Toast
 
 struct BillItem {
     let title: String
@@ -65,8 +67,14 @@ class BillSummaryViewModel: ObservableObject {
             bill.isPaid = true
             try billService.update(bill)
             sections.removeLast()
+            showToast("Payment successful", haptic: .success)
         } catch {
             fatalError("Failed to update bill: \(error)")
         }
+    }
+    
+    private func showToast(_ message: String, haptic: UINotificationFeedbackGenerator.FeedbackType) {
+        let toast = Toast.text(message)
+        toast.show(haptic: haptic)
     }
 }

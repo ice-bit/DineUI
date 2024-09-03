@@ -41,6 +41,7 @@
 		5524F62E2BEDE57C003F500C /* OrderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F62D2BEDE57C003F500C /* OrderCell.swift */; };
 		5524F6372BEE688D003F500C /* MenuDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5524F6362BEE688D003F500C /* MenuDetailViewController.swift */; };
 		552866BC2C2EE23000258C79 /* SQLite in Frameworks */ = {isa = PBXBuildFile; productRef = 552866BB2C2EE23000258C79 /* SQLite */; };
+		552CA0862C86E92A0081DC52 /* EditCartViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552CA0852C86E92A0081DC52 /* EditCartViewModel.swift */; };
 		552D37A02BF1F00D005B1D19 /* Date+Formatting.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D379F2BF1F00D005B1D19 /* Date+Formatting.swift */; };
 		552D37AC2BF1F09F005B1D19 /* DatabaseError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D37A32BF1F09F005B1D19 /* DatabaseError.swift */; };
 		552D37AD2BF1F09F005B1D19 /* SQLiteError.swift in Sources */ = {isa = PBXBuildFile; fileRef = 552D37A42BF1F09F005B1D19 /* SQLiteError.swift */; };
@@ -215,6 +216,7 @@
 		5524F62A2BECD422003F500C /* MenuItemDummy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuItemDummy.swift; sourceTree = "<group>"; };
 		5524F62D2BEDE57C003F500C /* OrderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrderCell.swift; sourceTree = "<group>"; };
 		5524F6362BEE688D003F500C /* MenuDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MenuDetailViewController.swift; sourceTree = "<group>"; };
+		552CA0852C86E92A0081DC52 /* EditCartViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCartViewModel.swift; sourceTree = "<group>"; };
 		552D379F2BF1F00D005B1D19 /* Date+Formatting.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Formatting.swift"; sourceTree = "<group>"; };
 		552D37A32BF1F09F005B1D19 /* DatabaseError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DatabaseError.swift; sourceTree = "<group>"; };
 		552D37A42BF1F09F005B1D19 /* SQLiteError.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SQLiteError.swift; sourceTree = "<group>"; };
@@ -415,6 +417,7 @@
 				5577A5002C7F5E6A00DD1B1D /* MenuCartViewController.swift */,
 				551AAE482BFF873B00E50FE7 /* MenuListingViewController.swift */,
 				55D46FB72C2ACAC300F06657 /* EditCartViewController.swift */,
+				552CA0852C86E92A0081DC52 /* EditCartViewModel.swift */,
 			);
 			path = Controllers;
 			sourceTree = "<group>";
@@ -1159,6 +1162,7 @@
 				552D37C02BF1F17F005B1D19 /* String+OrderFormatting.swift in Sources */,
 				552D37BC2BF1F13A005B1D19 /* CSVParseError.swift in Sources */,
 				5524F5612BEA1F1D003F500C /* OrderViewController.swift in Sources */,
+				552CA0862C86E92A0081DC52 /* EditCartViewModel.swift in Sources */,
 				5548B6B72C0B8DB1000E99C8 /* Notification+Name.swift in Sources */,
 				552D37DB2BF1F4F0005B1D19 /* OrderItem.swift in Sources */,
 				55F9666B2BF3344B00557C92 /* QuantityButton.swift in Sources */,

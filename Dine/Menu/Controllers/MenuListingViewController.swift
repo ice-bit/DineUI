@@ -52,7 +52,7 @@ class MenuListingViewController: UIViewController {
         // Set it as the right bar button item
         let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(addMenuItemButtonTapped(_:)))
         
-        navigationItem.rightBarButtonItems = [addButton, menuBarButtonItem]
+        navigationItem.rightBarButtonItems = [addButton/*, menuBarButtonItem*/]
     }
     
     private func setupBindings() {

@@ -87,6 +87,12 @@ class MenuDetailViewController: UIViewController {
     private func setupNavbar() {
         let editBarButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonAction(_:)))
         navigationItem.rightBarButtonItem = editBarButton
+        if let user = UserSessionManager.shared.loadAccount() {
+            if user.userRole == .waitStaff {
+                editBarButton.isHidden = true
+            }
+        }
+        
     }
     
     @objc private func editButtonAction(_ sender: UIBarButtonItem) {

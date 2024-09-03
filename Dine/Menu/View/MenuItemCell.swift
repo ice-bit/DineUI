@@ -1,43 +1,69 @@
 //
 //  MenuItemCell.swift
-//  DineUIComponents
+//  Dine
 //
-//  Created by doss-zstch1212 on 02/05/24.
+//  Created by doss-zstch1212 on 29/05/24.
 //
 
 import UIKit
-import SwiftUI
 
-protocol CustomStepperDelegate: AnyObject {
-    func stepperValueChanged(value: Double)
+protocol MenuItemTableViewCellDelegate: AnyObject {
+    func menuTableViewCell(_ cell: MenuItemCell, didChangeItemCount count: Int, for menuItem: MenuItem)
 }
 
 class MenuItemCell: UITableViewCell {
-    static let reuseIdentifier = "MenuItemCell"
     
-    private var count: Int = 0 {
-        willSet {
-            countTag.text = String(newValue)
+    static let reuseIdentifier = "MenuItemTableViewCell"
+    weak var delegate: MenuItemTableViewCellDelegate?
+    var menuItem: MenuItem?
+    
+    private var itemCount: Int = 0 {
+        didSet {
+            itemCountLabel.text = String(itemCount)
+            itemCountLabel.isHidden = itemCount == 0
+            stepper.value = Double(itemCount)
         }
     }
     
-    var itemCount: Int {
-        count
-    }
-    private var menuItem: MenuItem?
+    private lazy var itemImage: UIImageView = {
+        let imageView = UIImageView()
+        imageView.contentMode = .scaleToFill
+        imageView.layer.cornerRadius = 4
+        imageView.layer.masksToBounds = true
+        imageView.translatesAutoresizingMaskIntoConstraints = false
+        return imageView
+    }()
     
-    weak var stepperDelegate: CustomStepperDelegate?
+    private lazy var vegNonVegSymbol: UIImageView = {
+        let symbol = UIImageView()
+        symbol.contentMode = .scaleToFill
+        symbol.translatesAutoresizingMaskIntoConstraints = false
+        return symbol
+    }()
     
-    private var itemImageView: UIImageView!
-    private var foodIndicator: UIImageView!
-    private var title: UILabel!
-    private var priceTag: UILabel!
-    private var secondaryTitle: UILabel!
-    private var containerView: UIView!
-    private var countTag: UILabel!
-    private var stepper: UIStepper!
+    private lazy var itemNameLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .boldSystemFont(ofSize: 15)
+        label.setContentCompressionResistancePriority(.defaultLow, for: .horizontal)
+        return label
+    }()
     
-    private lazy var stackView: UIStackView = {
+    private lazy var priceLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = .systemFont(ofSize: 14, weight: .regular)
+        return label
+    }()
+    
+    private lazy var secTitleLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 12, weight: .regular)
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
+    
+    private lazy var labelVStackView: UIStackView = {
         let stackView = UIStackView()
         stackView.axis = .vertical
         stackView.spacing = 2
@@ -45,134 +71,143 @@ class MenuItemCell: UITableViewCell {
         stackView.translatesAutoresizingMaskIntoConstraints = false
         return stackView
     }()
-
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        
-    }
     
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-        
-        // Configure the view for the selected state
-    }
+    private lazy var hStackView: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 6
+        stackView.alignment = .center
+        stackView.distribution = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        return stackView
+    }()
+    
+    private lazy var wrapperView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .secondarySystemGroupedBackground
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 20
+        return view
+    }()
+    
+    private lazy var stepper: UIStepper = {
+        let stepper = UIStepper()
+        stepper.addTarget(self, action: #selector(stepperAction(_:)), for: .touchUpInside)
+        stepper.setBackgroundImage(UIImage(color: UIColor.clear), for: .normal)
+        stepper.setDividerImage(UIImage(color: UIColor.clear), forLeftSegmentState: .normal, rightSegmentState: .normal)
+        stepper.translatesAutoresizingMaskIntoConstraints = false
+        return stepper
+    }()
+    
+    private lazy var itemCountLabel: UILabel = {
+        let label = UILabel()
+        label.font = .systemFont(ofSize: 14, weight: .medium)
+        label.isHidden = true // Initially is it hidden
+        label.textAlignment = .center
+        label.layer.masksToBounds = true
+        label.translatesAutoresizingMaskIntoConstraints = false
+        return label
+    }()
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        setupSubViews()
+        // Initialization code...
+        setupSubviews()
     }
     
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     
-    @objc private func stepperValueChanged(sender: UIStepper) {
-        print("Stepper value: \(stepper.value)")
-        count = Int(stepper.value)
-        
-        stepperDelegate?.stepperValueChanged(value: stepper.value)
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        // Initialization code
+        setupSubviews()
+    }
+
+    override func setSelected(_ selected: Bool, animated: Bool) {
+        super.setSelected(selected, animated: animated)
+
+        // Configure the view for the selected state
     }
     
-    private func setupSubViews() {
-        containerView = UIView()
-        itemImageView = UIImageView()
-        foodIndicator = UIImageView()
-        title = UILabel()
-        priceTag = UILabel()
-        secondaryTitle = UILabel()
-        countTag = UILabel()
-        stepper = UIStepper()
+    @objc private func stepperAction(_ sender: UIStepper) {
+        // Haptic feedback
+        let selectionFeedback = UISelectionFeedbackGenerator()
+        selectionFeedback.prepare()
+        selectionFeedback.selectionChanged()
         
-        contentView.addSubview(containerView)
-        containerView.addSubview(itemImageView)
-//        containerView.addSubview(stepper)
-//        containerView.addSubview(countTag)
-        containerView.addSubview(stackView)
-        stackView.addArrangedSubview(foodIndicator)
-        stackView.addArrangedSubview(title)
-        stackView.addArrangedSubview(priceTag)
-        stackView.addArrangedSubview(secondaryTitle)
+        itemCount = Int(stepper.value)
+        menuItem?.count = itemCount
+        if let menuItem {
+            delegate?.menuTableViewCell(self, didChangeItemCount: itemCount, for: menuItem)
+        }
+    }
+    
+    // MARK: - View Setup
+    private func setupSubviews() {
+        contentView.addSubview(wrapperView)
+        stepper.addSubview(itemCountLabel)
         
-        itemImageView.translatesAutoresizingMaskIntoConstraints = false
-        foodIndicator.translatesAutoresizingMaskIntoConstraints = false
-        title.translatesAutoresizingMaskIntoConstraints = false
-        priceTag.translatesAutoresizingMaskIntoConstraints = false
-        secondaryTitle.translatesAutoresizingMaskIntoConstraints = false
-        containerView.translatesAutoresizingMaskIntoConstraints = false
-        stepper.translatesAutoresizingMaskIntoConstraints = false
-        countTag.translatesAutoresizingMaskIntoConstraints = false
+        /*wrapperView.backgroundColor = .red*/
+        //hStackView.backgroundColor = .blue
         
-        contentView.backgroundColor = .systemBackground
+        wrapperView.addSubview(hStackView)
+        hStackView.addArrangedSubview(itemImage)
+        hStackView.addArrangedSubview(labelVStackView)
+        hStackView.addArrangedSubview(stepper)
         
-        containerView.backgroundColor = .app
-        containerView.layer.cornerRadius = 12
-        
-        countTag.font = .systemFont(ofSize: 14)
-        
-        itemImageView.layer.cornerRadius = 8 // Adjust the value as needed
-        itemImageView.layer.masksToBounds = true
-        itemImageView.contentMode = .scaleToFill
-        foodIndicator.image = UIImage(systemName: "square.dashed")
-        title.font = .systemFont(ofSize: 17, weight: .medium)
-        priceTag.font = .systemFont(ofSize: 14, weight: .regular)
-        secondaryTitle.font = .systemFont(ofSize: 12, weight: .regular)
-        
-        stepper.addTarget(self, action: #selector(stepperValueChanged), for: .touchUpInside)
-        
-        countTag.text = String(count)
+        //labelVStackView.addArrangedSubview(vegNonVegSymbol)
+        labelVStackView.addArrangedSubview(itemNameLabel)
+        labelVStackView.addArrangedSubview(priceLabel)
+        // removed this and solved the stepper going out of bounds issue (still didn't figure out how)
+        //labelVStackView.addArrangedSubview(secTitleLabel)
         
         NSLayoutConstraint.activate([
-            containerView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 12),
-            containerView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 12),
-            containerView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -12),
-            containerView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -12),
+            wrapperView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: 16),
+            wrapperView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -16),
+            wrapperView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 8),
+            wrapperView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor, constant: -8),
+            
+            itemImage.heightAnchor.constraint(equalToConstant: 72),
+            itemImage.widthAnchor.constraint(equalToConstant: 72),
+            
+            hStackView.leadingAnchor.constraint(equalTo: wrapperView.leadingAnchor, constant: 16),
+            hStackView.trailingAnchor.constraint(equalTo: wrapperView.trailingAnchor, constant: -16),
+            hStackView.topAnchor.constraint(equalTo: wrapperView.topAnchor, constant: 16),
+            hStackView.bottomAnchor.constraint(equalTo: wrapperView.bottomAnchor, constant: -16),
 
-            itemImageView.leadingAnchor.constraint(equalTo: containerView.leadingAnchor, constant: 12),
-            itemImageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            itemImageView.heightAnchor.constraint(equalToConstant: 100),
-            itemImageView.widthAnchor.constraint(equalToConstant: 100),
-            
-            stackView.leadingAnchor.constraint(equalTo: itemImageView.trailingAnchor, constant: 12),
-            stackView.centerYAnchor.constraint(equalTo: itemImageView.centerYAnchor),
-            
-            /*stepper.trailingAnchor.constraint(equalTo: containerView.trailingAnchor, constant: -8),
-            stepper.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
-            
-            countTag.centerXAnchor.constraint(equalTo: stepper.centerXAnchor),
-            countTag.centerYAnchor.constraint(equalTo: stepper.centerYAnchor)*/
+
+            itemCountLabel.centerXAnchor.constraint(equalTo: stepper.centerXAnchor),
+            itemCountLabel.centerYAnchor.constraint(equalTo: stepper.centerYAnchor),
+            stepper.centerYAnchor.constraint(equalTo: hStackView.centerYAnchor),
+            stepper.trailingAnchor.constraint(equalTo: hStackView.trailingAnchor),
         ])
-        
-    }
-    
-    func configure(itemImage: UIImage, isFoodVeg: Bool, title: String, price: Double, secondaryTitle: String) {
-        itemImageView.image = itemImage
-        self.title.text = title
-        let priceString = String(price)
-        self.priceTag.text = "$ \(priceString)"
-        self.secondaryTitle.text = secondaryTitle
     }
     
     func configure(menuItem: MenuItem) {
-        itemImageView.image = UIImage(named: "burger")!
-        title.text = menuItem.name
-        let priceString = String(format: "%.2f", menuItem.price)
-        self.priceTag.text = "$ \(priceString)"
-        secondaryTitle.text = "Lorem ipsum is not fair."
         self.menuItem = menuItem
+        itemImage.cacheImage(for: menuItem.itemId)
+        
+        vegNonVegSymbol.image = UIImage(systemName: "square.dashed.inset.filled")
+        itemNameLabel.text = menuItem.name
+        let priceString = String(format: "%.2f", menuItem.price)
+        priceLabel.text = "$ \(priceString)"
+        secTitleLabel.text = menuItem.description
+        itemCount = menuItem.count
+        stepper.value = Double(menuItem.count)
     }
     
-}
+    private func configureMenuItem() {
+        guard let menuItem else { return }
+        itemCount = menuItem.count
+    }
 
-struct MenuCell {
-    let image: UIImage
-    let indicator: UIImage?
-    let title: String
-    let price: Double
-    let secTitle: String
 }
 
 #Preview {
-    let menuItemCell = MenuItemCell()
-    menuItemCell.configure(itemImage: .burger, isFoodVeg: false, title: "Burger", price: 8.98, secondaryTitle: "Lorem ipsumfew")
-    return menuItemCell
+    let menuItem: MenuItem = .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!")
+    let cell = MenuItemCell()
+    cell.configure(menuItem: menuItem)
+    return cell
 }

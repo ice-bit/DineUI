@@ -80,12 +80,12 @@ extension GeneralViewController {
         dataSource.apply(snapshot, animatingDifferences: false)
     }*/
     
-    private func configureDataSource() {
+    /*private func configureDataSource() {
         let cellResigtration = UICollectionView.CellRegistration<FeatureCell, Int> { (cell, indexPath, identifier) in
             // Populate the cell with our item description.
             
         }
-    }
+    }*/
 }
 
 class FeatureCell: UICollectionViewCell {

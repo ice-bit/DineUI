@@ -13,11 +13,8 @@ enum AccountStatus: String, Codable {
 }
 
 enum UserRole: String, CaseIterable, Codable {
-    case admin = "Administrator"
     case manager = "Management Staff"
     case waitStaff = "Wait Staff"
-    case kitchenStaff = "Kitchen Staff"
-    case employee = "Employee"
 }
 
 class Account: Codable {

@@ -14,12 +14,7 @@ struct OrderCellView: View {
         HStack {
             VStack {
                 Text("#\(order.getTable?.locationIdentifier ?? 0)")
-                    .font(.subheadline)
-                    .padding(.bottom, 8)
-                
-                Image(systemName: "table.furniture")
                     .font(.title3)
-                    .padding(.bottom, 5)
             }
             .padding()
             .overlay (

@@ -13,7 +13,9 @@ class EditUserFormViewController: UIViewController {
     
     private let account: Account
     private var toast: Toast!
+    
     private var activeTextField: DineTextField?
+    
     private var toggleButton: UIButton!
     private var scrollView: UIScrollView!
     private var scrollContentView: UIView!
@@ -21,7 +23,7 @@ class EditUserFormViewController: UIViewController {
     private var selectedUserRole: UserRole? {
         didSet {
             if let selectedUserRole {
-                dinePicker.contentLabel.text = selectedUserRole.rawValue
+                dinePicker.text = selectedUserRole.rawValue
             }
         }
     }
@@ -62,7 +64,6 @@ class EditUserFormViewController: UIViewController {
         button.setTitleColor(.lightGray, for: .disabled)
         button.layer.cornerRadius = 10
         button.backgroundColor = .app
-//        button.isEnabled = false
         button.addTarget(self, action: #selector(saveButtonAction(_:)), for: .touchUpInside)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.isHidden = true
@@ -102,25 +103,78 @@ class EditUserFormViewController: UIViewController {
         navigationController?.navigationBar.prefersLargeTitles = true
         view.backgroundColor = .systemGroupedBackground
         view.keyboardLayoutGuide.followsUndockedKeyboard = true
+        
         setupScrollView()
         setupSubviews()
         setupPasswordVisibiltyToggle()
         setupForgetLabelGesture()
         fetchAccounts()
-        usernameDineTextField.inputText = account.username
-        passwordDineTextField.inputText = account.password
-        selectedUserRole = account.userRole
+        
         let tap = UITapGestureRecognizer(target: self, action: #selector(UIInputViewController.dismissKeyboard))
-        //Uncomment the line below if you want the tap not not interfere and cancel other interactions.
-        // tap.cancelsTouchesInView = false
+
         view.addGestureRecognizer(tap)
         setupPicker()
         setupNavigationBar()
         
-        usernameDineTextField.onEditingChanged = onEditingChanged
-        passwordDineTextField.onEditingChanged = onEditingChanged
-        usernameDineTextField.onDidEndEditing = onDidEndEditingUsernameTF
-        passwordDineTextField.onDidEndEditing = onDidEndEditing
+        configTextFieldDelegates()
+        
+        // Register for keyboard notifications
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
+    }
+    
+    @objc func keyboardWillShow(notification: NSNotification) {
+        if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
+            let keyboardHeight = keyboardSize.height
+            var visibleRect = self.view.frame
+            visibleRect.size.height -= keyboardHeight
+
+            if let activeTextField = self.activeTextField {
+                // Convert the text field's frame to the scroll view's coordinate system
+                let textFieldFrameInScrollView = activeTextField.convert(activeTextField.bounds, to: scrollView)
+                // Check if the active text field is not visible
+                if !visibleRect.contains(textFieldFrameInScrollView.origin) {
+                    scrollView.scrollRectToVisible(textFieldFrameInScrollView, animated: true)
+                }
+            }
+        }
+    }
+
+    @objc func keyboardWillHide(notification: NSNotification) {
+        let contentInsets = UIEdgeInsets.zero
+        scrollView.contentInset = contentInsets
+        scrollView.scrollIndicatorInsets = contentInsets
+    }
+    
+    private func configTextFieldDelegates() {
+        usernameDineTextField.inputText = account.username
+        passwordDineTextField.inputText = account.password
+        selectedUserRole = account.userRole
+        
+        usernameDineTextField.onEditingChanged = textFieldDidChangeEditing
+        passwordDineTextField.onEditingChanged = textFieldDidChangeEditing
+        
+        usernameDineTextField.onDidBeginEditing = textFieldDidBeginEditing
+        passwordDineTextField.onDidBeginEditing = textFieldDidBeginEditing
+        
+        usernameDineTextField.onDidEndEditing = textFieldDidEndEditing
+        passwordDineTextField.onDidEndEditing = textFieldDidEndEditing
+        
+        usernameDineTextField.onShouldEndEditing = textFieldShouldEndEditing
+        passwordDineTextField.onShouldEndEditing = textFieldShouldEndEditing
+        
+        usernameDineTextField.onReturn = textFieldShouldReturn
+        passwordDineTextField.onReturn = textFieldShouldReturn
     }
     
     private func setupNavigationBar() {
@@ -179,6 +233,8 @@ class EditUserFormViewController: UIViewController {
             editButton.title = "Edit"
             usernameDineTextField.inputText = account.username
             passwordDineTextField.inputText = account.password
+            dinePicker.text = account.userRole.rawValue
+            activeTextField?.textfield.resignFirstResponder()
         }
     }
     
@@ -283,21 +339,34 @@ class EditUserFormViewController: UIViewController {
             let accountService = AccountServiceImpl(databaseAccess: databaseAccess)
             let resultAccounts = try accountService.fetch()
             if let resultAccounts {
-                if let _ = resultAccounts.first(where: { $0.username == username }) {
-                    showToast("User already exists")
-                    return
+                if let user = resultAccounts.first(where: { $0.username == username }) {
+                    if !(user.username == account.username) {
+                        showToast("Username already taken")
+                        return
+                    }
                 }
             }
             account.updateUsername(username)
             account.updatePassword(password)
             account.updateRole(userRole)
             try accountService.update(account)
+            // inform the changes
             onDidEditUser?(account)
+            // change the authentication state (face id)
             state = .unauthenticated
-//            navigationController?.popViewController(animated: true)
+            // show toast for visual indication
+            showSuccessToast("User credentials updated")
         } catch {
             fatalError("Failed to update credentials: \(error.localizedDescription)")
         }
+    }
+    
+    private func showSuccessToast(_ message: String) {
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text(message)
+        toast.show(haptic: .success)
     }
     
     private func isUserAvaialable(_ username: String) -> Bool {
@@ -310,7 +379,7 @@ class EditUserFormViewController: UIViewController {
             let account = try accountService.fetch()
             if let account {
                 if account.first(where: { $0.username == username }) != nil {
-                    return true
+                    return true // true since there is some user associated with this username
                 } else {
                     return false
                 }
@@ -322,29 +391,7 @@ class EditUserFormViewController: UIViewController {
             fatalError("accessing db failed with error: \(error)")
         }
     }
-    
-    private func validateUsername(_ textField: DineTextField) -> DineTextInputError? {
-        guard let text = textField.inputText else { return nil }
-        
-        if isUserAvaialable(text) {
-            return DineTextInputError(localizedDescription: "Username not available")
-        }
-        
-        return nil
-    }
-    
-    private func onDidEndEditingUsernameTF(_ textField: DineTextField) {
-        textField.error = validateUsername(textField)
-        animateErrorMessage(for: textField)
-        activeTextField = nil
-    }
-    
-    private func animateErrorMessage(for textField: DineTextField) {
-        UIView.animate(withDuration: 0.3) {
-            self.view.layoutIfNeeded()
-        }
-    }
-    
+
     private func setupSubviews() {
         scrollContentView.addSubview(verticalStackView)
         verticalStackView.addArrangedSubview(usernameDineTextField)
@@ -385,6 +432,9 @@ class EditUserFormViewController: UIViewController {
             if !AuthenticationValidator.isValidUsername(text) {
                 return DineTextInputError(localizedDescription: "Username must be 3-20 characters, only letters, numbers, and underscores.")
             }
+            if isUserAvaialable(text) {
+                return DineTextInputError(localizedDescription: "Username is already taken.")
+            }
         }
         
         if textfield == passwordDineTextField {
@@ -404,6 +454,7 @@ class EditUserFormViewController: UIViewController {
         field.titleText = "Username"
         field.textfield.isUserInteractionEnabled = false
         field.placeholder = "e.g. John Dean"
+        field.textfield.returnKeyType = .next
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -414,6 +465,7 @@ class EditUserFormViewController: UIViewController {
         field.textfield.isUserInteractionEnabled = false
         field.textfield.isSecureTextEntry = true
         field.placeholder = "Set New Password"
+        field.textfield.returnKeyType = .done
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
@@ -425,45 +477,45 @@ class EditUserFormViewController: UIViewController {
         return picker
     }()
     
-    func onEditingChanged(_ textfield: DineTextField) {
-        textfield.error = validateText(textfield)
-    }
-    
-    func validateUsername(_ username: String) -> Bool {
-        guard !(username == account.username) else {
-            return false
-        }
-        guard AuthenticationValidator.isValidUsername(username) else {
-            return false
-        }
-        do {
-            let databaseAccess = try SQLiteDataAccess.openDatabase()
-            let authController = AuthController(databaseAccess: databaseAccess)
-            return authController.isUserPresent(username: username)
-        } catch {
-            return false
+    private func animateErrorMessage(for textField: DineTextField) {
+        UIView.animate(withDuration: 0.3) {
+            self.view.layoutIfNeeded()
         }
     }
     
-    private func validateForm() {
-        guard let username = usernameDineTextField.inputText,
-              let password = passwordDineTextField.inputText else {
-            return
-        }
-        guard validateUsername(username) else { return }
-        guard AuthenticationValidator.isStrongPassword(password) else { return }
-//        saveButton.isEnabled = true
-    }
 }
 
 extension EditUserFormViewController {
-    private func onDidBeginEditing(_ textField: DineTextField) {
+    private func textFieldDidBeginEditing(_ textField: DineTextField) {
         activeTextField = textField
     }
     
-    private func onDidEndEditing(_ textField: DineTextField) {
+    private func textFieldDidEndEditing(_ textField: DineTextField) {
         activeTextField = nil
-        validateForm()
+    }
+    
+    private func textFieldDidChangeEditing(_ textField: DineTextField) {
+        textField.error = nil
+        animateErrorMessage(for: textField)
+    }
+    
+    private func textFieldShouldEndEditing(_ textField: DineTextField) -> Bool {
+        if let validator = validateText(textField) {
+            textField.error = validator
+            animateErrorMessage(for: textField)
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    private func textFieldShouldReturn(_ textField: DineTextField) -> Bool {
+        if textField == usernameDineTextField {
+            passwordDineTextField.textfield.becomeFirstResponder()
+        } else if textField == passwordDineTextField {
+            passwordDineTextField.textfield.resignFirstResponder()
+        }
+        return true
     }
 }
 

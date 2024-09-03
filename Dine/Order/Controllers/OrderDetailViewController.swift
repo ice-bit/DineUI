@@ -13,6 +13,8 @@ class OrderDetailViewController: UIViewController {
     
     private let order: Order // Dependency Injection
     private let cellReuseIdentifier = "menuItemCell" // Reuse identifier for table view cells
+    private var toast: Toast!
+    var didPopToRoot: (() -> Void)?
     
     private var tableView: UITableView!
     private var scrollView: UIScrollView!
@@ -103,7 +105,7 @@ class OrderDetailViewController: UIViewController {
             verticalStackView.topAnchor.constraint(equalTo: tableView.bottomAnchor, constant: 20),
             verticalStackView.centerXAnchor.constraint(equalTo: scrollContentView.centerXAnchor),
             verticalStackView.widthAnchor.constraint(equalTo: scrollContentView.widthAnchor, multiplier: 0.88),
-            verticalStackView.heightAnchor.constraint(equalToConstant: 300)
+            verticalStackView.heightAnchor.constraint(equalToConstant: 150)
         ])
     }
     
@@ -138,8 +140,8 @@ class OrderDetailViewController: UIViewController {
         tableIDView.configureView(title: "Table", description: order.tableIDValue.uuidString)
         orderIDView.configureView(title: "Order", description: order.orderIdValue.uuidString)
         
-        stackView.addArrangedSubview(orderIDView)
-        stackView.addArrangedSubview(tableIDView)
+        /*stackView.addArrangedSubview(orderIDView)
+        stackView.addArrangedSubview(tableIDView)*/
         stackView.addArrangedSubview(statusView)
         stackView.addArrangedSubview(dateView)
         
@@ -177,7 +179,7 @@ class OrderDetailViewController: UIViewController {
         
         switch type {
         case .normal:
-            config.baseForegroundColor = .systemBackground
+            config.baseForegroundColor = .white
         case .destructive:
             config.baseForegroundColor = .red
         }
@@ -245,9 +247,9 @@ class OrderDetailViewController: UIViewController {
             
             horizontalButtonStackView.isHidden = true
             navigationController?.popViewController(animated: true)
+            didPopToRoot?()
             
-            let toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Bill Added")
-            toast.show(haptic: .success)
+            /*showSuccessToast("Order has been processed")*/
         } catch {
             print("Unable to bill the order - \(error)")
         }
@@ -311,11 +313,18 @@ class OrderDetailViewController: UIViewController {
             navigationController?.popViewController(animated: true)
             NotificationCenter.default.post(name: .cartDidChangeNotification, object: nil)
             
-            let toast = Toast.default(image: UIImage(systemName: "checkmark")!, title: "Order Deleted")
-            toast.show(haptic: .success)
+            /*showSuccessToast("Order deleted")*/
         } catch {
             print("Failed to delete order - \(error)")
         }
+    }
+    
+    private func showSuccessToast(_ message: String) {
+        if let toast {
+            toast.close(animated: false)
+        }
+        toast = Toast.text(message)
+        toast.show(haptic: .success)
     }
 }
 

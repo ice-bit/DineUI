@@ -11,6 +11,28 @@ import Toast
 
 class BillViewController: UIViewController {
     // MARK: - Properties
+    private enum BillFilter {
+        case all
+        case paid
+        case unpaid
+        
+        var title: String {
+            switch self {
+            case .all: return "All Bills"
+            case .paid: return "Paid Bills"
+            case .unpaid: return "Unpaid Bills"
+            }
+        }
+    }
+    
+    private var currentFilter: BillFilter = .unpaid
+    
+    private var filteredBills: [Bill] = [] {
+        didSet {
+            // Update the table view when filtered bills change
+            filterBills()
+        }
+    }
     
     // TableView for displaying bills
     private var tableView: UITableView!
@@ -24,31 +46,20 @@ class BillViewController: UIViewController {
     // Data source for bills
     private var billData: [Bill] = [] {
         didSet {
-            // Show/hide placeholder based on data availability
-            placeholderLabel.isHidden = !billData.isEmpty
-            tableView.isHidden = billData.isEmpty
-        }
-    }
-    
-    // Computed properties for categorizing bills
-    private var todaysBills: [Bill] {
-        billData.filter { Calendar.current.isDateInToday($0.date) }
-    }
-    
-    private var yesterdaysBills: [Bill] {
-        billData.filter { Calendar.current.isDateInYesterday($0.date) }
-    }
-    
-    private var previousBills: [Bill] {
-        billData.filter {
-            guard let twoDaysAgo = Calendar.current.date(byAdding: .day, value: -2, to: Date()) else { return false }
-            return Calendar.current.compare($0.date, to: twoDaysAgo, toGranularity: .day) == .orderedSame
+            // Refresh filtered data
+            filterBills()
         }
     }
     
     // Grouped bill data by sections
     private var tableViewData: [BillSection: [Bill]] {
-        [.today: todaysBills, .yesterday: yesterdaysBills, .previous: previousBills]
+        [.today: filteredBills.filter { Calendar.current.isDateInToday($0.date) },
+         .yesterday: filteredBills.filter { Calendar.current.isDateInYesterday($0.date) },
+         .previous: filteredBills.filter {
+             guard let twoDaysAgo = Calendar.current.date(byAdding: .day, value: -2, to: Date()) else { return false }
+             return Calendar.current.compare($0.date, to: twoDaysAgo, toGranularity: .day) == .orderedSame
+         }
+        ]
     }
     
     // Sections with non-empty data
@@ -65,10 +76,10 @@ class BillViewController: UIViewController {
         setupAppearance()
         setupTableView()
         setupPlaceholderLabel()
-        // setupBarButton()
+        setupBarButton()
+        
         loadBillData()
         
-        // Register for notification when a bill is added
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(billDidAdd(_:)),
@@ -92,8 +103,8 @@ class BillViewController: UIViewController {
         print(#function)
         loadBillData()
     }
-    
     // MARK: - Methods
+    
     
     // Setup table view
     private func setupTableView() {
@@ -137,24 +148,69 @@ class BillViewController: UIViewController {
     
     // Setup navigation bar appearance
     private func setupAppearance() {
-        self.title = "Bills"
         view.backgroundColor = .systemGroupedBackground
         navigationController?.navigationBar.prefersLargeTitles = true
     }
     
     // Setup filter bar button
     private func setupBarButton() {
+        // Create the menu items
+        let paidBillsAction = UIAction(title: "Paid Bills", image: UIImage(systemName: "checkmark.circle")) { [weak self] _ in
+            self?.filterBills(by: .paid)
+        }
+
+        let unpaidBillsAction = UIAction(title: "Unpaid Bills", image: UIImage(systemName: "xmark.circle")) { [weak self] _ in
+            self?.filterBills(by: .unpaid)
+        }
+
+        let allBillsAction = UIAction(title: "All Bills", image: UIImage(systemName: "list.bullet")) { [weak self] _ in
+            self?.filterBills(by: .all)
+        }
+
+        // Create the UIMenu
+        let filterMenu = UIMenu(title: "", children: [paidBillsAction, unpaidBillsAction, allBillsAction])
+
+        // Assign the UIMenu to the filter button
         filterBarButton = UIBarButtonItem(
+            title: nil,
             image: UIImage(systemName: "line.3.horizontal.decrease.circle"),
-            style: .plain,
-            target: self,
-            action: #selector(filterAction(_:))
+            primaryAction: nil,
+            menu: filterMenu
         )
+
         navigationItem.rightBarButtonItem = filterBarButton
     }
     
-    @objc private func filterAction(_ sender: UIBarButtonItem) {
-        print("Filter button tapped!")
+    
+    private func filterBills(by filter: BillFilter) {
+        currentFilter = filter
+        applyCurrentFilter()
+    }
+    
+    private func applyCurrentFilter() {
+        switch currentFilter {
+        case .paid:
+            filteredBills = billData.filter { $0.isPaid }
+            self.title = "Paid Bills"
+        case .unpaid:
+            filteredBills = billData.filter { !$0.isPaid }
+            self.title = "Unpaid Bills"
+        case .all:
+            filteredBills = billData
+            self.title = "All Bills"
+        }
+
+        // Update the table view with the filtered data
+        placeholderLabel.isHidden = !filteredBills.isEmpty
+        tableView.isHidden = filteredBills.isEmpty
+        tableView.reloadData()
+    }
+
+    
+    private func filterBills() {
+        placeholderLabel.isHidden = !filteredBills.isEmpty
+        tableView.isHidden = filteredBills.isEmpty
+        tableView.reloadData()
     }
     
     // Load bill data from database
@@ -165,7 +221,7 @@ class BillViewController: UIViewController {
             let results = try billService.fetch()
             if let results {
                 billData = results
-                tableView.reloadData()
+                applyCurrentFilter() // Apply the current filter and set the title when data is loaded
             }
         } catch {
             print("Unable to load bills = \(error)")
@@ -227,9 +283,8 @@ class BillViewController: UIViewController {
 
 // MARK: - TableView DataSource & Delegate methods
 extension BillViewController: UITableViewDataSource, UITableViewDelegate {
-    
     func numberOfSections(in tableView: UITableView) -> Int {
-        nonEmptyBillSection.count
+        return nonEmptyBillSection.count
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
@@ -242,7 +297,7 @@ extension BillViewController: UITableViewDataSource, UITableViewDelegate {
         let billSection = nonEmptyBillSection[indexPath.section]
         guard let bill = tableViewData[billSection]?[indexPath.row] else { return cell }
         cell.contentConfiguration = UIHostingConfiguration {
-            BillItem(billData: bill)
+            BillItemView(billData: bill)
         }
         cell.backgroundColor = .systemGroupedBackground
         return cell
@@ -255,13 +310,16 @@ extension BillViewController: UITableViewDataSource, UITableViewDelegate {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
-        let data = billData[indexPath.row]
-        let billDetailViewController = BillDetailViewController(bill: data)
-        navigationController?.pushViewController(billDetailViewController, animated: true)
+        let billSection = nonEmptyBillSection[indexPath.section]
+        guard let data = tableViewData[billSection]?[indexPath.row] else { return }
+        let viewModel = BillSummaryViewModel(bill: data)
+        let billsummaryVC = BillSummaryViewController(viewModel: viewModel)
+        navigationController?.pushViewController(billsummaryVC, animated: true)
     }
-    
+
     func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let selectedBill = billData[indexPath.row]
+        let billSection = nonEmptyBillSection[indexPath.section]
+        guard let selectedBill = tableViewData[billSection]?[indexPath.row] else { return nil }
         
         let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] action, view, completionHandler in
             guard let self else { return }

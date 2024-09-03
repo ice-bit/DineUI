@@ -24,6 +24,7 @@ struct BillServiceImpl: BillService {
     
     func add(_ bill: Bill) throws {
         try databaseAccess.insert(bill)
+        publishNotification()
     }
     
     func fetch() throws -> [Bill]? {
@@ -36,10 +37,15 @@ struct BillServiceImpl: BillService {
     
     func update(_ bill: Bill) throws {
         try databaseAccess.update(bill)
+        publishNotification()
     }
     
     func delete(_ bill: Bill) throws {
         try databaseAccess.delete(item: bill)
+        publishNotification()
     }
     
+    private func publishNotification() {
+        NotificationCenter.default.post(name: .billDidChangeNotification, object: nil)
+    }
 }

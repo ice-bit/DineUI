@@ -191,13 +191,20 @@ class TablesViewController: UIViewController, UICollectionViewDataSource, UIColl
     }
     
     // MARK: - UICollectionViewDelegate methods
+#warning("index out of range occurs, cannot reproduce!")
     func collectionView(_ collectionView: UICollectionView, contextMenuConfigurationForItemsAt indexPaths: [IndexPath], point: CGPoint) -> UIContextMenuConfiguration? {
         let item = tables[indexPaths[0].item]
         return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
             let editAction = UIAction(title: "Edit", image: UIImage(systemName: "pencil")) { [weak self] action in
                 guard let self else { return }
                 print("Edit context menu action")
-                self.presentEditAlertController(for: item)
+                 self.presentEditAlertController(for: item)
+                let addTableVC = AddTableFormViewController()
+                if let sheet = addTableVC.sheetPresentationController {
+                    sheet.detents = [.medium(), .large()]
+                    sheet.prefersScrollingExpandsWhenScrolledToEdge = true
+                }
+                self.present(addTableVC, animated: true)
             }
             
             let deleteAction = UIAction(title: "Delete", image: UIImage(systemName: "trash")) { action in

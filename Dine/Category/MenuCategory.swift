@@ -8,7 +8,7 @@
 import Foundation
 import SQLite3
 
-struct MenuCategory {
+struct MenuCategory: Hashable {
     let id: UUID
     let categoryName: String
 }

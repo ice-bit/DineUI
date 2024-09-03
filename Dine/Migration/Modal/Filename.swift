@@ -7,7 +7,7 @@
 
 import Foundation
 
-@frozen enum Filename: String {
+/*@frozen*/ enum Filename: String {
     case accountFile = "Test_Account"
     case tableFile = "Test_Table"
     case billFile = "bills_test_1"

@@ -5,6 +5,9 @@
 //  Created by doss-zstch1212 on 18/06/24.
 //
 
+/// https://stackoverflow.com/questions/3782066/how-to-get-my-uiwindow-using-uiapplication
+/// fix
+
 import UIKit
 import Toast
 

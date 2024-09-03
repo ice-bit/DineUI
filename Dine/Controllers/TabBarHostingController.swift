@@ -24,7 +24,7 @@ class TabBarHostingController: UITabBarController {
     }
     
     private func setupTabBar() {
-        let vcFactory = ViewControllerFactory()
+        /*let vcFactory = ViewControllerFactory()*/
         guard let databaseAccess = try? SQLiteDataAccess.openDatabase() else {
             print("Failed to open database connection")
             return
@@ -85,14 +85,14 @@ struct ViewControllerFactory {
     }()
     
     func createMenuSectionViewController() -> MenuSectionViewController? {
-        guard let databaseAccess else {
+        /*guard let databaseAccess else {
             print("Error: 'databaseAccess' object not found. Unwrapping failed due to missing or null reference.")
             return nil
         }
         
-        let menuService = MenuServiceImpl(databaseAccess: databaseAccess)
+        let menuService = MenuServiceImpl(databaseAccess: databaseAccess)*/
         
-        return MenuSectionViewController()
+        return MenuSectionViewController(isSelectable: true)
     }
 }
 

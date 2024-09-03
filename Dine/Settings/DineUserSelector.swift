@@ -14,6 +14,23 @@ class DineUserSelector: UIView {
             trailingPickerButton.menu = menu
         }
     }
+    var title: String? {
+        get {
+            titleLabel.text
+        }
+        set {
+            titleLabel.text = newValue
+        }
+    }
+    
+    var text: String? {
+        get {
+            contentLabel.text
+        }
+        set {
+            contentLabel.text = newValue
+        }
+    }
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -65,14 +82,14 @@ class DineUserSelector: UIView {
         return button
     }()
     
-    let contentLabel: UILabel = {
+    private let contentLabel: UILabel = {
         let label = UILabel()
         label.font = .systemFont(ofSize: 17, weight: .medium)
         label.textColor = .label
         return label
     }()
     
-    let titleLabel: UILabel = {
+    private let titleLabel: UILabel = {
         let label = UILabel()
         label.text = "User Role"
         label.lineBreakMode = .byWordWrapping
@@ -83,7 +100,7 @@ class DineUserSelector: UIView {
         return label
     }()
     
-    let separator: Separator = {
+    private let separator: Separator = {
         let separator = Separator()
         return separator
     }()

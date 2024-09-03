@@ -11,7 +11,7 @@
 
 import Foundation
 
-@frozen enum UserStatus: String {
+/*@frozen */enum UserStatus: String {
     case isInitialLaunch = "isIntialLaunch"
     case isUserLoggedIn = "IsUserLoggedIn"
     

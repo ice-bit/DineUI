@@ -87,11 +87,17 @@ class MenuDetailViewController: UIViewController {
     private func setupNavbar() {
         let editBarButton = UIBarButtonItem(barButtonSystemItem: .edit, target: self, action: #selector(editButtonAction(_:)))
         navigationItem.rightBarButtonItem = editBarButton
+        if let user = UserSessionManager.shared.loadAccount() {
+            if user.userRole == .waitStaff {
+                editBarButton.isHidden = true
+            }
+        }
+        
     }
     
     @objc private func editButtonAction(_ sender: UIBarButtonItem) {
         let editViewController = AddItemFormViewController(menuItem: menu)
-        editViewController.onEndEditingMenuItem = menuItemDidChange
+        editViewController.didUpdateMenuItem = menuItemDidChange
         self.present(UINavigationController(rootViewController: editViewController), animated: true)
         
     }
@@ -99,7 +105,7 @@ class MenuDetailViewController: UIViewController {
     private func setupMenuImage() {
         itemImageView = UIImageView()
         Task {
-            itemImageView.image = await menu.renderedImage
+            itemImageView.image = menu.renderedImage
         }
         itemImageView.layer.cornerRadius = 14
         itemImageView.clipsToBounds = true

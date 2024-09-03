@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import SwiftUI
 import Toast
 
 struct CartSection {
@@ -16,6 +15,8 @@ struct CartSection {
 
 class CartViewController: UIViewController {
     private var tableView: UITableView!
+    private var tableViewBottomConstraint: NSLayoutConstraint!
+    private var blurEffectView: UIVisualEffectView!
     
     private var addItemsButton: UIButton!
     private var noResultsLabel: UILabel! // Added noResultsLabel
@@ -34,14 +35,14 @@ class CartViewController: UIViewController {
     
     private var menuItemCart: [MenuItem: Int] = [:] {
         didSet {
-            if !menuItemCart.isEmpty {
-                navigationItem.rightBarButtonItem?.isHidden = false
-                // menuCartView.isHidden = false
-            } else {
-                navigationItem.rightBarButtonItem?.isHidden = true
-                // menuCartView.isHidden = true
+            let shouldShowOverlay = !menuItemCart.isEmpty
+            overlayView.isHidden = !shouldShowOverlay
+
+            // Adjust table view's bottom constraint
+            tableViewBottomConstraint.constant = shouldShowOverlay ? -75 : 0 // Adjust the constant as needed
+            UIView.animate(withDuration: 0.2) {
+                self.view.layoutIfNeeded()
             }
-            
         }
     }
     
@@ -64,18 +65,26 @@ class CartViewController: UIViewController {
         return searchController.searchBar.text?.isEmpty ?? true
     }
     
+    private let overlayView: ViewCartOverlayView = {
+        let view = ViewCartOverlayView()
+        view.isHidden = true
+        view.translatesAutoresizingMaskIntoConstraints = false
+        return view
+    }()
+    
     // MARK: - View Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemGroupedBackground
         setupTableView()
+        setupOverlayView()
+        //setupBlurEffectView()
         loadMenu()
         populateCategories()
         populateCartTableView()
         setupNavBar()
         configureView()
         setupSearchBar()
-        setupCatalogButton()
         setupNoResultsLabel() // Setup noResultsLabel
         
         searchBarStateDidChange = {
@@ -85,6 +94,45 @@ class CartViewController: UIViewController {
             } else {
                 self.catalogButton.isHidden = false
             }
+        }
+    }
+    
+    private func setupOverlayView() {
+        view.addSubview(overlayView)
+        overlayView.layer.cornerRadius = 18
+        overlayView.onTap = overlayDidTap
+        
+        NSLayoutConstraint.activate([
+            overlayView.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -34),
+            overlayView.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 8),
+            overlayView.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -8),
+            overlayView.heightAnchor.constraint(equalToConstant: 56),
+        ])
+    }
+    
+    // gives a blurry effect at the bottom of the tableView
+    private func setupBlurEffectView() {
+        let blurEffect = UIBlurEffect(style: .light) // Choose the desired blur style
+        blurEffectView = UIVisualEffectView(effect: blurEffect)
+        blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+        tableView.addSubview(blurEffectView)
+
+        NSLayoutConstraint.activate([
+            blurEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            blurEffectView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            blurEffectView.heightAnchor.constraint(equalToConstant: 24), // Adjust the height as needed
+            blurEffectView.bottomAnchor.constraint(equalTo: tableView.bottomAnchor)
+        ])
+    }
+    
+    private func animateTableViewAndBlurEffect(overlayVisible: Bool) {
+        let overlayHeight: CGFloat = 56 // This should match the height of your overlayView
+
+        // Animate the tableView's bottom constraint and blur effect's alpha
+        UIView.animate(withDuration: 0.3) {
+            self.tableViewBottomConstraint.constant = overlayVisible ? -overlayHeight : 0
+            self.blurEffectView.alpha = overlayVisible ? 0.6 : 0.0
+            self.view.layoutIfNeeded()
         }
     }
     
@@ -135,10 +183,9 @@ class CartViewController: UIViewController {
     
     private func setupNavBar() {
         title = "Menu"
-        navigationController?.navigationBar.prefersLargeTitles = true
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(cancelButtonTapped))
         proceedbutton = UIBarButtonItem(title: "Proceed", style: .plain, target: self, action: #selector(proceedButtonAction(_:)))
-        navigationItem.rightBarButtonItem = proceedbutton
+        //navigationItem.rightBarButtonItem = proceedbutton
         navigationItem.rightBarButtonItem?.isHidden = true // Initially hidden
         navigationItem.leftBarButtonItem = cancelButton
     }
@@ -237,19 +284,20 @@ class CartViewController: UIViewController {
         tableView.backgroundColor = .systemGroupedBackground
         tableView.dataSource = self
         tableView.translatesAutoresizingMaskIntoConstraints = false
-        tableView.register(MenuItemTableViewCell.self, forCellReuseIdentifier: MenuItemTableViewCell.reuseIdentifier)
+        tableView.register(MenuItemCell.self, forCellReuseIdentifier: MenuItemCell.reuseIdentifier)
         view.addSubview(tableView)
         
-        // TableView Constraints
+        // Create the table view's bottom constraint and store it
+        tableViewBottomConstraint = tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        
+        // Activate constraints
         NSLayoutConstraint.activate([
             tableView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
-            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableViewBottomConstraint, // Use the stored constraint here
             tableView.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor),
             tableView.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor)
         ])
     }
-    
-    
     
     // MARK: - SearchBar Methods
     private func setupSearchBar() {
@@ -306,13 +354,8 @@ class CartViewController: UIViewController {
     }
     
     private func presentMenuSection() {
-        do {
-            let menuService = try MenuServiceImpl(databaseAccess: SQLiteDataAccess.openDatabase())
-            let menuSectionViewController = MenuSectionViewController()
-            navigationController?.present(menuSectionViewController, animated: true)
-        } catch {
-            fatalError("Failed to build menuService @\(#line): \(error)")
-        }
+        let menuSectionViewController = MenuSectionViewController(isSelectable: true)
+        navigationController?.present(menuSectionViewController, animated: true)
     }
 
     var showCatalogMenu: UIMenu {
@@ -352,6 +395,23 @@ class CartViewController: UIViewController {
             catalogButton.heightAnchor.constraint(equalToConstant: 60)
         ])
     }
+    
+    private func overlayDidTap() {
+        //animateTableViewAndBlurEffect(overlayVisible: true)
+        
+        let cartViewModel = CartViewModel(cart: menuItemCart)
+        let menuCartVC = MenuCartViewController(viewModal: cartViewModel)
+        navigationController?.pushViewController(menuCartVC, animated: true)
+        
+        /*let chooseTableVC = ChooseTableViewController(selectedMenuItems: menuItemCart)
+        
+        // Check if the tables are available
+        if chooseTableVC.isTablesAvailable() {
+            navigationController?.pushViewController(chooseTableVC, animated: true)
+        } else {
+            showErrorToast(with: "No Available Tables")
+        }*/
+    }
 }
 
 // MARK: - TableView built-in methods
@@ -364,7 +424,7 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemTableViewCell.reuseIdentifier, for: indexPath) as? MenuItemTableViewCell else {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: MenuItemCell.reuseIdentifier, for: indexPath) as? MenuItemCell else {
             return UITableViewCell()
         }
         cell.selectionStyle = .none
@@ -393,6 +453,10 @@ extension CartViewController: UITableViewDelegate, UITableViewDataSource {
         }
         return tableViewData[section].sectionHeader
     }
+    
+    private func updateOverlayValue(with itemsCount: Int) {
+        overlayView.configure(itemsCount: itemsCount)
+    }
 }
 
 extension CartViewController: UISearchResultsUpdating {
@@ -404,7 +468,7 @@ extension CartViewController: UISearchResultsUpdating {
 }
 
 extension CartViewController: MenuItemTableViewCellDelegate {
-    func menuTableViewCell(_ cell: MenuItemTableViewCell, didChangeItemCount count: Int, for menuItem: MenuItem) {
+    func menuTableViewCell(_ cell: MenuItemCell, didChangeItemCount count: Int, for menuItem: MenuItem) {
         // Remove the key if the count is zero.
         if count > 0 {
             menuItemCart[menuItem] = count
@@ -424,29 +488,12 @@ extension CartViewController: MenuItemTableViewCellDelegate {
         // menuCartView.setItemCount(menuItemCart.values.reduce(0, +))
         
         // Update the toast view with proper item count
-        showCartToast()
+        //showCartToast()
+        let itemCount = menuItemCart.values.reduce(0, +)
+        updateOverlayValue(with: itemCount)
         
         for (item, count) in menuItemCart {
             print("\(item.name) - \(count)")
         }
     }
-}
-
-#Preview {
-    let menuItem: [MenuItem] = [
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Appetizer"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Side course"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Chicken bOom"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
-        .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
-            .init(name: "Boom chicka vaaava", price: 0.87, category: MenuCategory(id: UUID(), categoryName: "Main Course"), description: "There are no flying car which fly above tower!"),
-    ]
-    let vc = CartViewController()
-    return vc
 }

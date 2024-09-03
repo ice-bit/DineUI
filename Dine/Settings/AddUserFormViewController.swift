@@ -15,9 +15,9 @@ class AddUserFormViewController: UIViewController {
     private var toggleButton: UIButton!
     private var confirmPasswordToggleButton: UIButton!
     var onDidAddUser: ((Account) -> Void)?
-    private var selectedUserRole: UserRole = .employee {
+    private var selectedUserRole: UserRole = .waitStaff {
         didSet {
-            dinePicker.contentLabel.text = selectedUserRole.rawValue
+            dinePicker.text = selectedUserRole.rawValue
         }
     }
     
@@ -42,28 +42,31 @@ class AddUserFormViewController: UIViewController {
         return button
     }()
     
-    let usernameDineTextField: DineTextField = {
+    let usernameTextField: DineTextField = {
         let field = DineTextField()
         field.keyboardType = .emailAddress
+        field.textfield.returnKeyType = .next
         field.titleText = "Username"
         field.placeholder = "Username (e.g., johndoe)"
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
     
-    let passwordDineTextField: DineTextField = {
+    let passwordTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Create a Password"
+        field.textfield.returnKeyType = .next
         field.textfield.isSecureTextEntry = true
         field.placeholder = "Set Password"
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
     }()
     
-    let confirmPasswordDineTextField: DineTextField = {
+    let verifyPasswordTextField: DineTextField = {
         let field = DineTextField()
         field.titleText = "Confirm Password"
         field.textfield.isSecureTextEntry = true
+        field.textfield.returnKeyType = .done
         field.placeholder = "Verify Password"
         field.translatesAutoresizingMaskIntoConstraints = false
         return field
@@ -89,28 +92,50 @@ class AddUserFormViewController: UIViewController {
         setupPicker()
         
         // Register for keyboard notifications
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillShow), name: UIResponder.keyboardWillShowNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillShow),
+            name: UIResponder.keyboardWillShowNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(keyboardWillHide),
+            name: UIResponder.keyboardWillHideNotification,
+            object: nil
+        )
         
-        usernameDineTextField.onEditingChanged = onEditingChanged
-        usernameDineTextField.onDidBeginEditing = onDidBeginEditing
-        usernameDineTextField.onDidEndEditing = onDidEndEditingUsernameTF
-        passwordDineTextField.onEditingChanged = onEditingChanged
-        passwordDineTextField.onDidBeginEditing = onDidBeginEditing
-        passwordDineTextField.onDidEndEditing = onDidEndEditing
-        confirmPasswordDineTextField.onEditingChanged = onEditingChanged
-        confirmPasswordDineTextField.onDidBeginEditing = onDidBeginEditing
-        confirmPasswordDineTextField.onDidEndEditing = onDidEndEditing
-        dinePicker.contentLabel.text = selectedUserRole.rawValue
+        configureTextFieldDelegates()
+        
+    }
+    
+    private func configureTextFieldDelegates() {
+        usernameTextField.onShouldEndEditing = textFieldShouldEndEditing
+        passwordTextField.onShouldEndEditing = textFieldShouldEndEditing
+        verifyPasswordTextField.onShouldEndEditing = textFieldShouldEndEditing
+        
+        usernameTextField.onDidBeginEditing = onDidBeginEditing
+        passwordTextField.onDidBeginEditing = onDidBeginEditing
+        verifyPasswordTextField.onDidBeginEditing = onDidBeginEditing
+        
+        verifyPasswordTextField.onDidEndEditing = onDidEndEditing
+        usernameTextField.onDidEndEditing = onDidEndEditing
+        passwordTextField.onDidEndEditing = onDidEndEditing
+        
+        usernameTextField.onReturn = textFieldShouldReturn
+        passwordTextField.onReturn = textFieldShouldReturn
+        verifyPasswordTextField.onReturn = textFieldShouldReturn
+        
+        usernameTextField.onEditingChanged = textFieldDidChangeEditing
+        passwordTextField.onEditingChanged = textFieldDidChangeEditing
+        verifyPasswordTextField.onEditingChanged = textFieldDidChangeEditing
+        
+        dinePicker.text = selectedUserRole.rawValue
     }
     
     @objc func keyboardWillShow(notification: NSNotification) {
         if let keyboardSize = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue {
             let keyboardHeight = keyboardSize.height
-            let contentInsets = UIEdgeInsets(top: 0, left: 0, bottom: keyboardHeight, right: 0)
-            
-            /*scrollView.contentInset = contentInsets
-            scrollView.scrollIndicatorInsets = contentInsets*/
             
             var visibleRect = self.view.frame
             visibleRect.size.height -= keyboardHeight
@@ -147,12 +172,12 @@ class AddUserFormViewController: UIViewController {
 
     private func setupPasswordVisibilityToggle() {
         toggleButton = createVisibilityToggleButton()
-        configureVisibilityToggle(for: passwordDineTextField, with: toggleButton)
+        configureVisibilityToggle(for: passwordTextField, with: toggleButton)
     }
 
     private func setupConfirmPasswordVisibilityToggle() {
         confirmPasswordToggleButton = createVisibilityToggleButton()
-        configureVisibilityToggle(for: confirmPasswordDineTextField, with: confirmPasswordToggleButton)
+        configureVisibilityToggle(for: verifyPasswordTextField, with: confirmPasswordToggleButton)
     }
 
     private func createVisibilityToggleButton() -> UIButton {
@@ -174,9 +199,9 @@ class AddUserFormViewController: UIViewController {
 
     @objc private func handleVisibilityToggle(_ sender: UIButton) {
         if sender == toggleButton {
-            toggleSecureTextEntry(for: passwordDineTextField, with: toggleButton)
+            toggleSecureTextEntry(for: passwordTextField, with: toggleButton)
         } else if sender == confirmPasswordToggleButton {
-            toggleSecureTextEntry(for: confirmPasswordDineTextField, with: confirmPasswordToggleButton)
+            toggleSecureTextEntry(for: verifyPasswordTextField, with: confirmPasswordToggleButton)
         }
     }
 
@@ -212,9 +237,9 @@ class AddUserFormViewController: UIViewController {
     }
 
     private func createAccount() {
-        guard let username = usernameDineTextField.inputText,
-              let password = passwordDineTextField.inputText,
-              let confirmPassword = confirmPasswordDineTextField.inputText else {
+        guard let username = usernameTextField.inputText,
+              let password = passwordTextField.inputText,
+              let confirmPassword = verifyPasswordTextField.inputText else {
              showToast(message: "Please fill all fields.")
             return
         }
@@ -243,7 +268,11 @@ class AddUserFormViewController: UIViewController {
             }
             try accountService.add(account)
             onDidAddUser?(account)
-            dismiss(animated: true)
+            dismiss(animated: true) { [weak self] in
+                guard let self else { return }
+                toast = Toast.text("User Added")
+                toast.show(haptic: .success)
+            }
         } catch let error as AuthenticationError {
             fatalError("Auth error: \(error)")
         } catch {
@@ -261,22 +290,24 @@ class AddUserFormViewController: UIViewController {
         scrollView.addSubview(contentView)
         contentView.addSubview(verticalStackView)
         
-        verticalStackView.addArrangedSubview(usernameDineTextField)
-        verticalStackView.addArrangedSubview(passwordDineTextField)
-        verticalStackView.addArrangedSubview(confirmPasswordDineTextField)
+        verticalStackView.addArrangedSubview(usernameTextField)
+        verticalStackView.addArrangedSubview(passwordTextField)
+        verticalStackView.addArrangedSubview(verifyPasswordTextField)
         verticalStackView.addArrangedSubview(dinePicker)
         verticalStackView.addArrangedSubview(signUpButton)
-        verticalStackView.setCustomSpacing(34, after: confirmPasswordDineTextField)
+        verticalStackView.setCustomSpacing(34, after: verifyPasswordTextField)
         
         NSLayoutConstraint.activate([
-            scrollView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            scrollView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
             scrollView.topAnchor.constraint(equalTo: view.topAnchor),
             scrollView.bottomAnchor.constraint(equalTo: view.keyboardLayoutGuide.topAnchor),
-            contentView.centerXAnchor.constraint(equalTo: scrollView.centerXAnchor),
-            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
+            
+            contentView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
+            contentView.trailingAnchor.constraint(equalTo: scrollView.trailingAnchor),
             contentView.topAnchor.constraint(equalTo: scrollView.topAnchor),
             contentView.bottomAnchor.constraint(equalTo: scrollView.bottomAnchor),
+            contentView.widthAnchor.constraint(equalTo: scrollView.widthAnchor),
             verticalStackView.centerXAnchor.constraint(equalTo: contentView.centerXAnchor),
             verticalStackView.widthAnchor.constraint(equalTo: contentView.widthAnchor, multiplier: 0.88),
             verticalStackView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20),
@@ -292,7 +323,7 @@ class AddUserFormViewController: UIViewController {
             let account = try accountService.fetch()
             if let account {
                 if account.first(where: { $0.username == username }) != nil {
-                    return true
+                    return true // user available
                 } else {
                     return false
                 }
@@ -308,26 +339,29 @@ class AddUserFormViewController: UIViewController {
     private func validateText(_ textField: DineTextField) -> DineTextInputError? {
         guard let text = textField.inputText else { return nil }
         
-        if textField == usernameDineTextField {
+        if textField == usernameTextField {
             guard !text.isEmpty else { return nil }
             if !AuthenticationValidator.isValidUsername(text) {
                 return DineTextInputError(localizedDescription: "Username must be 3-20 characters, only letters, numbers, and underscores.")
             }
+            if isUserAvaialable(text) {
+                return DineTextInputError(localizedDescription: "Username is already taken.")
+            }
         }
         
-        if textField == passwordDineTextField {
+        if textField == passwordTextField {
             guard !text.isEmpty else { return nil }
             if !AuthenticationValidator.isStrongPassword(text) {
                 return DineTextInputError(localizedDescription: "Password must be 8+ characters, with letters, numbers, and special characters.")
             }
         }
         
-        if textField == confirmPasswordDineTextField {
+        if textField == verifyPasswordTextField {
             guard !text.isEmpty else { return nil }
             if !AuthenticationValidator.isStrongPassword(text) {
                 return DineTextInputError(localizedDescription: "Password must be 8+ characters, with letters, numbers, and special characters.")
             }
-            if passwordDineTextField.inputText != confirmPasswordDineTextField.inputText {
+            if passwordTextField.inputText != verifyPasswordTextField.inputText {
                 return DineTextInputError(localizedDescription: "Passwords don't match.")
             }
         }
@@ -350,17 +384,6 @@ class AddUserFormViewController: UIViewController {
             self.view.layoutIfNeeded()
         }
     }
-
-    private func onEditingChanged(_ textField: DineTextField) {
-        textField.error = validateText(textField)
-        animateErrorMessage(for: textField)
-    }
-    
-    private func onDidEndEditingUsernameTF(_ textField: DineTextField) {
-        textField.error = validateUsername(textField)
-        animateErrorMessage(for: textField)
-        activeTextField = nil
-    }
 }
 
 extension AddUserFormViewController {
@@ -370,6 +393,32 @@ extension AddUserFormViewController {
     
     private func onDidEndEditing(_ textField: DineTextField) {
         activeTextField = nil
+    }
+    
+    private func textFieldDidChangeEditing(_ textField: DineTextField) {
+        textField.error = nil
+        animateErrorMessage(for: textField)
+    }
+    
+    private func textFieldShouldEndEditing(_ textField: DineTextField) -> Bool {
+        if let validator = validateText(textField) {
+            textField.error = validator
+            animateErrorMessage(for: textField)
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    private func textFieldShouldReturn(_ textField: DineTextField) -> Bool {
+        if textField == usernameTextField {
+            passwordTextField.textfield.becomeFirstResponder()
+        } else if textField == passwordTextField {
+            verifyPasswordTextField.textfield.becomeFirstResponder()
+        } else if textField == verifyPasswordTextField {
+            verifyPasswordTextField.textfield.resignFirstResponder()
+        }
+        return true
     }
 }
 

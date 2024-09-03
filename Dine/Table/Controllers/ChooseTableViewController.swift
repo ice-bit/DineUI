@@ -17,7 +17,15 @@ class ChooseTableViewController: UIViewController {
     private var toast: Toast!
     
     private var tableData: [RestaurantTable] = []
-    private var selectedTable: RestaurantTable?
+    private var selectedTable: RestaurantTable? {
+        didSet {
+            if let selectedTable {
+                if selectedTable.isSelected {
+                    showBottomSheet()
+                }
+            }
+        }
+    }
     
     private var collectionView: UICollectionView!
     
@@ -33,12 +41,17 @@ class ChooseTableViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        title = "Tables"
         view.backgroundColor = .systemGroupedBackground
+        
         loadTables()
         setupCollectionView()
-        view = collectionView
-        setupNavigationBar()
-        NotificationCenter.default.addObserver(self, selector: #selector(didSelectTable(_:)), name: .tableSelectionNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didSelectTable(_:)),
+            name: .tableSelectionNotification,
+            object: nil
+        )
     }
     
     private func setupNoTablesView() {
@@ -130,13 +143,15 @@ class ChooseTableViewController: UIViewController {
         collectionView.backgroundColor = .systemGroupedBackground
         collectionView.dataSource = self
         collectionView.delegate = self
-    }
-    
-    private func setupNavigationBar() {
-        title = "Choose Table"
-        navigationController?.navigationBar.prefersLargeTitles = true
-        let confirmBarButton = UIBarButtonItem(title: "Confirm", style: .plain, target: self, action: #selector(confirmButtonAction(_:)))
-        navigationItem.rightBarButtonItem = confirmBarButton
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        
+        view.addSubview(collectionView)
+        NSLayoutConstraint.activate([
+            collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+            collectionView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+        ])
     }
     
     private func showErrorToast() {
@@ -147,7 +162,7 @@ class ChooseTableViewController: UIViewController {
         toast.show(haptic: .error)
     }
     
-    @objc private func confirmButtonAction(_ sender: UIBarButtonItem) {
+    private func confirmButtonAction() {
         do {
             guard let selectedTable else {
                 showErrorToast()
@@ -163,7 +178,11 @@ class ChooseTableViewController: UIViewController {
             NotificationCenter.default.post(name: .orderDidChangeNotification, object: nil)
             NotificationCenter.default.post(name: .metricDataDidChangeNotification, object: nil)
             
-            self.dismiss(animated: true)
+            // bottom sheet dismissal
+            self.dismiss(animated: true) {
+                // order taking scene dismissal
+                self.dismiss(animated: true)
+            }
             // Show toast after completion
             showSuccessToast()
         } catch {
@@ -177,6 +196,24 @@ class ChooseTableViewController: UIViewController {
         }
         toast = Toast.default(image: UIImage(systemName: "checkmark.circle.fill")!, title: "New Order Added")
         toast.show(haptic: .success)
+    }
+    
+    private func showBottomSheet() {
+        let bottomSheetVC = TableConfirmationBottomSheetViewController()
+        bottomSheetVC.onProceedTap = confirmButtonAction
+        if let sheet = bottomSheetVC.sheetPresentationController {
+            sheet.detents = [
+                .custom { context in
+                    // Use the height of the content in the bottom
+                    return bottomSheetVC.preferredContentSize.height + 16
+                }
+            ]
+            sheet.preferredCornerRadius = 16
+            sheet.prefersScrollingExpandsWhenScrolledToEdge = false
+            sheet.prefersEdgeAttachedInCompactHeight = true
+            sheet.prefersPageSizing = false
+        }
+        self.present(bottomSheetVC, animated: true)
     }
 }
 

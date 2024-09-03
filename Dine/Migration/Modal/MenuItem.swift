@@ -13,7 +13,7 @@ class MenuItem: ObservableObject {
     @Published var name: String
     @Published var price: Double
     @Published var count: Int = 0
-    let category: MenuCategory
+    var category: MenuCategory
     @Published var description: String
     
     var image: UIImage? {
@@ -23,8 +23,8 @@ class MenuItem: ObservableObject {
     }
     
     var renderedImage: UIImage? {
-        get async {
-            await loadImage()
+        get {
+            loadImage()
         }
     }
     
@@ -89,7 +89,7 @@ class MenuItem: ObservableObject {
 }
 
 extension MenuItem {
-    func loadImage() async -> UIImage? {
+    func loadImage() -> UIImage? {
         let cache = ImageCacheManager.shared.cache
         
         if let imageFromCache = cache.object(forKey: self.itemId.uuidString as NSString) {
@@ -105,25 +105,13 @@ extension MenuItem {
         print("FileURL: \(fileURL)")
         
         do {
-            // Load the data asynchronously
-            let data = try await withCheckedThrowingContinuation { continuation in
-                DispatchQueue.global(qos: .background).async {
-                    do {
-                        let data = try Data(contentsOf: fileURL)
-                        continuation.resume(returning: data)
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
-                }
-            }
-            
+            let data = try Data(contentsOf: fileURL)
             guard let imageToCache = UIImage(data: data) else {
                 fatalError("Failed to create UIImage")
             }
             cache.setObject(imageToCache, forKey: self.itemId.uuidString as NSString)
             image = imageToCache // set the image
             return imageToCache
-            
         } catch {
             fatalError("🔨 Failed to load assets from files: \(error)")
         }
